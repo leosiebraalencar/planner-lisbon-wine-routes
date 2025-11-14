@@ -8,12 +8,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { Language } from "@/lib/i18n";
+import { PortugalFlag, UKFlag, SpainFlag, GermanyFlag } from "@/components/FlagIcons";
 
 const languages = [
-  { code: 'PT' as Language, label: 'Português', flag: '🇵🇹' },
-  { code: 'EN' as Language, label: 'English', flag: '🇬🇧' },
-  { code: 'ES' as Language, label: 'Español', flag: '🇪🇸' },
-  { code: 'DE' as Language, label: 'Deutsch', flag: '🇩🇪' }
+  { code: 'PT' as Language, label: 'Português', Flag: PortugalFlag },
+  { code: 'EN' as Language, label: 'English', Flag: UKFlag },
+  { code: 'ES' as Language, label: 'Español', Flag: SpainFlag },
+  { code: 'DE' as Language, label: 'Deutsch', Flag: GermanyFlag }
 ];
 
 export default function Header() {
@@ -57,22 +58,28 @@ export default function Header() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-2" data-testid="button-language">
-                  <span className="text-xl">{languages.find(l => l.code === language)?.flag}</span>
+                  {(() => {
+                    const currentLang = languages.find(l => l.code === language);
+                    return currentLang ? <currentLang.Flag className="w-4 h-3" /> : null;
+                  })()}
                   <span className="hidden sm:inline">{language}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                {languages.map((lang) => (
-                  <DropdownMenuItem
-                    key={lang.code}
-                    onClick={() => setLanguage(lang.code)}
-                    data-testid={`menuitem-language-${lang.code.toLowerCase()}`}
-                    className="gap-2"
-                  >
-                    <span className="text-xl">{lang.flag}</span>
-                    <span>{lang.label}</span>
-                  </DropdownMenuItem>
-                ))}
+                {languages.map((lang) => {
+                  const FlagComponent = lang.Flag;
+                  return (
+                    <DropdownMenuItem
+                      key={lang.code}
+                      onClick={() => setLanguage(lang.code)}
+                      data-testid={`menuitem-language-${lang.code.toLowerCase()}`}
+                      className="gap-2"
+                    >
+                      <FlagComponent className="w-4 h-3" />
+                      <span>{lang.label}</span>
+                    </DropdownMenuItem>
+                  );
+                })}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
