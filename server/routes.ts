@@ -4,6 +4,8 @@ import { storage } from "./storage";
 import Stripe from "stripe";
 import { itinerarySchema } from "@shared/schema";
 import { generateItineraryPDF } from "./pdf";
+import path from "path";
+import fs from "fs";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error("STRIPE_SECRET_KEY must be set");
@@ -67,6 +69,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     res.json({ received: true });
+  });
+
+  app.get("/api/download-pdf/:sessionId", async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      
+      const paymentSession = await storage.getPaymentSessionByStripeId(sessionId);
+      
+      if (!paymentSession) {
+        return res.status(404).json({ error: 'Payment session not found' });
+      }
+      
+      if (paymentSession.status !== 'completed') {
+        return res.status(403).json({ error: 'Payment not completed' });
+      }
+      
+      if (!paymentSession.pdfPath) {
+        return res.status(404).json({ error: 'PDF not yet generated' });
+      }
+      
+      if (!fs.existsSync(paymentSession.pdfPath)) {
+        return res.status(404).json({ error: 'PDF file not found' });
+      }
+      
+      res.download(paymentSession.pdfPath, `lisbon-wine-routes-itinerary.pdf`);
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      res.status(500).json({ error: 'Failed to download PDF' });
+    }
   });
 
   app.post("/api/create-checkout-session", async (req, res) => {
