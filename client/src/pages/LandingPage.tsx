@@ -1,3 +1,4 @@
+import { useLocation } from "wouter";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import ValueProposition from "@/components/ValueProposition";
@@ -6,15 +7,17 @@ import SampleItinerary from "@/components/SampleItinerary";
 import PricingSection from "@/components/PricingSection";
 import Footer from "@/components/Footer";
 
-interface LandingPageProps {
-  onStartQuiz: () => void;
-}
+export default function LandingPage() {
+  const [, setLocation] = useLocation();
 
-export default function LandingPage({ onStartQuiz }: LandingPageProps) {
+  const handleStartQuiz = () => {
+    setLocation('/quiz');
+  };
+
   return (
     <div className="min-h-screen">
       <Header />
-      <Hero onStartQuiz={onStartQuiz} />
+      <Hero onStartQuiz={handleStartQuiz} />
       <ValueProposition />
       <HowItWorks />
       <SampleItinerary />

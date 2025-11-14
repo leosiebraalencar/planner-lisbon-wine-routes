@@ -51,7 +51,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (!paymentSession) {
           console.error(`Payment session not found for Stripe session ${session.id}`);
-          return res.status(404).json({ error: 'Payment session not found' });
+          res.json({ received: true, error: 'Payment session not found' });
+          return;
         }
 
         const pdfPath = await generateItineraryPDF(paymentSession.itineraryData as any, session.id);
@@ -100,24 +101,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  let cachedPrice: Stripe.Price | null = null;
+
+  async function getOrCreatePrice(): Promise<Stripe.Price> {
+    if (cachedPrice) {
+      return cachedPrice;
+    }
+
+    const existingPrices = await stripe.prices.list({
+      lookup_keys: ['itinerary_pwyw'],
+      limit: 1,
+    });
+
+    if (existingPrices.data.length > 0) {
+      cachedPrice = existingPrices.data[0];
+      return cachedPrice;
+    }
+
+    const product = await stripe.products.create({
+      name: 'Lisbon Wine Routes - Personalized Itinerary',
+      description: 'Personalized wine tourism itinerary for Lisbon',
+    });
+
+    cachedPrice = await stripe.prices.create({
+      product: product.id,
+      currency: 'usd',
+      custom_unit_amount: {
+        enabled: true,
+        preset: 500,
+        minimum: 100,
+      },
+      lookup_key: 'itinerary_pwyw',
+    });
+
+    return cachedPrice;
+  }
+
   app.post("/api/create-checkout-session", async (req, res) => {
     try {
       const itinerary = itinerarySchema.parse(req.body);
 
-      const product = await stripe.products.create({
-        name: 'Lisbon Wine Routes - Personalized Itinerary',
-        description: `${itinerary.days.length}-day wine tourism itinerary in Lisbon`,
-      });
+      let baseUrl = req.get('origin') || `${req.protocol}://${req.get('host')}`;
+      
+      if (process.env.REPLIT_DEV_DOMAIN) {
+        let envUrl = process.env.REPLIT_DEV_DOMAIN;
+        if (!envUrl.startsWith('http://') && !envUrl.startsWith('https://')) {
+          envUrl = `https://${envUrl}`;
+        }
+        baseUrl = envUrl;
+      }
+      
+      if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
+        baseUrl = `https://${baseUrl}`;
+      }
+      
+      baseUrl = baseUrl.replace(/\/$/, '');
 
-      const price = await stripe.prices.create({
-        product: product.id,
-        currency: 'usd',
-        custom_unit_amount: {
-          enabled: true,
-          preset: 500,
-          minimum: 100,
-        },
-      });
+      const price = await getOrCreatePrice();
 
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
@@ -128,8 +168,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           },
         ],
         mode: 'payment',
-        success_url: `${process.env.REPLIT_DEV_DOMAIN}/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.REPLIT_DEV_DOMAIN}/itinerary`,
+        success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${baseUrl}/itinerary`,
         metadata: {
           itineraryId: itinerary.id,
         },

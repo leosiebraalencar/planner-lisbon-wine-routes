@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Route, Switch, useLocation } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
@@ -7,9 +8,24 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import LandingPage from "@/pages/LandingPage";
 import QuizPage from "@/pages/QuizPage";
 import ItineraryPage from "@/pages/ItineraryPage";
+import SuccessPage from "@/pages/SuccessPage";
 import type { QuizResponse, Itinerary } from "@shared/schema";
 
-type AppState = 'landing' | 'quiz' | 'itinerary';
+function ItineraryPageWrapper({ itinerary }: { itinerary: Itinerary | null }) {
+  const [, setLocation] = useLocation();
+
+  useEffect(() => {
+    if (!itinerary) {
+      setLocation('/');
+    }
+  }, [itinerary, setLocation]);
+
+  if (!itinerary) {
+    return null;
+  }
+
+  return <ItineraryPage itinerary={itinerary} />;
+}
 
 //todo: remove mock functionality
 const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
@@ -65,23 +81,16 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
 };
 
 function App() {
-  const [state, setState] = useState<AppState>('landing');
-  const [itinerary, setItinerary] = useState<Itinerary | null>(null);
-
-  const handleStartQuiz = () => {
-    setState('quiz');
-  };
+  const [itinerary, setItinerary] = useState<Itinerary | null>(() => {
+    const stored = sessionStorage.getItem('currentItinerary');
+    return stored ? JSON.parse(stored) : null;
+  });
 
   const handleQuizComplete = (data: QuizResponse) => {
     //todo: replace with actual API call to generate itinerary
     const generatedItinerary = generateMockItinerary(data);
     setItinerary(generatedItinerary);
-    setState('itinerary');
-  };
-
-  const handleDownload = () => {
-    //todo: implement Stripe payment and PDF generation
-    console.log('Download itinerary');
+    sessionStorage.setItem('currentItinerary', JSON.stringify(generatedItinerary));
   };
 
   return (
@@ -89,11 +98,20 @@ function App() {
       <LanguageProvider>
         <TooltipProvider>
           <div className="min-h-screen">
-            {state === 'landing' && <LandingPage onStartQuiz={handleStartQuiz} />}
-            {state === 'quiz' && <QuizPage onComplete={handleQuizComplete} />}
-            {state === 'itinerary' && itinerary && (
-              <ItineraryPage itinerary={itinerary} onDownload={handleDownload} />
-            )}
+            <Switch>
+              <Route path="/quiz">
+                <QuizPage onComplete={handleQuizComplete} />
+              </Route>
+              <Route path="/itinerary">
+                <ItineraryPageWrapper itinerary={itinerary} />
+              </Route>
+              <Route path="/success">
+                <SuccessPage />
+              </Route>
+              <Route path="/">
+                <LandingPage />
+              </Route>
+            </Switch>
           </div>
           <Toaster />
         </TooltipProvider>

@@ -154,6 +154,14 @@ export const translations = {
         grupo: 'Grupo',
       },
     },
+    success: {
+      title: 'Pagamento Confirmado!',
+      message: 'Obrigado por apoiar nosso trabalho! Seu roteiro personalizado está pronto para download.',
+      downloadButton: 'Baixar Roteiro (PDF)',
+      downloading: 'Baixando...',
+      backHome: 'Voltar ao Início',
+      supportText: 'Precisa de ajuda ou quer um roteiro ainda mais personalizado? Entre em contato:',
+    },
   },
   EN: {
     header: {
@@ -307,6 +315,14 @@ export const translations = {
         familia: 'Family',
         grupo: 'Group',
       },
+    },
+    success: {
+      title: 'Payment Confirmed!',
+      message: 'Thank you for supporting our work! Your personalized itinerary is ready to download.',
+      downloadButton: 'Download Itinerary (PDF)',
+      downloading: 'Downloading...',
+      backHome: 'Back to Home',
+      supportText: 'Need help or want an even more personalized itinerary? Contact us:',
     },
   },
   ES: {
@@ -462,6 +478,14 @@ export const translations = {
         grupo: 'Grupo',
       },
     },
+    success: {
+      title: '¡Pago Confirmado!',
+      message: '¡Gracias por apoyar nuestro trabajo! Tu itinerario personalizado está listo para descargar.',
+      downloadButton: 'Descargar Itinerario (PDF)',
+      downloading: 'Descargando...',
+      backHome: 'Volver al Inicio',
+      supportText: '¿Necesitas ayuda o quieres un itinerario aún más personalizado? Contáctanos:',
+    },
   },
   DE: {
     header: {
@@ -615,6 +639,14 @@ export const translations = {
         familia: 'Familie',
         grupo: 'Gruppe',
       },
+    },
+    success: {
+      title: 'Zahlung Bestätigt!',
+      message: 'Vielen Dank für Ihre Unterstützung! Ihre personalisierte Reiseroute steht zum Download bereit.',
+      downloadButton: 'Reiseroute Herunterladen (PDF)',
+      downloading: 'Wird heruntergeladen...',
+      backHome: 'Zurück zur Startseite',
+      supportText: 'Benötigen Sie Hilfe oder eine noch individuellere Route? Kontaktieren Sie uns:',
     },
   },
 };

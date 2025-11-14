@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import Header from "@/components/Header";
 import QuizProgress from "@/components/QuizProgress";
 import QuizQuestion from "@/components/QuizQuestion";
@@ -29,6 +30,7 @@ const preferences = [
 ];
 
 export default function QuizPage({ onComplete }: QuizPageProps) {
+  const [, setLocation] = useLocation();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<Partial<QuizResponse>>({
     duration: 3,
@@ -43,6 +45,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
       setCurrentStep(currentStep + 1);
     } else {
       onComplete(formData as QuizResponse);
+      setLocation('/itinerary');
     }
   };
 
