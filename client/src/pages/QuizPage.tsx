@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Header from "@/components/Header";
 import QuizProgress from "@/components/QuizProgress";
 import QuizQuestion from "@/components/QuizQuestion";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -78,7 +79,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-background py-8 px-4">
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <QuizProgress currentStep={currentStep} totalSteps={TOTAL_STEPS} />
         
@@ -328,6 +331,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
             </div>
           </QuizQuestion>
         )}
+      </div>
       </div>
     </div>
   );

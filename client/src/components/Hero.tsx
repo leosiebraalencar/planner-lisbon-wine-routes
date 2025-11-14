@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Header from "@/components/Header";
 import heroImage from "@assets/generated_images/Hero_vineyard_golden_hour_eac5587d.png";
 
 interface HeroProps {
@@ -8,6 +9,7 @@ interface HeroProps {
 export default function Hero({ onStartQuiz }: HeroProps) {
   return (
     <section className="relative h-screen min-h-[600px] flex items-center justify-center">
+      <Header transparent />
       <div className="absolute inset-0">
         <img
           src={heroImage}
