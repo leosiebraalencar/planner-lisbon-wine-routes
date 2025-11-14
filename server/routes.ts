@@ -13,6 +13,51 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  app.post("/api/webhook", async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    
+    if (!sig) {
+      return res.status(400).send('Missing stripe-signature header');
+    }
+
+    let event: Stripe.Event;
+
+    try {
+      if (process.env.STRIPE_WEBHOOK_SECRET) {
+        event = stripe.webhooks.constructEvent(
+          req.body,
+          sig,
+          process.env.STRIPE_WEBHOOK_SECRET
+        );
+      } else {
+        console.warn('WARNING: STRIPE_WEBHOOK_SECRET not set, skipping webhook signature verification');
+        event = JSON.parse(req.body.toString());
+      }
+    } catch (err: any) {
+      console.error('Webhook signature verification failed:', err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object as Stripe.Checkout.Session;
+      
+      try {
+        const amountPaid = session.amount_total || 0;
+        
+        await storage.updatePaymentSession(session.id, {
+          status: 'completed',
+          amountPaid: amountPaid,
+        });
+
+        console.log(`Payment completed for session ${session.id}, amount: $${amountPaid / 100}`);
+      } catch (error) {
+        console.error('Error updating payment session:', error);
+      }
+    }
+
+    res.json({ received: true });
+  });
+
   app.post("/api/create-checkout-session", async (req, res) => {
     try {
       const itinerary = itinerarySchema.parse(req.body);
