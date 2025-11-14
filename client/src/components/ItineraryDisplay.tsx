@@ -2,7 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, Calendar, Download, DollarSign } from "lucide-react";
+import { MapPin, Clock, Calendar, Download, DollarSign, Mail } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import type { Itinerary } from "@shared/schema";
 
 interface ItineraryDisplayProps {
@@ -11,14 +12,16 @@ interface ItineraryDisplayProps {
 }
 
 export default function ItineraryDisplay({ itinerary, onDownload }: ItineraryDisplayProps) {
+  const { t } = useLanguage();
+  
   return (
     <div className="w-full max-w-5xl mx-auto">
       <div className="mb-8 text-center">
         <h1 className="font-serif font-bold text-3xl md:text-4xl mb-4">
-          Seu Roteiro Personalizado de Enoturismo
+          {t('itinerary.title')}
         </h1>
         <p className="text-muted-foreground">
-          Um guia completo criado especialmente para você
+          {t('itinerary.subtitle')}
         </p>
       </div>
       
@@ -28,8 +31,8 @@ export default function ItineraryDisplay({ itinerary, onDownload }: ItineraryDis
             <div className="flex items-center gap-3">
               <Calendar className="w-5 h-5 text-primary" />
               <div>
-                <div className="text-sm text-muted-foreground">Duração</div>
-                <div className="font-semibold">{itinerary.days.length} dias</div>
+                <div className="text-sm text-muted-foreground">{t('itinerary.duration')}</div>
+                <div className="font-semibold">{itinerary.days.length} {t('itinerary.days')}</div>
               </div>
             </div>
           </CardContent>
@@ -40,8 +43,10 @@ export default function ItineraryDisplay({ itinerary, onDownload }: ItineraryDis
             <div className="flex items-center gap-3">
               <DollarSign className="w-5 h-5 text-primary" />
               <div>
-                <div className="text-sm text-muted-foreground">Orçamento</div>
-                <div className="font-semibold capitalize">{itinerary.quizData.budget}</div>
+                <div className="text-sm text-muted-foreground">{t('itinerary.budget')}</div>
+                <div className="font-semibold capitalize">
+                  {t(`itinerary.budgetTypes.${itinerary.quizData.budget}`)}
+                </div>
               </div>
             </div>
           </CardContent>
@@ -52,8 +57,10 @@ export default function ItineraryDisplay({ itinerary, onDownload }: ItineraryDis
             <div className="flex items-center gap-3">
               <MapPin className="w-5 h-5 text-primary" />
               <div>
-                <div className="text-sm text-muted-foreground">Tipo de Viagem</div>
-                <div className="font-semibold capitalize">{itinerary.quizData.travelers}</div>
+                <div className="text-sm text-muted-foreground">{t('itinerary.travelType')}</div>
+                <div className="font-semibold capitalize">
+                  {t(`itinerary.travelerTypes.${itinerary.quizData.travelers}`)}
+                </div>
               </div>
             </div>
           </CardContent>
@@ -62,7 +69,7 @@ export default function ItineraryDisplay({ itinerary, onDownload }: ItineraryDis
       
       <Card className="border-border mb-8">
         <CardHeader>
-          <CardTitle className="font-serif">Destaques do Roteiro</CardTitle>
+          <CardTitle className="font-serif">{t('itinerary.highlights')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
@@ -77,7 +84,7 @@ export default function ItineraryDisplay({ itinerary, onDownload }: ItineraryDis
       
       <Card className="border-border mb-8">
         <CardHeader>
-          <CardTitle className="font-serif">Roteiro Dia a Dia</CardTitle>
+          <CardTitle className="font-serif">{t('itinerary.dayByDay')}</CardTitle>
         </CardHeader>
         <CardContent>
           <Accordion type="single" collapsible className="w-full">
@@ -89,7 +96,7 @@ export default function ItineraryDisplay({ itinerary, onDownload }: ItineraryDis
                       {day.day}
                     </div>
                     <div className="text-left">
-                      <div className="font-serif font-semibold">Dia {day.day}</div>
+                      <div className="font-serif font-semibold">{t('itinerary.day')} {day.day}</div>
                       <div className="text-sm text-muted-foreground">{day.region}</div>
                     </div>
                   </div>
@@ -100,14 +107,14 @@ export default function ItineraryDisplay({ itinerary, onDownload }: ItineraryDis
                       <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold">Manhã</h4>
+                          <h4 className="font-semibold">{t('itinerary.morning')}</h4>
                           <span className="text-sm text-muted-foreground">{day.morning.time}</span>
                         </div>
                         <div className="bg-card p-4 rounded-lg">
                           <div className="font-medium mb-1">{day.morning.location}</div>
                           <div className="text-sm text-muted-foreground mb-2">{day.morning.activity}</div>
                           <p className="text-sm">{day.morning.description}</p>
-                          <div className="text-sm text-muted-foreground mt-2">Duração: {day.morning.duration}</div>
+                          <div className="text-sm text-muted-foreground mt-2">{t('itinerary.durationLabel')}: {day.morning.duration}</div>
                         </div>
                       </div>
                     </div>
@@ -116,14 +123,14 @@ export default function ItineraryDisplay({ itinerary, onDownload }: ItineraryDis
                       <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold">Tarde</h4>
+                          <h4 className="font-semibold">{t('itinerary.afternoon')}</h4>
                           <span className="text-sm text-muted-foreground">{day.afternoon.time}</span>
                         </div>
                         <div className="bg-card p-4 rounded-lg">
                           <div className="font-medium mb-1">{day.afternoon.location}</div>
                           <div className="text-sm text-muted-foreground mb-2">{day.afternoon.activity}</div>
                           <p className="text-sm">{day.afternoon.description}</p>
-                          <div className="text-sm text-muted-foreground mt-2">Duração: {day.afternoon.duration}</div>
+                          <div className="text-sm text-muted-foreground mt-2">{t('itinerary.durationLabel')}: {day.afternoon.duration}</div>
                         </div>
                       </div>
                     </div>
@@ -132,14 +139,14 @@ export default function ItineraryDisplay({ itinerary, onDownload }: ItineraryDis
                       <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold">Noite</h4>
+                          <h4 className="font-semibold">{t('itinerary.evening')}</h4>
                           <span className="text-sm text-muted-foreground">{day.evening.time}</span>
                         </div>
                         <div className="bg-card p-4 rounded-lg">
                           <div className="font-medium mb-1">{day.evening.location}</div>
                           <div className="text-sm text-muted-foreground mb-2">{day.evening.activity}</div>
                           <p className="text-sm">{day.evening.description}</p>
-                          <div className="text-sm text-muted-foreground mt-2">Duração: {day.evening.duration}</div>
+                          <div className="text-sm text-muted-foreground mt-2">{t('itinerary.durationLabel')}: {day.evening.duration}</div>
                         </div>
                       </div>
                     </div>
@@ -151,14 +158,13 @@ export default function ItineraryDisplay({ itinerary, onDownload }: ItineraryDis
         </CardContent>
       </Card>
       
-      <Card className="border-primary/20 bg-primary/5">
+      <Card className="border-primary/20 bg-primary/5 mb-6">
         <CardContent className="p-8 text-center">
           <h3 className="font-serif font-bold text-2xl mb-4">
-            Gostou do Seu Roteiro?
+            {t('itinerary.liked')}
           </h3>
           <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-            Faça o download do guia completo em PDF com todas as informações, mapas e contatos. 
-            Pague o que achar justo (mínimo $1 USD).
+            {t('itinerary.downloadInfo')}
           </p>
           <Button 
             size="lg" 
@@ -167,8 +173,27 @@ export default function ItineraryDisplay({ itinerary, onDownload }: ItineraryDis
             data-testid="button-download-itinerary"
           >
             <Download className="w-4 h-4 mr-2" />
-            Baixar Roteiro Completo (PDF)
+            {t('itinerary.downloadButton')}
           </Button>
+        </CardContent>
+      </Card>
+      
+      <Card className="border-border">
+        <CardContent className="p-6 text-center">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <Mail className="w-5 h-5 text-primary" />
+            <h4 className="font-semibold text-lg">{t('itinerary.supportTitle')}</h4>
+          </div>
+          <p className="text-muted-foreground text-sm mb-2">
+            {t('itinerary.supportText')}
+          </p>
+          <a 
+            href="mailto:contacto@lisbonwineroutes.com" 
+            className="text-primary font-medium hover:underline"
+            data-testid="link-contact-email"
+          >
+            contacto@lisbonwineroutes.com
+          </a>
         </CardContent>
       </Card>
     </div>

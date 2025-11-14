@@ -139,6 +139,8 @@ export const translations = {
       liked: 'Gostou do Seu Roteiro?',
       downloadInfo: 'Faça o download do guia completo em PDF com todas as informações, mapas e contatos. Pague o que achar justo (mínimo $1 USD).',
       downloadButton: 'Baixar Roteiro Completo (PDF)',
+      supportTitle: 'Precisa de Ajuda Personalizada?',
+      supportText: 'Se deseja apoio para realizar as reservas ou um roteiro ainda mais personalizado, entre em contato conosco em',
       days: 'dias',
       budgetTypes: {
         economico: 'Econômico',
@@ -291,6 +293,8 @@ export const translations = {
       liked: 'Did You Like Your Itinerary?',
       downloadInfo: 'Download the complete PDF guide with all information, maps, and contacts. Pay what you think is fair (minimum $1 USD).',
       downloadButton: 'Download Complete Itinerary (PDF)',
+      supportTitle: 'Need Personalized Help?',
+      supportText: 'If you need support for making reservations or want an even more personalized itinerary, contact us at',
       days: 'days',
       budgetTypes: {
         economico: 'Economic',
@@ -443,6 +447,8 @@ export const translations = {
       liked: '¿Te Gustó Tu Itinerario?',
       downloadInfo: 'Descarga la guía completa en PDF con toda la información, mapas y contactos. Paga lo que consideres justo (mínimo $1 USD).',
       downloadButton: 'Descargar Itinerario Completo (PDF)',
+      supportTitle: '¿Necesitas Ayuda Personalizada?',
+      supportText: 'Si deseas apoyo para realizar las reservas o un itinerario aún más personalizado, contáctanos en',
       days: 'días',
       budgetTypes: {
         economico: 'Económico',
@@ -595,6 +601,8 @@ export const translations = {
       liked: 'Hat Ihnen Ihre Route Gefallen?',
       downloadInfo: 'Laden Sie den vollständigen PDF-Führer mit allen Informationen, Karten und Kontakten herunter. Zahlen Sie, was Sie für fair halten (mindestens $1 USD).',
       downloadButton: 'Vollständige Route Herunterladen (PDF)',
+      supportTitle: 'Benötigen Sie Persönliche Hilfe?',
+      supportText: 'Wenn Sie Unterstützung bei Reservierungen oder eine noch persönlichere Route wünschen, kontaktieren Sie uns unter',
       days: 'Tage',
       budgetTypes: {
         economico: 'Wirtschaftlich',
