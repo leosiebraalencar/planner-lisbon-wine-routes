@@ -1,0 +1,631 @@
+export type Language = 'PT' | 'EN' | 'ES' | 'DE';
+
+export const translations = {
+  PT: {
+    header: {
+      visitBlog: 'Visite nosso blog',
+    },
+    hero: {
+      title: 'Descubra o Seu Roteiro Perfeito de Enoturismo em Lisboa',
+      subtitle: 'Responda algumas perguntas e receba um guia personalizado com as melhores vinícolas, degustações e experiências da região de Lisboa',
+      cta: 'Criar Meu Roteiro Personalizado',
+      created: 'Mais de 500 roteiros criados',
+    },
+    valueProposition: {
+      personalized: {
+        title: 'Personalizado para Você',
+        description: 'Roteiros únicos baseados em suas preferências, orçamento e tempo disponível',
+      },
+      curated: {
+        title: 'Curadoria Especializada',
+        description: 'Seleção cuidadosa das melhores vinícolas, restaurantes e experiências de Lisboa',
+      },
+      instant: {
+        title: 'Baixe Instantaneamente',
+        description: 'Receba seu guia completo em PDF pronto para usar na sua viagem',
+      },
+    },
+    howItWorks: {
+      title: 'Como Funciona',
+      step1: { title: 'Responda ao Quiz', description: 'Conte-nos sobre sua viagem, preferências e orçamento', label: 'Passo' },
+      step2: { title: 'IA Gera Roteiro', description: 'Nossa IA cria um roteiro personalizado só para você', label: 'Passo' },
+      step3: { title: 'Revise Sugestões', description: 'Veja seu roteiro detalhado dia a dia', label: 'Passo' },
+      step4: { title: 'Baixe seu Guia', description: 'Faça o download do PDF e aproveite sua viagem', label: 'Passo' },
+    },
+    sampleItinerary: {
+      title: 'Veja um Exemplo do Que Você Receberá',
+      subtitle: 'Um roteiro detalhado com sugestões para cada período do dia',
+      morning: 'Manhã',
+      afternoon: 'Tarde',
+      evening: 'Noite',
+    },
+    pricing: {
+      title: 'Pague o Que Achar Justo',
+      subtitle: 'Acreditamos no valor que oferecemos. Escolha quanto quer pagar (mínimo $1 USD)',
+      included: 'O que está incluído:',
+      from: 'A partir de',
+      choose: 'Você escolhe o valor após ver seu roteiro personalizado',
+      benefits: {
+        personalized: 'Roteiros personalizados por IA especializada',
+        time: 'Economia de horas de pesquisa e planejamento',
+        insider: 'Acesso a dicas exclusivas e informações locais',
+        restaurants: 'Sugestões de restaurantes e hospedagem',
+        maps: 'Mapas e informações de contato',
+        support: 'Apoie nosso trabalho de curadoria',
+      },
+    },
+    footer: {
+      description: 'Descobrindo as melhores experiências de enoturismo em Lisboa',
+      about: 'Sobre',
+      aboutProject: 'Sobre o Projeto',
+      mainBlog: 'Blog Principal',
+      routes: 'Rotas',
+      westRoute: 'Rota dos Vinhos Oeste',
+      tourism: 'Enoturismo em Lisboa',
+      contact: 'Contato',
+      rights: 'Todos os direitos reservados.',
+    },
+    quiz: {
+      progress: 'Passo {{current}} de {{total}}',
+      back: 'Voltar',
+      next: 'Próximo',
+      generate: 'Gerar Roteiro',
+      q1: {
+        question: 'Quantos dias durará sua viagem?',
+        day: 'dia',
+        days: 'dias',
+      },
+      q2: {
+        question: 'Quando você pretende viajar?',
+        info: 'Esta informação é opcional e nos ajuda a sugerir experiências sazonais',
+        startDate: 'Data de Início',
+        endDate: 'Data de Término',
+      },
+      q3: {
+        question: 'Qual é o seu orçamento?',
+        economic: {
+          title: 'Econômico',
+          description: 'Adegas familiares, degustações simples, restaurantes locais',
+        },
+        moderate: {
+          title: 'Moderado',
+          description: 'Quintas renomadas, tours guiados, harmonizações gastronômicas',
+        },
+        premium: {
+          title: 'Premium',
+          description: 'Experiências exclusivas, vinhos raros, restaurantes com estrela Michelin',
+        },
+      },
+      q4: {
+        question: 'Como você vai viajar?',
+        alone: 'Sozinho(a)',
+        couple: 'Em Casal',
+        family: 'Em Família',
+        group: 'Em Grupo',
+      },
+      q5: {
+        question: 'O que você mais gosta em enoturismo?',
+        info: 'Selecione todas as opções que lhe interessam',
+        preferences: {
+          historic: 'Vinícolas históricas',
+          tastings: 'Degustações exclusivas',
+          gastronomy: 'Gastronomia local',
+          landscapes: 'Paisagens e fotografia',
+          family: 'Experiências em família',
+          tours: 'Tours guiados',
+          sustainable: 'Produção sustentável',
+          biodynamic: 'Vinhos biodinâmicos',
+        },
+      },
+      q6: {
+        question: 'Alguma preferência especial?',
+        info: 'Compartilhe qualquer informação adicional que possa nos ajudar a personalizar seu roteiro',
+        placeholder: 'Ex: Preferência por vinhos tintos, restrições alimentares, interesse em vinhos orgânicos...',
+      },
+    },
+    itinerary: {
+      title: 'Seu Roteiro Personalizado de Enoturismo',
+      subtitle: 'Um guia completo criado especialmente para você',
+      duration: 'Duração',
+      budget: 'Orçamento',
+      travelType: 'Tipo de Viagem',
+      highlights: 'Destaques do Roteiro',
+      dayByDay: 'Roteiro Dia a Dia',
+      day: 'Dia',
+      morning: 'Manhã',
+      afternoon: 'Tarde',
+      evening: 'Noite',
+      durationLabel: 'Duração',
+      liked: 'Gostou do Seu Roteiro?',
+      downloadInfo: 'Faça o download do guia completo em PDF com todas as informações, mapas e contatos. Pague o que achar justo (mínimo $1 USD).',
+      downloadButton: 'Baixar Roteiro Completo (PDF)',
+      days: 'dias',
+      budgetTypes: {
+        economico: 'Econômico',
+        moderado: 'Moderado',
+        premium: 'Premium',
+      },
+      travelerTypes: {
+        sozinho: 'Sozinho(a)',
+        casal: 'Casal',
+        familia: 'Família',
+        grupo: 'Grupo',
+      },
+    },
+  },
+  EN: {
+    header: {
+      visitBlog: 'Visit our blog',
+    },
+    hero: {
+      title: 'Discover Your Perfect Wine Tourism Itinerary in Lisbon',
+      subtitle: 'Answer a few questions and receive a personalized guide with the best wineries, tastings, and experiences in the Lisbon region',
+      cta: 'Create My Personalized Itinerary',
+      created: 'Over 500 itineraries created',
+    },
+    valueProposition: {
+      personalized: {
+        title: 'Personalized for You',
+        description: 'Unique itineraries based on your preferences, budget, and available time',
+      },
+      curated: {
+        title: 'Expert Curation',
+        description: 'Careful selection of the best wineries, restaurants, and Lisbon experiences',
+      },
+      instant: {
+        title: 'Download Instantly',
+        description: 'Receive your complete PDF guide ready to use on your trip',
+      },
+    },
+    howItWorks: {
+      title: 'How It Works',
+      step1: { title: 'Answer the Quiz', description: 'Tell us about your trip, preferences, and budget', label: 'Step' },
+      step2: { title: 'AI Generates Itinerary', description: 'Our AI creates a personalized itinerary just for you', label: 'Step' },
+      step3: { title: 'Review Suggestions', description: 'See your detailed day-by-day itinerary', label: 'Step' },
+      step4: { title: 'Download Your Guide', description: 'Download the PDF and enjoy your trip', label: 'Step' },
+    },
+    sampleItinerary: {
+      title: 'See an Example of What You Will Receive',
+      subtitle: 'A detailed itinerary with suggestions for each period of the day',
+      morning: 'Morning',
+      afternoon: 'Afternoon',
+      evening: 'Evening',
+    },
+    pricing: {
+      title: 'Pay What You Think Is Fair',
+      subtitle: 'We believe in the value we offer. Choose how much you want to pay (minimum $1 USD)',
+      included: 'What\'s included:',
+      from: 'From',
+      choose: 'You choose the amount after seeing your personalized itinerary',
+      benefits: {
+        personalized: 'Personalized itineraries by specialized AI',
+        time: 'Save hours of research and planning',
+        insider: 'Access to exclusive tips and local information',
+        restaurants: 'Restaurant and accommodation suggestions',
+        maps: 'Maps and contact information',
+        support: 'Support our curation work',
+      },
+    },
+    footer: {
+      description: 'Discovering the best wine tourism experiences in Lisbon',
+      about: 'About',
+      aboutProject: 'About the Project',
+      mainBlog: 'Main Blog',
+      routes: 'Routes',
+      westRoute: 'West Wine Route',
+      tourism: 'Wine Tourism in Lisbon',
+      contact: 'Contact',
+      rights: 'All rights reserved.',
+    },
+    quiz: {
+      progress: 'Step {{current}} of {{total}}',
+      back: 'Back',
+      next: 'Next',
+      generate: 'Generate Itinerary',
+      q1: {
+        question: 'How many days will your trip last?',
+        day: 'day',
+        days: 'days',
+      },
+      q2: {
+        question: 'When do you plan to travel?',
+        info: 'This information is optional and helps us suggest seasonal experiences',
+        startDate: 'Start Date',
+        endDate: 'End Date',
+      },
+      q3: {
+        question: 'What is your budget?',
+        economic: {
+          title: 'Economic',
+          description: 'Family wineries, simple tastings, local restaurants',
+        },
+        moderate: {
+          title: 'Moderate',
+          description: 'Renowned estates, guided tours, gastronomic pairings',
+        },
+        premium: {
+          title: 'Premium',
+          description: 'Exclusive experiences, rare wines, Michelin-starred restaurants',
+        },
+      },
+      q4: {
+        question: 'How will you be traveling?',
+        alone: 'Solo',
+        couple: 'As a Couple',
+        family: 'With Family',
+        group: 'In a Group',
+      },
+      q5: {
+        question: 'What do you enjoy most about wine tourism?',
+        info: 'Select all options that interest you',
+        preferences: {
+          historic: 'Historic wineries',
+          tastings: 'Exclusive tastings',
+          gastronomy: 'Local gastronomy',
+          landscapes: 'Landscapes and photography',
+          family: 'Family experiences',
+          tours: 'Guided tours',
+          sustainable: 'Sustainable production',
+          biodynamic: 'Biodynamic wines',
+        },
+      },
+      q6: {
+        question: 'Any special preferences?',
+        info: 'Share any additional information that can help us personalize your itinerary',
+        placeholder: 'E.g.: Preference for red wines, dietary restrictions, interest in organic wines...',
+      },
+    },
+    itinerary: {
+      title: 'Your Personalized Wine Tourism Itinerary',
+      subtitle: 'A complete guide created especially for you',
+      duration: 'Duration',
+      budget: 'Budget',
+      travelType: 'Travel Type',
+      highlights: 'Itinerary Highlights',
+      dayByDay: 'Day by Day Itinerary',
+      day: 'Day',
+      morning: 'Morning',
+      afternoon: 'Afternoon',
+      evening: 'Evening',
+      durationLabel: 'Duration',
+      liked: 'Did You Like Your Itinerary?',
+      downloadInfo: 'Download the complete PDF guide with all information, maps, and contacts. Pay what you think is fair (minimum $1 USD).',
+      downloadButton: 'Download Complete Itinerary (PDF)',
+      days: 'days',
+      budgetTypes: {
+        economico: 'Economic',
+        moderado: 'Moderate',
+        premium: 'Premium',
+      },
+      travelerTypes: {
+        sozinho: 'Solo',
+        casal: 'Couple',
+        familia: 'Family',
+        grupo: 'Group',
+      },
+    },
+  },
+  ES: {
+    header: {
+      visitBlog: 'Visita nuestro blog',
+    },
+    hero: {
+      title: 'Descubre Tu Itinerario Perfecto de Enoturismo en Lisboa',
+      subtitle: 'Responde algunas preguntas y recibe una guía personalizada con las mejores bodegas, degustaciones y experiencias de la región de Lisboa',
+      cta: 'Crear Mi Itinerario Personalizado',
+      created: 'Más de 500 itinerarios creados',
+    },
+    valueProposition: {
+      personalized: {
+        title: 'Personalizado para Ti',
+        description: 'Itinerarios únicos basados en tus preferencias, presupuesto y tiempo disponible',
+      },
+      curated: {
+        title: 'Curación Especializada',
+        description: 'Selección cuidadosa de las mejores bodegas, restaurantes y experiencias de Lisboa',
+      },
+      instant: {
+        title: 'Descarga Instantánea',
+        description: 'Recibe tu guía completa en PDF lista para usar en tu viaje',
+      },
+    },
+    howItWorks: {
+      title: 'Cómo Funciona',
+      step1: { title: 'Responde el Cuestionario', description: 'Cuéntanos sobre tu viaje, preferencias y presupuesto', label: 'Paso' },
+      step2: { title: 'IA Genera Itinerario', description: 'Nuestra IA crea un itinerario personalizado solo para ti', label: 'Paso' },
+      step3: { title: 'Revisa Sugerencias', description: 'Ve tu itinerario detallado día a día', label: 'Paso' },
+      step4: { title: 'Descarga tu Guía', description: 'Descarga el PDF y disfruta tu viaje', label: 'Paso' },
+    },
+    sampleItinerary: {
+      title: 'Ve un Ejemplo de Lo Que Recibirás',
+      subtitle: 'Un itinerario detallado con sugerencias para cada período del día',
+      morning: 'Mañana',
+      afternoon: 'Tarde',
+      evening: 'Noche',
+    },
+    pricing: {
+      title: 'Paga Lo Que Consideres Justo',
+      subtitle: 'Creemos en el valor que ofrecemos. Elige cuánto quieres pagar (mínimo $1 USD)',
+      included: 'Qué está incluido:',
+      from: 'Desde',
+      choose: 'Eliges el monto después de ver tu itinerario personalizado',
+      benefits: {
+        personalized: 'Itinerarios personalizados por IA especializada',
+        time: 'Ahorra horas de investigación y planificación',
+        insider: 'Acceso a consejos exclusivos e información local',
+        restaurants: 'Sugerencias de restaurantes y alojamiento',
+        maps: 'Mapas e información de contacto',
+        support: 'Apoya nuestro trabajo de curación',
+      },
+    },
+    footer: {
+      description: 'Descubriendo las mejores experiencias de enoturismo en Lisboa',
+      about: 'Acerca de',
+      aboutProject: 'Sobre el Proyecto',
+      mainBlog: 'Blog Principal',
+      routes: 'Rutas',
+      westRoute: 'Ruta de Vinos Oeste',
+      tourism: 'Enoturismo en Lisboa',
+      contact: 'Contacto',
+      rights: 'Todos los derechos reservados.',
+    },
+    quiz: {
+      progress: 'Paso {{current}} de {{total}}',
+      back: 'Volver',
+      next: 'Siguiente',
+      generate: 'Generar Itinerario',
+      q1: {
+        question: '¿Cuántos días durará tu viaje?',
+        day: 'día',
+        days: 'días',
+      },
+      q2: {
+        question: '¿Cuándo planeas viajar?',
+        info: 'Esta información es opcional y nos ayuda a sugerir experiencias de temporada',
+        startDate: 'Fecha de Inicio',
+        endDate: 'Fecha de Término',
+      },
+      q3: {
+        question: '¿Cuál es tu presupuesto?',
+        economic: {
+          title: 'Económico',
+          description: 'Bodegas familiares, degustaciones sencillas, restaurantes locales',
+        },
+        moderate: {
+          title: 'Moderado',
+          description: 'Quintas reconocidas, tours guiados, armonizaciones gastronómicas',
+        },
+        premium: {
+          title: 'Premium',
+          description: 'Experiencias exclusivas, vinos raros, restaurantes con estrellas Michelin',
+        },
+      },
+      q4: {
+        question: '¿Cómo vas a viajar?',
+        alone: 'Solo(a)',
+        couple: 'En Pareja',
+        family: 'En Familia',
+        group: 'En Grupo',
+      },
+      q5: {
+        question: '¿Qué es lo que más te gusta del enoturismo?',
+        info: 'Selecciona todas las opciones que te interesen',
+        preferences: {
+          historic: 'Bodegas históricas',
+          tastings: 'Degustaciones exclusivas',
+          gastronomy: 'Gastronomía local',
+          landscapes: 'Paisajes y fotografía',
+          family: 'Experiencias familiares',
+          tours: 'Tours guiados',
+          sustainable: 'Producción sostenible',
+          biodynamic: 'Vinos biodinámicos',
+        },
+      },
+      q6: {
+        question: '¿Alguna preferencia especial?',
+        info: 'Comparte cualquier información adicional que pueda ayudarnos a personalizar tu itinerario',
+        placeholder: 'Ej: Preferencia por vinos tintos, restricciones alimentarias, interés en vinos orgánicos...',
+      },
+    },
+    itinerary: {
+      title: 'Tu Itinerario Personalizado de Enoturismo',
+      subtitle: 'Una guía completa creada especialmente para ti',
+      duration: 'Duración',
+      budget: 'Presupuesto',
+      travelType: 'Tipo de Viaje',
+      highlights: 'Destacados del Itinerario',
+      dayByDay: 'Itinerario Día a Día',
+      day: 'Día',
+      morning: 'Mañana',
+      afternoon: 'Tarde',
+      evening: 'Noche',
+      durationLabel: 'Duración',
+      liked: '¿Te Gustó Tu Itinerario?',
+      downloadInfo: 'Descarga la guía completa en PDF con toda la información, mapas y contactos. Paga lo que consideres justo (mínimo $1 USD).',
+      downloadButton: 'Descargar Itinerario Completo (PDF)',
+      days: 'días',
+      budgetTypes: {
+        economico: 'Económico',
+        moderado: 'Moderado',
+        premium: 'Premium',
+      },
+      travelerTypes: {
+        sozinho: 'Solo',
+        casal: 'Pareja',
+        familia: 'Familia',
+        grupo: 'Grupo',
+      },
+    },
+  },
+  DE: {
+    header: {
+      visitBlog: 'Besuchen Sie unseren Blog',
+    },
+    hero: {
+      title: 'Entdecken Sie Ihre Perfekte Weintourismus-Route in Lissabon',
+      subtitle: 'Beantworten Sie einige Fragen und erhalten Sie einen personalisierten Führer mit den besten Weingütern, Verkostungen und Erlebnissen der Region Lissabon',
+      cta: 'Meine Personalisierte Route Erstellen',
+      created: 'Über 500 erstellte Routen',
+    },
+    valueProposition: {
+      personalized: {
+        title: 'Für Sie Personalisiert',
+        description: 'Einzigartige Routen basierend auf Ihren Vorlieben, Budget und verfügbarer Zeit',
+      },
+      curated: {
+        title: 'Fachkundige Auswahl',
+        description: 'Sorgfältige Auswahl der besten Weingüter, Restaurants und Lissaboner Erlebnisse',
+      },
+      instant: {
+        title: 'Sofort Herunterladen',
+        description: 'Erhalten Sie Ihren vollständigen PDF-Führer bereit für Ihre Reise',
+      },
+    },
+    howItWorks: {
+      title: 'Wie es Funktioniert',
+      step1: { title: 'Quiz Beantworten', description: 'Erzählen Sie uns von Ihrer Reise, Vorlieben und Budget', label: 'Schritt' },
+      step2: { title: 'KI Erstellt Route', description: 'Unsere KI erstellt eine personalisierte Route nur für Sie', label: 'Schritt' },
+      step3: { title: 'Vorschläge Prüfen', description: 'Sehen Sie Ihre detaillierte tägliche Route', label: 'Schritt' },
+      step4: { title: 'Ihren Führer Herunterladen', description: 'Laden Sie das PDF herunter und genießen Sie Ihre Reise', label: 'Schritt' },
+    },
+    sampleItinerary: {
+      title: 'Sehen Sie Ein Beispiel von Dem, Was Sie Erhalten',
+      subtitle: 'Eine detaillierte Route mit Vorschlägen für jede Tageszeit',
+      morning: 'Morgen',
+      afternoon: 'Nachmittag',
+      evening: 'Abend',
+    },
+    pricing: {
+      title: 'Zahlen Sie, Was Sie Für Fair Halten',
+      subtitle: 'Wir glauben an den Wert, den wir bieten. Wählen Sie, wie viel Sie zahlen möchten (mindestens $1 USD)',
+      included: 'Was ist enthalten:',
+      from: 'Ab',
+      choose: 'Sie wählen den Betrag nach Ansicht Ihrer personalisierten Route',
+      benefits: {
+        personalized: 'Personalisierte Routen durch spezialisierte KI',
+        time: 'Sparen Sie Stunden an Recherche und Planung',
+        insider: 'Zugang zu exklusiven Tipps und lokalen Informationen',
+        restaurants: 'Restaurant- und Unterkunftsvorschläge',
+        maps: 'Karten und Kontaktinformationen',
+        support: 'Unterstützen Sie unsere Kurationsarbeit',
+      },
+    },
+    footer: {
+      description: 'Entdecken Sie die besten Weintourismus-Erlebnisse in Lissabon',
+      about: 'Über',
+      aboutProject: 'Über das Projekt',
+      mainBlog: 'Hauptblog',
+      routes: 'Routen',
+      westRoute: 'Westliche Weinroute',
+      tourism: 'Weintourismus in Lissabon',
+      contact: 'Kontakt',
+      rights: 'Alle Rechte vorbehalten.',
+    },
+    quiz: {
+      progress: 'Schritt {{current}} von {{total}}',
+      back: 'Zurück',
+      next: 'Weiter',
+      generate: 'Route Erstellen',
+      q1: {
+        question: 'Wie viele Tage wird Ihre Reise dauern?',
+        day: 'Tag',
+        days: 'Tage',
+      },
+      q2: {
+        question: 'Wann planen Sie zu reisen?',
+        info: 'Diese Information ist optional und hilft uns, saisonale Erlebnisse vorzuschlagen',
+        startDate: 'Startdatum',
+        endDate: 'Enddatum',
+      },
+      q3: {
+        question: 'Was ist Ihr Budget?',
+        economic: {
+          title: 'Wirtschaftlich',
+          description: 'Familienweingüter, einfache Verkostungen, lokale Restaurants',
+        },
+        moderate: {
+          title: 'Moderat',
+          description: 'Renommierte Weingüter, geführte Touren, gastronomische Paarungen',
+        },
+        premium: {
+          title: 'Premium',
+          description: 'Exklusive Erlebnisse, seltene Weine, Michelin-Sterne-Restaurants',
+        },
+      },
+      q4: {
+        question: 'Wie werden Sie reisen?',
+        alone: 'Allein',
+        couple: 'Als Paar',
+        family: 'Mit Familie',
+        group: 'In Gruppe',
+      },
+      q5: {
+        question: 'Was genießen Sie am meisten am Weintourismus?',
+        info: 'Wählen Sie alle Optionen aus, die Sie interessieren',
+        preferences: {
+          historic: 'Historische Weingüter',
+          tastings: 'Exklusive Verkostungen',
+          gastronomy: 'Lokale Gastronomie',
+          landscapes: 'Landschaften und Fotografie',
+          family: 'Familienerlebnisse',
+          tours: 'Geführte Touren',
+          sustainable: 'Nachhaltige Produktion',
+          biodynamic: 'Biodynamische Weine',
+        },
+      },
+      q6: {
+        question: 'Besondere Wünsche?',
+        info: 'Teilen Sie zusätzliche Informationen, die uns helfen können, Ihre Route zu personalisieren',
+        placeholder: 'Z.B.: Vorliebe für Rotweine, Ernährungseinschränkungen, Interesse an Bio-Weinen...',
+      },
+    },
+    itinerary: {
+      title: 'Ihre Personalisierte Weintourismus-Route',
+      subtitle: 'Ein vollständiger Führer, speziell für Sie erstellt',
+      duration: 'Dauer',
+      budget: 'Budget',
+      travelType: 'Reiseart',
+      highlights: 'Route-Highlights',
+      dayByDay: 'Tägliche Route',
+      day: 'Tag',
+      morning: 'Morgen',
+      afternoon: 'Nachmittag',
+      evening: 'Abend',
+      durationLabel: 'Dauer',
+      liked: 'Hat Ihnen Ihre Route Gefallen?',
+      downloadInfo: 'Laden Sie den vollständigen PDF-Führer mit allen Informationen, Karten und Kontakten herunter. Zahlen Sie, was Sie für fair halten (mindestens $1 USD).',
+      downloadButton: 'Vollständige Route Herunterladen (PDF)',
+      days: 'Tage',
+      budgetTypes: {
+        economico: 'Wirtschaftlich',
+        moderado: 'Moderat',
+        premium: 'Premium',
+      },
+      travelerTypes: {
+        sozinho: 'Allein',
+        casal: 'Paar',
+        familia: 'Familie',
+        grupo: 'Gruppe',
+      },
+    },
+  },
+};
+
+export function t(key: string, lang: Language, replacements?: Record<string, string>): string {
+  const keys = key.split('.');
+  let value: any = translations[lang];
+  
+  for (const k of keys) {
+    value = value?.[k];
+  }
+  
+  if (typeof value !== 'string') {
+    return key;
+  }
+  
+  if (replacements) {
+    return value.replace(/\{\{(\w+)\}\}/g, (_, key) => replacements[key] || '');
+  }
+  
+  return value;
+}

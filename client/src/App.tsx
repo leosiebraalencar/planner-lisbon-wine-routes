@@ -3,6 +3,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import LandingPage from "@/pages/LandingPage";
 import QuizPage from "@/pages/QuizPage";
 import ItineraryPage from "@/pages/ItineraryPage";
@@ -85,16 +86,18 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <div className="min-h-screen">
-          {state === 'landing' && <LandingPage onStartQuiz={handleStartQuiz} />}
-          {state === 'quiz' && <QuizPage onComplete={handleQuizComplete} />}
-          {state === 'itinerary' && itinerary && (
-            <ItineraryPage itinerary={itinerary} onDownload={handleDownload} />
-          )}
-        </div>
-        <Toaster />
-      </TooltipProvider>
+      <LanguageProvider>
+        <TooltipProvider>
+          <div className="min-h-screen">
+            {state === 'landing' && <LandingPage onStartQuiz={handleStartQuiz} />}
+            {state === 'quiz' && <QuizPage onComplete={handleQuizComplete} />}
+            {state === 'itinerary' && itinerary && (
+              <ItineraryPage itinerary={itinerary} onDownload={handleDownload} />
+            )}
+          </div>
+          <Toaster />
+        </TooltipProvider>
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }

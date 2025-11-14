@@ -1,4 +1,3 @@
-import { useState } from "react";
 import logoImage from "@assets/marca-lisbon-wine-routes-1_1763141966678.png";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,16 +7,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Globe } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import type { Language } from "@/lib/i18n";
 
 const languages = [
-  { code: 'PT', label: 'Português' },
-  { code: 'EN', label: 'English' },
-  { code: 'ES', label: 'Español' },
-  { code: 'DE', label: 'Deutsch' }
+  { code: 'PT' as Language, label: 'Português' },
+  { code: 'EN' as Language, label: 'English' },
+  { code: 'ES' as Language, label: 'Español' },
+  { code: 'DE' as Language, label: 'Deutsch' }
 ];
 
 export default function Header() {
-  const [currentLanguage, setCurrentLanguage] = useState('PT');
+  const { language, setLanguage, t } = useLanguage();
 
   return (
     <header className="bg-white py-4 md:py-6 border-b border-border">
@@ -31,7 +32,7 @@ export default function Header() {
               className="text-sm font-medium text-foreground hover:text-primary transition-colors inline-block"
               data-testid="link-main-blog"
             >
-              Visite nosso blog
+              {t('header.visitBlog')}
             </a>
           </div>
           
@@ -58,17 +59,14 @@ export default function Header() {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-2" data-testid="button-language">
                   <Globe className="w-4 h-4" />
-                  <span className="hidden sm:inline">{currentLanguage}</span>
+                  <span className="hidden sm:inline">{language}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {languages.map((lang) => (
                   <DropdownMenuItem
                     key={lang.code}
-                    onClick={() => {
-                      setCurrentLanguage(lang.code);
-                      console.log(`Language changed to: ${lang.code}`);
-                    }}
+                    onClick={() => setLanguage(lang.code)}
                     data-testid={`menuitem-language-${lang.code.toLowerCase()}`}
                   >
                     {lang.code} - {lang.label}
