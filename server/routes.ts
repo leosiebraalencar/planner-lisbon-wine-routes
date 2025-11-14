@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import Stripe from "stripe";
 import { itinerarySchema } from "@shared/schema";
+import { generateItineraryPDF } from "./pdf";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error("STRIPE_SECRET_KEY must be set");
@@ -44,14 +45,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         const amountPaid = session.amount_total || 0;
         
+        const paymentSession = await storage.getPaymentSessionByStripeId(session.id);
+        
+        if (!paymentSession) {
+          console.error(`Payment session not found for Stripe session ${session.id}`);
+          return res.status(404).json({ error: 'Payment session not found' });
+        }
+
+        const pdfPath = await generateItineraryPDF(paymentSession.itineraryData as any, session.id);
+        
         await storage.updatePaymentSession(session.id, {
           status: 'completed',
           amountPaid: amountPaid,
+          pdfPath: pdfPath,
         });
 
-        console.log(`Payment completed for session ${session.id}, amount: $${amountPaid / 100}`);
+        console.log(`Payment completed for session ${session.id}, amount: $${amountPaid / 100}, PDF generated at ${pdfPath}`);
       } catch (error) {
-        console.error('Error updating payment session:', error);
+        console.error('Error processing payment completion:', error);
       }
     }
 
