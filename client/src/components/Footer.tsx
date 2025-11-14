@@ -1,4 +1,5 @@
-import { Instagram, Mail, Compass } from "lucide-react";
+import { Instagram, Mail } from "lucide-react";
+import logoImage from "@assets/marca-lisbon-wine-routes-1_1763141966678.png";
 
 export default function Footer() {
   return (
@@ -6,9 +7,12 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <Compass className="w-6 h-6 text-primary" />
-              <span className="font-serif font-bold text-lg">Lisbon Wine Routes</span>
+            <div className="mb-4">
+              <img 
+                src={logoImage} 
+                alt="Lisbon Wine Routes" 
+                className="h-12 w-auto object-contain"
+              />
             </div>
             <p className="text-sm text-muted-foreground">
               Descobrindo as melhores experiências de enoturismo em Lisboa

@@ -1,3 +1,4 @@
+import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import ValueProposition from "@/components/ValueProposition";
 import HowItWorks from "@/components/HowItWorks";
@@ -12,6 +13,7 @@ interface LandingPageProps {
 export default function LandingPage({ onStartQuiz }: LandingPageProps) {
   return (
     <div className="min-h-screen">
+      <Header />
       <Hero onStartQuiz={onStartQuiz} />
       <ValueProposition />
       <HowItWorks />

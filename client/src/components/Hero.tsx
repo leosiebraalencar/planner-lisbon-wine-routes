@@ -7,7 +7,7 @@ interface HeroProps {
 
 export default function Hero({ onStartQuiz }: HeroProps) {
   return (
-    <section className="relative h-screen min-h-[600px] flex items-center justify-center">
+    <section className="relative min-h-[calc(100vh-88px)] flex items-center justify-center">
       <div className="absolute inset-0">
         <img
           src={heroImage}
