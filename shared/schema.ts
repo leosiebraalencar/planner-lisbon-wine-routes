@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, integer, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, integer, jsonb, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -16,6 +16,24 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+export const paymentSessions = pgTable("payment_sessions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  stripeSessionId: text("stripe_session_id").notNull().unique(),
+  itineraryData: jsonb("itinerary_data").notNull(),
+  status: text("status").notNull().default('pending'),
+  amountPaid: integer("amount_paid"),
+  pdfPath: text("pdf_path"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertPaymentSessionSchema = createInsertSchema(paymentSessions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertPaymentSession = z.infer<typeof insertPaymentSessionSchema>;
+export type PaymentSession = typeof paymentSessions.$inferSelect;
 
 export const quizResponseSchema = z.object({
   duration: z.number().min(1).max(10),
