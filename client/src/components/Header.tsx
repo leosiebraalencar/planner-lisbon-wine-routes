@@ -6,15 +6,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Globe } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { Language } from "@/lib/i18n";
 
 const languages = [
-  { code: 'PT' as Language, label: 'Português' },
-  { code: 'EN' as Language, label: 'English' },
-  { code: 'ES' as Language, label: 'Español' },
-  { code: 'DE' as Language, label: 'Deutsch' }
+  { code: 'PT' as Language, label: 'Português', flag: '🇵🇹' },
+  { code: 'EN' as Language, label: 'English', flag: '🇬🇧' },
+  { code: 'ES' as Language, label: 'Español', flag: '🇪🇸' },
+  { code: 'DE' as Language, label: 'Deutsch', flag: '🇩🇪' }
 ];
 
 export default function Header() {
@@ -58,7 +57,7 @@ export default function Header() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-2" data-testid="button-language">
-                  <Globe className="w-4 h-4" />
+                  <span className="text-xl">{languages.find(l => l.code === language)?.flag}</span>
                   <span className="hidden sm:inline">{language}</span>
                 </Button>
               </DropdownMenuTrigger>
@@ -68,8 +67,10 @@ export default function Header() {
                     key={lang.code}
                     onClick={() => setLanguage(lang.code)}
                     data-testid={`menuitem-language-${lang.code.toLowerCase()}`}
+                    className="gap-2"
                   >
-                    {lang.code} - {lang.label}
+                    <span className="text-xl">{lang.flag}</span>
+                    <span>{lang.label}</span>
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
