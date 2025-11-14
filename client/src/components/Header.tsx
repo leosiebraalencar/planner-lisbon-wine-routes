@@ -1,18 +1,13 @@
-import logoImage from "@assets/screenshot-1763139281462.png";
-import { Compass } from "lucide-react";
+import logoImage from "@assets/marca-lisbon-wine-routes-1_1763141599781.png";
 
-interface HeaderProps {
-  transparent?: boolean;
-}
-
-export default function Header({ transparent = false }: HeaderProps) {
+export default function Header() {
   return (
-    <header className={`${transparent ? 'absolute top-0 left-0 right-0 z-20' : 'border-b border-border'} py-4`}>
+    <header className="bg-white py-6">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between">
+        <div className="flex justify-center">
           <a 
             href="/" 
-            className="flex items-center gap-3"
+            className="inline-block"
             onClick={(e) => {
               e.preventDefault();
               window.location.reload();
@@ -22,18 +17,8 @@ export default function Header({ transparent = false }: HeaderProps) {
             <img 
               src={logoImage} 
               alt="Lisbon Wine Routes" 
-              className="h-12 w-auto object-contain"
+              className="h-16 md:h-20 w-auto object-contain"
             />
-          </a>
-          
-          <a
-            href="https://lisbonwineroutes.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`text-sm font-medium ${transparent ? 'text-white hover:text-white/80' : 'text-foreground hover:text-primary'} transition-colors`}
-            data-testid="link-main-blog"
-          >
-            Visite o Blog
           </a>
         </div>
       </div>
