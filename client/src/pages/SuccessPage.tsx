@@ -10,7 +10,9 @@ import { SiFacebook, SiX, SiLinkedin, SiWhatsapp } from "react-icons/si";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 
-const DONATION_URL = import.meta.env.VITE_STRIPE_DONATION_URL || 'https://buy.stripe.com/donation';
+import { STRIPE_DONATION_URL } from "@shared/affiliateLinks";
+
+const DONATION_URL = import.meta.env.VITE_STRIPE_DONATION_URL || STRIPE_DONATION_URL;
 
 export default function SuccessPage() {
   const [, setLocation] = useLocation();
@@ -71,8 +73,9 @@ export default function SuccessPage() {
     }
   };
 
-  const handleDonation = (amount: number) => {
-    window.open(`${DONATION_URL}?amount=${amount * 100}`, '_blank');
+  const handleDonation = () => {
+    // Uses fixed Stripe checkout link - amounts are handled by Stripe's pay-what-you-want UI
+    window.open(DONATION_URL, '_blank');
   };
 
   const shareUrl = 'https://guides.lisbonwineroutes.com';
@@ -145,32 +148,10 @@ export default function SuccessPage() {
                   </p>
                   <div className="flex flex-wrap gap-2">
                     <Button 
-                      variant="outline" 
-                      onClick={() => handleDonation(1)}
-                      data-testid="button-donate-1"
+                      onClick={handleDonation}
+                      data-testid="button-donate"
                     >
-                      €1
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => handleDonation(3)}
-                      data-testid="button-donate-3"
-                    >
-                      €3
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => handleDonation(5)}
-                      data-testid="button-donate-5"
-                    >
-                      €5
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => window.open(DONATION_URL, '_blank')}
-                      data-testid="button-donate-other"
-                    >
-                      {t('success.otherAmount')}
+                      {t('success.donateButton')}
                     </Button>
                   </div>
                 </CardContent>

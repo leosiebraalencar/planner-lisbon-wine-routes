@@ -11,6 +11,13 @@ import ItineraryPage from "@/pages/ItineraryPage";
 import SuccessPage from "@/pages/SuccessPage";
 import ProPage from "@/pages/ProPage";
 import type { QuizResponse, Itinerary } from "@shared/schema";
+import { 
+  resolveWinalistUrl, 
+  addGetYourGuideParams, 
+  buildBookingAwinUrl, 
+  DISCOVERCARS_AFFILIATE_URL,
+  buildGoogleMapsUrl
+} from "@shared/affiliateLinks";
 
 function ItineraryPageWrapper({ itinerary }: { itinerary: Itinerary | null }) {
   const [, setLocation] = useLocation();
@@ -28,24 +35,67 @@ function ItineraryPageWrapper({ itinerary }: { itinerary: Itinerary | null }) {
   return <ItineraryPage itinerary={itinerary} />;
 }
 
-//todo: remove mock functionality
+interface WineryData {
+  region: string;
+  morning: {
+    location: string;
+    address: string;
+    winalistKey?: string;
+    getyourguideUrl?: string;
+  };
+  afternoon: {
+    location: string;
+    address: string;
+    winalistKey?: string;
+  };
+  evening: {
+    location: string;
+    address: string;
+  };
+}
+
+function resolveActivityUrl(
+  winalistKey: string | undefined,
+  getyourguideUrl: string | undefined,
+  locationName: string,
+  address: string
+): { affiliateUrl: string; affiliateProvider: 'winalist' | 'getyourguide' | 'googlemaps' } {
+  if (getyourguideUrl) {
+    return {
+      affiliateUrl: addGetYourGuideParams(getyourguideUrl),
+      affiliateProvider: 'getyourguide'
+    };
+  }
+  
+  if (winalistKey) {
+    const result = resolveWinalistUrl(winalistKey, locationName, address);
+    return {
+      affiliateUrl: result.url,
+      affiliateProvider: result.isFallback ? 'googlemaps' : 'winalist'
+    };
+  }
+  
+  return {
+    affiliateUrl: buildGoogleMapsUrl(locationName, address),
+    affiliateProvider: 'googlemaps'
+  };
+}
+
 const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
   const days = [];
   
-  const wineryData = [
+  const wineryData: WineryData[] = [
     {
       region: 'Região Oeste',
       morning: {
         location: 'Quinta do Gradil',
         address: 'Estrada do Gradil, 2580-081 Alenquer',
-        affiliateUrl: 'https://www.winalist.pt/visita/quinta-do-gradil',
-        affiliateProvider: 'winalist' as const
+        winalistKey: 'quinta_do_gradil'
       },
       afternoon: {
         location: 'Adega Mãe',
         address: 'Quinta da Folgorosa, 2565-641 Torres Vedras',
-        affiliateUrl: 'https://www.winalist.pt/visita/adega-mae',
-        affiliateProvider: 'winalist' as const
+        winalistKey: 'adega_mae'
       },
       evening: {
         location: 'Restaurante O Celeiro',
@@ -57,14 +107,12 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
       morning: {
         location: 'Adega Regional de Colares',
         address: 'Alameda do Coronel Linhares de Lima, 2705-189 Colares',
-        affiliateUrl: 'https://www.getyourguide.com/sintra-l170/wine-tour-colares-t123456',
-        affiliateProvider: 'getyourguide' as const
+        getyourguideUrl: 'https://www.getyourguide.com/sintra-l170/wine-tour-colares-t123456'
       },
       afternoon: {
         location: 'Casal Santa Maria',
         address: 'Estrada de Colares, 2710-453 Sintra',
-        affiliateUrl: 'https://www.winalist.pt/visita/casal-santa-maria',
-        affiliateProvider: 'winalist' as const
+        winalistKey: 'casal_santa_maria'
       },
       evening: {
         location: 'Restaurante Monserrate',
@@ -76,14 +124,12 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
       morning: {
         location: 'Quinta da Murta',
         address: 'Rua da Murta, 2670-701 Bucelas',
-        affiliateUrl: 'https://www.winalist.pt/visita/quinta-da-murta',
-        affiliateProvider: 'winalist' as const
+        winalistKey: 'quinta_da_murta'
       },
       afternoon: {
         location: 'Quinta de Chocapalha',
         address: 'Aldeia Galega, 2615-128 Aldeia Galega da Merceana',
-        affiliateUrl: 'https://www.winalist.pt/visita/quinta-de-chocapalha',
-        affiliateProvider: 'winalist' as const
+        winalistKey: 'quinta_de_chocapalha'
       },
       evening: {
         location: 'Adega das Gravatas',
@@ -96,6 +142,20 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
     const dataIndex = (i - 1) % wineryData.length;
     const data = wineryData[dataIndex];
     
+    const morningResolved = resolveActivityUrl(
+      data.morning.winalistKey,
+      data.morning.getyourguideUrl,
+      data.morning.location,
+      data.morning.address
+    );
+    
+    const afternoonResolved = resolveActivityUrl(
+      data.afternoon.winalistKey,
+      undefined,
+      data.afternoon.location,
+      data.afternoon.address
+    );
+    
     days.push({
       day: i,
       region: data.region,
@@ -106,8 +166,8 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
         description: 'Visita guiada às vinhas e caves com degustação de vinhos premiados',
         duration: '3 horas',
         address: data.morning.address,
-        affiliateUrl: data.morning.affiliateUrl,
-        affiliateProvider: data.morning.affiliateProvider
+        affiliateUrl: morningResolved.affiliateUrl,
+        affiliateProvider: morningResolved.affiliateProvider
       },
       afternoon: {
         time: '14:00-18:00',
@@ -116,8 +176,8 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
         description: 'Explore a produção e participe de uma prova comentada',
         duration: '4 horas',
         address: data.afternoon.address,
-        affiliateUrl: data.afternoon.affiliateUrl,
-        affiliateProvider: data.afternoon.affiliateProvider
+        affiliateUrl: afternoonResolved.affiliateUrl,
+        affiliateProvider: afternoonResolved.affiliateProvider
       },
       evening: {
         time: '19:30+',
@@ -125,7 +185,9 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
         location: data.evening.location,
         description: 'Jantar tradicional português com harmonização de vinhos locais',
         duration: '2 horas',
-        address: data.evening.address
+        address: data.evening.address,
+        affiliateUrl: buildGoogleMapsUrl(data.evening.location, data.evening.address),
+        affiliateProvider: 'googlemaps' as const
       }
     });
   }
@@ -147,20 +209,24 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
   if (quizData.needsCarRental) {
     recommendations.carRental = {
       provider: 'DiscoverCars',
-      affiliateUrl: 'https://www.discovercars.com/pt/location/pt/lisbon?a_aid=lisbonwineroutes'
+      affiliateUrl: DISCOVERCARS_AFFILIATE_URL
     };
   }
 
   if (!quizData.hasAccommodation) {
     const isNearWineries = quizData.accommodationPreference === 'vinicolas_proximas';
+    const bookingUrl = isNearWineries 
+      ? 'https://www.booking.com/hotel/pt/areias-do-seixo.pt-pt.html'
+      : 'https://www.booking.com/hotel/pt/memmo-alfama.pt-pt.html';
+    
     recommendations.accommodation = isNearWineries ? {
       name: 'Areias do Seixo - Charm Hotel & Residences',
       address: 'Praia de Santa Cruz, A dos Cunhados',
-      affiliateUrl: 'https://www.booking.com/hotel/pt/areias-do-seixo.pt-pt.html'
+      affiliateUrl: buildBookingAwinUrl(bookingUrl)
     } : {
       name: 'Hotel Memmo Alfama',
       address: 'Travessa das Merceeiras, 27, Lisboa',
-      affiliateUrl: 'https://www.booking.com/hotel/pt/memmo-alfama.pt-pt.html'
+      affiliateUrl: buildBookingAwinUrl(bookingUrl)
     };
   }
 
@@ -185,7 +251,6 @@ function App() {
   });
 
   const handleQuizComplete = (data: QuizResponse) => {
-    //todo: replace with actual API call to generate itinerary
     const generatedItinerary = generateMockItinerary(data);
     setItinerary(generatedItinerary);
     sessionStorage.setItem('currentItinerary', JSON.stringify(generatedItinerary));

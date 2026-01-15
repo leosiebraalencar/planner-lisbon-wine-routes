@@ -1,0 +1,207 @@
+Você é um engenheiro full-stack sênior. Analise o repositório atual e corrija os problemas abaixo com o mínimo de regressões possível. Antes de alterar código, identifique onde o roteiro é montado (UI e PDF), onde links são gerados, e onde acontece o download/sucesso do PDF. Depois implemente as correções em pequenos commits, testando o fluxo end-to-end.
+
+A) Corrigir links do roteiro (Winalist / Booking / DiscoverCars)
+A1) Winalist — NÃO inventar URL / NÃO usar “/visita/{slug}”
+
+Hoje o sistema está gerando links errados do tipo:
+
+https://www.winalist.pt/visita/adega-mae
+
+Mas o correto (exemplo real) é:
+
+https://www.winalist.pt/hosts/3134/adegamae?utm_source=lisbonwineroutes&utm_medium=affiliate&utm_campaign=lisbonwineroutes
+
+Regra obrigatória (Winalist)
+
+Nunca gerar URL “na unha” por slug ou conversão de nome.
+
+Para links Winalist, o sistema deve usar uma URL real do site (por exemplo, página /hosts/{id}/{slug} ou a URL específica da experiência, caso exista).
+
+Depois de ter uma URL real, apenas anexar/mesclar a UTM:
+
+utm_source=lisbonwineroutes&utm_medium=affiliate&utm_campaign=lisbonwineroutes
+
+Se a URL já tiver querystring, anexar com &....
+
+Se não tiver, anexar com ?....
+
+Implementação: resolver URL real do Winalist
+
+Crie uma camada de resolução com esta ordem de prioridade:
+
+Opção 1 (preferida): catálogo/mapeamento local (mais confiável)
+
+Criar um arquivo/tabela winalist_url_map (JSON/DB) que mapeie ID interno do item (ou nome normalizado + região) → winalistUrl.
+
+Ex.: "adega_mae" -> "https://www.winalist.pt/hosts/3134/adegamae"
+
+No gerador do roteiro, quando o item tiver winalistUrl conhecido, usar essa URL + UTM.
+
+Opção 2: tentativa automatizada (somente se já existir infraestrutura de scraping/lookup)
+
+Se o projeto já tem um mecanismo de busca/lookup, implementar um resolver que:
+
+pesquise no Winalist e recupere a URL oficial do host/experiência
+
+cacheie o resultado no DB para não bater sempre
+
+Importante: se não for possível implementar isso com confiabilidade (por bloqueios/Cloudflare/ausência de API), NÃO forçar.
+
+Fallback obrigatório (quando não conseguir resolver)
+
+Se não houver URL real mapeada e não for possível buscar de forma confiável:
+
+No roteiro/PDF, exibir sem link de Winalist e mostrar um fallback seguro:
+
+Link do Google Maps para o local (nome + endereço), OU
+
+site oficial se existir no dataset
+
+E registrar um log/flag interno tipo missing_winalist_url: true para eu conseguir te entregar a lista depois.
+
+Comportamento esperado (muito importante):
+
+Se não conseguir obter URL real do Winalist com confiança, me avise no output/log que você precisa que eu gere/forneça “a relação de todas as URLs do Winalist” para mapear corretamente.
+
+Função Winalist (obrigatória)
+
+Crie buildWinalistAffiliateUrl(realUrl: string): string
+
+Valida que o domínio é winalist.pt (ou winalist.com se já usado no repo, mas preferir winalist.pt).
+
+NÃO altera path.
+
+Só adiciona/mescla:
+utm_source=lisbonwineroutes&utm_medium=affiliate&utm_campaign=lisbonwineroutes
+
+A2) Booking — sempre via AWIN (faltou parâmetro)
+
+Hoje está saindo assim (errado):
+
+https://www.booking.com/hotel/pt/areias-do-seixo.pt-pt.html
+
+O correto (exemplo) é:
+
+https://www.awin1.com/cread.php?awinmid=18120&awinaffid=1914530&ued=https%3A%2F%2Fwww.booking.com%2Fhotel%2Fpt%2Fareias-do-seixo.pt-pt.html
+
+Regra obrigatória (Booking)
+
+Toda URL de Booking deve ser convertida pela função AWIN:
+
+buildBookingAwinUrl(destinationUrl: string, clickref?: string): string
+
+Regras:
+
+base: https://www.awin1.com/cread.php
+
+awinmid=18120
+
+awinaffid=1914530
+
+clickref opcional
+
+ued recebe destinationUrl totalmente URL-encoded
+
+Nunca encode nos params da AWIN, apenas no valor do ued
+
+Integrar essa função:
+
+na UI do roteiro
+
+no gerador do PDF
+
+em qualquer lugar que apareça Booking
+
+Adicionar testes básicos:
+
+booking sem query
+
+booking com query
+
+com clickref e sem clickref
+
+A3) DiscoverCars — pode usar sempre o mesmo link fixo
+
+Definir constante única e usar sempre:
+
+https://www.discovercars.com/pt?a_aid=lisbonwineroutes
+
+Remover qualquer lógica que tente montar URL diferente (a menos que no futuro seja necessário).
+
+B) Ajustar fluxo do Download do PDF: baixar primeiro, depois CTA doação
+B1) Requisito de UX
+
+Quando o usuário clicar em “Download PDF”:
+
+o PDF deve baixar imediatamente
+
+depois disso, o usuário permanece na tela de sucesso e vê o CTA:
+
+Copy obrigatório:
+
+"Este roteiro foi útil? Ajude-nos a continuar criando conteúdo gratuito!"
+[ €1 ] [ €3 ] [ €5 ] [ Outro valor ]
+Ou compartilhe nas redes sociais ❤️
+
+E se clicar em contribuir (padrão €1), direcionar para este checkout Stripe:
+https://checkout.stripe.com/c/pay/cs_live_a1Nr3hEkaSsI0wcLrAznkPts6pq3waZpuTYuHxJQhD03FEDnvqj8hMsCDQ#fidnandhYHdWcXxpYCc%2FJ2FgY2RwaXEnKSdkdWxOYHwnPyd1blppbHNgWjA0VlFXT3VVQlVEXE1tQEtPQVNxd2ZBSGtfUzMxYXZQSXJHbTBXNVd%2FblJjYDMwaDUySn9%2FdmBvMVZBU3c9PVNzaG1Rf0JRVDJJNV99cH1KVjBJMjVnf2M8NTUzTzducjB9RCcpJ2N3amhWYHdzYHcnP3F3cGApJ2dkZm5id2pwa2FGamlqdyc%2FJyZjY2NjY2MnKSdpZHxqcHFRfHVgJz8ndmxrYmlgWmxxYGgnKSdga2RnaWBVaWRmYG1qaWFgd3YnP3F3cGB4JSUl
+
+B2) Implementação técnica recomendada (robusta)
+
+No clique do botão:
+
+disparar download sem navegar de página:
+
+Se o PDF é uma URL direta: criar <a href="PDF_URL" download target="_blank" rel="noopener"> e acionar click programaticamente.
+
+Se o PDF vem via API: fetch → blob → URL.createObjectURL(blob) → <a download> programático.
+
+Assim que o click do download for disparado, setar estado downloadStarted=true e renderizar (ou manter) a área do CTA de doação na própria tela.
+
+Importante: não existe “garantia 100%” de detectar conclusão real do download no browser. Então o comportamento aceito é:
+
+“baixar primeiro” = iniciar o download imediatamente ao clique
+
+“depois mostrar CTA” = mostrar CTA logo após iniciar o download (sem redirecionar antes)
+
+B3) Botões de valores e “Outro valor”
+
+Como o link do Stripe já está fixo, implemente:
+
+Botões €1/€3/€5 que redirecionam para o link fixo (pelo menos o de €1 obrigatório).
+
+“Outro valor”:
+
+se o projeto já tiver Stripe Payment Links dinâmicos: abrir modal/input e gerar link com valor custom.
+
+se não houver: por enquanto redirecionar para o mesmo link fixo e deixar claro no código que é um TODO para “custom amount”.
+
+B4) Compartilhamento social
+
+Adicionar botões com links prontos (WhatsApp, Facebook, X/Twitter, LinkedIn) usando:
+
+URL do gerador
+
+texto curto: “Usei o gerador de roteiro do Lisbon Wine Routes 🍷”
+
+C) Critérios de aceite (DoD)
+
+Winalist: não existe mais link /visita/{slug} gerado automaticamente.
+
+Winalist: quando há URL real conhecida, sempre anexa UTM corretamente.
+
+Winalist: quando não há URL real, cai em fallback (Maps/site oficial) e loga missing_winalist_url.
+
+Booking: todo link Booking vira AWIN com ued encoded.
+
+DiscoverCars: sempre usa o link fixo.
+
+Download PDF: ao clicar, inicia download imediatamente e só então mostra CTA doação + botões.
+
+CTA doação: botão de €1 redireciona para o link do Stripe fornecido.
+
+Notas finais para você implementar certo (bem prático)
+
+Procure no código por funções tipo buildLinks, formatPartnerUrl, affiliate, winalist, booking, pdf, download.
+
+Garanta que a mesma fonte de verdade de links afiliados seja usada tanto na UI quanto no PDF.

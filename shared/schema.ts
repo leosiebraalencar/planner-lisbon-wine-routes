@@ -80,7 +80,7 @@ export const activitySchema = z.object({
   duration: z.string(),
   address: z.string().optional(),
   affiliateUrl: z.string().optional(),
-  affiliateProvider: z.enum(['winalist', 'getyourguide', 'booking', 'discovercars']).optional(),
+  affiliateProvider: z.enum(['winalist', 'getyourguide', 'booking', 'discovercars', 'googlemaps']).optional(),
 });
 
 export const itinerarySchema = z.object({
