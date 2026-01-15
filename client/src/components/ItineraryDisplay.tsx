@@ -2,9 +2,39 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, Calendar, Download, DollarSign, Mail } from "lucide-react";
+import { MapPin, Clock, Calendar, Download, DollarSign, Mail, ExternalLink, Car, Building2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import type { Itinerary } from "@shared/schema";
+import type { Itinerary, Activity } from "@shared/schema";
+
+function ActivityCard({ activity, periodLabel, t }: { activity: Activity; periodLabel: string; t: (key: string) => string }) {
+  return (
+    <div className="bg-card p-4 rounded-lg">
+      <div className="font-medium mb-1">{activity.location}</div>
+      {activity.address && (
+        <div className="text-xs text-muted-foreground flex items-center gap-1 mb-2">
+          <MapPin className="w-3 h-3" />
+          {activity.address}
+        </div>
+      )}
+      <div className="text-sm text-muted-foreground mb-2">{activity.activity}</div>
+      <p className="text-sm">{activity.description}</p>
+      <div className="flex items-center justify-between mt-2">
+        <div className="text-sm text-muted-foreground">{t('itinerary.durationLabel')}: {activity.duration}</div>
+        {activity.affiliateUrl && (
+          <a
+            href={activity.affiliateUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary text-sm font-medium hover:underline flex items-center gap-1"
+            data-testid={`link-book-${periodLabel.toLowerCase()}`}
+          >
+            {t('itinerary.book')} <ExternalLink className="w-3 h-3" />
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
 
 interface ItineraryDisplayProps {
   itinerary: Itinerary;
@@ -110,12 +140,7 @@ export default function ItineraryDisplay({ itinerary, onDownload }: ItineraryDis
                           <h4 className="font-semibold">{t('itinerary.morning')}</h4>
                           <span className="text-sm text-muted-foreground">{day.morning.time}</span>
                         </div>
-                        <div className="bg-card p-4 rounded-lg">
-                          <div className="font-medium mb-1">{day.morning.location}</div>
-                          <div className="text-sm text-muted-foreground mb-2">{day.morning.activity}</div>
-                          <p className="text-sm">{day.morning.description}</p>
-                          <div className="text-sm text-muted-foreground mt-2">{t('itinerary.durationLabel')}: {day.morning.duration}</div>
-                        </div>
+                        <ActivityCard activity={day.morning} periodLabel={`morning-day-${day.day}`} t={t} />
                       </div>
                     </div>
                     
@@ -126,12 +151,7 @@ export default function ItineraryDisplay({ itinerary, onDownload }: ItineraryDis
                           <h4 className="font-semibold">{t('itinerary.afternoon')}</h4>
                           <span className="text-sm text-muted-foreground">{day.afternoon.time}</span>
                         </div>
-                        <div className="bg-card p-4 rounded-lg">
-                          <div className="font-medium mb-1">{day.afternoon.location}</div>
-                          <div className="text-sm text-muted-foreground mb-2">{day.afternoon.activity}</div>
-                          <p className="text-sm">{day.afternoon.description}</p>
-                          <div className="text-sm text-muted-foreground mt-2">{t('itinerary.durationLabel')}: {day.afternoon.duration}</div>
-                        </div>
+                        <ActivityCard activity={day.afternoon} periodLabel={`afternoon-day-${day.day}`} t={t} />
                       </div>
                     </div>
                     
@@ -142,12 +162,7 @@ export default function ItineraryDisplay({ itinerary, onDownload }: ItineraryDis
                           <h4 className="font-semibold">{t('itinerary.evening')}</h4>
                           <span className="text-sm text-muted-foreground">{day.evening.time}</span>
                         </div>
-                        <div className="bg-card p-4 rounded-lg">
-                          <div className="font-medium mb-1">{day.evening.location}</div>
-                          <div className="text-sm text-muted-foreground mb-2">{day.evening.activity}</div>
-                          <p className="text-sm">{day.evening.description}</p>
-                          <div className="text-sm text-muted-foreground mt-2">{t('itinerary.durationLabel')}: {day.evening.duration}</div>
-                        </div>
+                        <ActivityCard activity={day.evening} periodLabel={`evening-day-${day.day}`} t={t} />
                       </div>
                     </div>
                   </div>
@@ -157,6 +172,67 @@ export default function ItineraryDisplay({ itinerary, onDownload }: ItineraryDis
           </Accordion>
         </CardContent>
       </Card>
+
+      {(itinerary.recommendations.accommodation || itinerary.recommendations.carRental) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          {itinerary.recommendations.accommodation && (
+            <Card className="border-border">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-primary" />
+                  {t('itinerary.accommodation')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="font-medium">{itinerary.recommendations.accommodation.name}</div>
+                {itinerary.recommendations.accommodation.address && (
+                  <div className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                    <MapPin className="w-3 h-3" />
+                    {itinerary.recommendations.accommodation.address}
+                  </div>
+                )}
+                {itinerary.recommendations.accommodation.affiliateUrl && (
+                  <a
+                    href={itinerary.recommendations.accommodation.affiliateUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-primary text-sm font-medium hover:underline mt-3"
+                    data-testid="link-book-accommodation"
+                  >
+                    {t('itinerary.bookNow')} <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+              </CardContent>
+            </Card>
+          )}
+          
+          {itinerary.recommendations.carRental && (
+            <Card className="border-border">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Car className="w-5 h-5 text-primary" />
+                  {t('itinerary.carRental')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="font-medium">{itinerary.recommendations.carRental.provider}</div>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {t('itinerary.carRentalInfo')}
+                </p>
+                <a
+                  href={itinerary.recommendations.carRental.affiliateUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-primary text-sm font-medium hover:underline mt-3"
+                  data-testid="link-book-car"
+                >
+                  {t('itinerary.bookCar')} <ExternalLink className="w-3 h-3" />
+                </a>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
       
       <Card className="border-primary/20 bg-primary/5 mb-6">
         <CardContent className="p-8 text-center">

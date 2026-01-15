@@ -1,12 +1,40 @@
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
-import type { Itinerary } from '@shared/schema';
+import type { Itinerary, Activity } from '@shared/schema';
 
 const PDFS_DIR = path.join(process.cwd(), 'attached_assets', 'pdfs');
 
 if (!fs.existsSync(PDFS_DIR)) {
   fs.mkdirSync(PDFS_DIR, { recursive: true });
+}
+
+function renderActivity(doc: PDFKit.PDFDocument, activity: Activity, period: string) {
+  doc.fontSize(12).font('Helvetica-Bold').text(period, { underline: true });
+  doc.moveDown(0.3);
+  doc.fontSize(11).font('Helvetica');
+  doc.text(`Time: ${activity.time}`);
+  doc.text(`Location: ${activity.location}`);
+  doc.text(`Activity: ${activity.activity}`);
+  doc.text(`Duration: ${activity.duration}`);
+  
+  if (activity.address) {
+    doc.text(`Address: ${activity.address}`);
+  }
+  
+  doc.moveDown(0.3);
+  doc.text(activity.description, { width: 500 });
+  
+  if (activity.affiliateUrl) {
+    doc.moveDown(0.2);
+    doc.fillColor('#7c3aed').text('Book Now', { 
+      link: activity.affiliateUrl,
+      underline: true 
+    });
+    doc.fillColor('#000000');
+  }
+  
+  doc.moveDown(1);
 }
 
 export async function generateItineraryPDF(itinerary: Itinerary, sessionId: string): Promise<string> {
@@ -54,37 +82,9 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
       doc.fontSize(18).font('Helvetica-Bold').text(`Day ${day.day} - ${day.region}`, { underline: true });
       doc.moveDown(1);
 
-      doc.fontSize(12).font('Helvetica-Bold').text('Morning', { underline: true });
-      doc.moveDown(0.3);
-      doc.fontSize(11).font('Helvetica');
-      doc.text(`Time: ${day.morning.time}`);
-      doc.text(`Location: ${day.morning.location}`);
-      doc.text(`Activity: ${day.morning.activity}`);
-      doc.text(`Duration: ${day.morning.duration}`);
-      doc.moveDown(0.3);
-      doc.text(day.morning.description, { width: 500 });
-      doc.moveDown(1);
-
-      doc.fontSize(12).font('Helvetica-Bold').text('Afternoon', { underline: true });
-      doc.moveDown(0.3);
-      doc.fontSize(11).font('Helvetica');
-      doc.text(`Time: ${day.afternoon.time}`);
-      doc.text(`Location: ${day.afternoon.location}`);
-      doc.text(`Activity: ${day.afternoon.activity}`);
-      doc.text(`Duration: ${day.afternoon.duration}`);
-      doc.moveDown(0.3);
-      doc.text(day.afternoon.description, { width: 500 });
-      doc.moveDown(1);
-
-      doc.fontSize(12).font('Helvetica-Bold').text('Evening', { underline: true });
-      doc.moveDown(0.3);
-      doc.fontSize(11).font('Helvetica');
-      doc.text(`Time: ${day.evening.time}`);
-      doc.text(`Location: ${day.evening.location}`);
-      doc.text(`Activity: ${day.evening.activity}`);
-      doc.text(`Duration: ${day.evening.duration}`);
-      doc.moveDown(0.3);
-      doc.text(day.evening.description, { width: 500 });
+      renderActivity(doc, day.morning, 'Morning');
+      renderActivity(doc, day.afternoon, 'Afternoon');
+      renderActivity(doc, day.evening, 'Evening');
     });
 
     doc.addPage();
@@ -97,10 +97,50 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
       doc.fontSize(11).font('Helvetica');
       
       itinerary.recommendations.restaurants.forEach((restaurant, index) => {
-        doc.text(`${index + 1}. ${restaurant}`, { indent: 20 });
+        doc.font('Helvetica-Bold').text(`${index + 1}. ${restaurant.name}`, { indent: 20 });
+        if (restaurant.address) {
+          doc.font('Helvetica').text(`   Address: ${restaurant.address}`, { indent: 20 });
+        }
+        if (restaurant.description) {
+          doc.font('Helvetica').text(`   ${restaurant.description}`, { indent: 20 });
+        }
+        doc.moveDown(0.3);
       });
       
-      doc.moveDown(1.5);
+      doc.moveDown(1);
+    }
+
+    if (itinerary.recommendations.accommodation) {
+      doc.fontSize(14).font('Helvetica-Bold').text('Accommodation');
+      doc.moveDown(0.5);
+      doc.fontSize(11).font('Helvetica');
+      doc.text(`${itinerary.recommendations.accommodation.name}`, { indent: 20 });
+      if (itinerary.recommendations.accommodation.address) {
+        doc.text(`Address: ${itinerary.recommendations.accommodation.address}`, { indent: 20 });
+      }
+      if (itinerary.recommendations.accommodation.affiliateUrl) {
+        doc.fillColor('#7c3aed').text('Book Now', { 
+          indent: 20,
+          link: itinerary.recommendations.accommodation.affiliateUrl,
+          underline: true 
+        });
+        doc.fillColor('#000000');
+      }
+      doc.moveDown(1);
+    }
+
+    if (itinerary.recommendations.carRental) {
+      doc.fontSize(14).font('Helvetica-Bold').text('Car Rental');
+      doc.moveDown(0.5);
+      doc.fontSize(11).font('Helvetica');
+      doc.text(`Provider: ${itinerary.recommendations.carRental.provider}`, { indent: 20 });
+      doc.fillColor('#7c3aed').text('Book Your Car', { 
+        indent: 20,
+        link: itinerary.recommendations.carRental.affiliateUrl,
+        underline: true 
+      });
+      doc.fillColor('#000000');
+      doc.moveDown(1);
     }
 
     if (itinerary.recommendations.tips.length > 0) {
