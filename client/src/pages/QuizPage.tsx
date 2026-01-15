@@ -127,7 +127,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
               value={String(formData.duration)} 
               onValueChange={(value) => setFormData({ ...formData, duration: parseInt(value) })}
             >
-              {[1, 2, 3, 4, 5, 6, 7].map((day) => (
+              {[1, 2, 3, 4, 5].map((day) => (
                 <div 
                   key={day} 
                   className="flex items-center space-x-3 p-4 rounded-lg border border-border hover-elevate active-elevate-2 cursor-pointer"
