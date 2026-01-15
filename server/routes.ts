@@ -72,6 +72,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ received: true });
   });
 
+  // Free PDF download - generates and returns PDF directly without payment
+  app.post("/api/generate-free-pdf", async (req, res) => {
+    try {
+      const itinerary = itinerarySchema.parse(req.body);
+      
+      // Generate unique ID for this free download
+      const downloadId = `free_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+      
+      // Generate PDF directly
+      const pdfPath = await generateItineraryPDF(itinerary, downloadId);
+      
+      if (!fs.existsSync(pdfPath)) {
+        return res.status(500).json({ error: 'PDF generation failed' });
+      }
+      
+      // Send the PDF file
+      res.download(pdfPath, 'lisbon-wine-routes-itinerary.pdf', (err) => {
+        if (err) {
+          console.error('Error sending PDF:', err);
+        }
+        // Clean up the file after sending (optional - keeps disk clean)
+        setTimeout(() => {
+          try {
+            if (fs.existsSync(pdfPath)) {
+              fs.unlinkSync(pdfPath);
+            }
+          } catch (cleanupError) {
+            console.error('Error cleaning up PDF:', cleanupError);
+          }
+        }, 60000); // Clean up after 1 minute
+      });
+    } catch (error) {
+      console.error('Error generating free PDF:', error);
+      res.status(500).json({ error: 'Failed to generate PDF' });
+    }
+  });
+
+  // Legacy paid download endpoint (kept for existing payment sessions)
   app.get("/api/download-pdf/:sessionId", async (req, res) => {
     try {
       const { sessionId } = req.params;

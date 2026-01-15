@@ -39,9 +39,10 @@ function ActivityCard({ activity, periodLabel, t }: { activity: Activity; period
 interface ItineraryDisplayProps {
   itinerary: Itinerary;
   onDownload: () => void;
+  isDownloading?: boolean;
 }
 
-export default function ItineraryDisplay({ itinerary, onDownload }: ItineraryDisplayProps) {
+export default function ItineraryDisplay({ itinerary, onDownload, isDownloading = false }: ItineraryDisplayProps) {
   const { t } = useLanguage();
   
   return (
@@ -245,11 +246,12 @@ export default function ItineraryDisplay({ itinerary, onDownload }: ItineraryDis
           <Button 
             size="lg" 
             onClick={onDownload}
+            disabled={isDownloading}
             className="px-8"
             data-testid="button-download-itinerary"
           >
             <Download className="w-4 h-4 mr-2" />
-            {t('itinerary.downloadButton')}
+            {isDownloading ? t('success.downloading') : t('itinerary.downloadButton')}
           </Button>
         </CardContent>
       </Card>
