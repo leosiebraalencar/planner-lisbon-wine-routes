@@ -35,6 +35,26 @@ export const insertPaymentSessionSchema = createInsertSchema(paymentSessions).om
 export type InsertPaymentSession = z.infer<typeof insertPaymentSessionSchema>;
 export type PaymentSession = typeof paymentSessions.$inferSelect;
 
+export const proRequests = pgTable("pro_requests", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name"),
+  email: text("email"),
+  phone: text("phone"),
+  duration: text("duration"),
+  preferences: text("preferences").notNull(),
+  quizData: jsonb("quiz_data"),
+  referrer: text("referrer"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertProRequestSchema = createInsertSchema(proRequests).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertProRequest = z.infer<typeof insertProRequestSchema>;
+export type ProRequest = typeof proRequests.$inferSelect;
+
 export const quizResponseSchema = z.object({
   duration: z.number().min(1).max(10),
   startDate: z.string().optional(),
@@ -43,9 +63,25 @@ export const quizResponseSchema = z.object({
   travelers: z.enum(['sozinho', 'casal', 'familia', 'grupo']),
   preferences: z.array(z.string()),
   specialRequests: z.string().optional(),
+  arrival: z.enum(['aviao', 'trem', 'carro', 'outros', 'ja_em_lisboa']).optional(),
+  needsCarRental: z.boolean().optional(),
+  wantsPrivateGuide: z.boolean().optional(),
+  hasAccommodation: z.boolean().optional(),
+  accommodationPreference: z.enum(['central_lisboa', 'vinicolas_proximas']).optional(),
 });
 
 export type QuizResponse = z.infer<typeof quizResponseSchema>;
+
+export const activitySchema = z.object({
+  time: z.string(),
+  activity: z.string(),
+  location: z.string(),
+  description: z.string(),
+  duration: z.string(),
+  address: z.string().optional(),
+  affiliateUrl: z.string().optional(),
+  affiliateProvider: z.enum(['winalist', 'getyourguide', 'booking', 'discovercars']).optional(),
+});
 
 export const itinerarySchema = z.object({
   id: z.string(),
@@ -53,33 +89,29 @@ export const itinerarySchema = z.object({
   days: z.array(z.object({
     day: z.number(),
     region: z.string(),
-    morning: z.object({
-      time: z.string(),
-      activity: z.string(),
-      location: z.string(),
-      description: z.string(),
-      duration: z.string(),
-    }),
-    afternoon: z.object({
-      time: z.string(),
-      activity: z.string(),
-      location: z.string(),
-      description: z.string(),
-      duration: z.string(),
-    }),
-    evening: z.object({
-      time: z.string(),
-      activity: z.string(),
-      location: z.string(),
-      description: z.string(),
-      duration: z.string(),
-    }),
+    morning: activitySchema,
+    afternoon: activitySchema,
+    evening: activitySchema,
   })),
   highlights: z.array(z.string()),
   recommendations: z.object({
-    restaurants: z.array(z.string()),
+    restaurants: z.array(z.object({
+      name: z.string(),
+      address: z.string().optional(),
+      description: z.string().optional(),
+    })),
     tips: z.array(z.string()),
+    accommodation: z.object({
+      name: z.string(),
+      address: z.string().optional(),
+      affiliateUrl: z.string().optional(),
+    }).optional(),
+    carRental: z.object({
+      provider: z.string(),
+      affiliateUrl: z.string(),
+    }).optional(),
   }),
 });
 
+export type Activity = z.infer<typeof activitySchema>;
 export type Itinerary = z.infer<typeof itinerarySchema>;

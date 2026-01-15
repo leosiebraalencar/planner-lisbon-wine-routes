@@ -1,4 +1,4 @@
-import { users, paymentSessions, type User, type InsertUser, type PaymentSession, type InsertPaymentSession } from "@shared/schema";
+import { users, paymentSessions, proRequests, type User, type InsertUser, type PaymentSession, type InsertPaymentSession, type ProRequest, type InsertProRequest } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 
@@ -9,6 +9,8 @@ export interface IStorage {
   createPaymentSession(session: InsertPaymentSession): Promise<PaymentSession>;
   getPaymentSessionByStripeId(stripeSessionId: string): Promise<PaymentSession | undefined>;
   updatePaymentSession(stripeSessionId: string, updates: Partial<PaymentSession>): Promise<PaymentSession | undefined>;
+  createProRequest(request: InsertProRequest): Promise<ProRequest>;
+  getProRequests(): Promise<ProRequest[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -53,6 +55,18 @@ export class DatabaseStorage implements IStorage {
       .where(eq(paymentSessions.stripeSessionId, stripeSessionId))
       .returning();
     return updated || undefined;
+  }
+
+  async createProRequest(request: InsertProRequest): Promise<ProRequest> {
+    const [proRequest] = await db
+      .insert(proRequests)
+      .values(request)
+      .returning();
+    return proRequest;
+  }
+
+  async getProRequests(): Promise<ProRequest[]> {
+    return await db.select().from(proRequests);
   }
 }
 

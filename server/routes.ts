@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import Stripe from "stripe";
-import { itinerarySchema } from "@shared/schema";
+import { itinerarySchema, insertProRequestSchema } from "@shared/schema";
 import { generateItineraryPDF } from "./pdf";
 import path from "path";
 import fs from "fs";
@@ -190,6 +190,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error creating checkout session:', error);
       res.status(500).json({ error: 'Failed to create checkout session' });
+    }
+  });
+
+  app.post("/api/pro-request", async (req, res) => {
+    try {
+      const validationResult = insertProRequestSchema.safeParse(req.body);
+      
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          error: 'Validation failed', 
+          details: validationResult.error.errors 
+        });
+      }
+
+      const validatedData = validationResult.data;
+
+      if (!validatedData.preferences || validatedData.preferences.length < 10) {
+        return res.status(400).json({ error: 'Please provide more details about your preferences' });
+      }
+
+      const proRequest = await storage.createProRequest(validatedData);
+
+      console.log(`New Pro request created: ${proRequest.id}`);
+
+      res.json({ success: true, id: proRequest.id });
+    } catch (error) {
+      console.error('Error creating pro request:', error);
+      res.status(500).json({ error: 'Failed to create pro request' });
     }
   });
 

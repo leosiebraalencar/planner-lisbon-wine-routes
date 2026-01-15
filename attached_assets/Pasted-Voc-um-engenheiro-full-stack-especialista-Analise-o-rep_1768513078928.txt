@@ -1,0 +1,372 @@
+Você é um engenheiro full-stack especialista. Analise o repositório atual e implemente as mudanças abaixo com o mínimo de regressões possível. Antes de codar, faça um levantamento do stack (framework frontend, backend, gerador de PDF, banco de dados, provider de email) e proponha onde cada mudança será aplicada. Depois execute as alterações com commits pequenos e testes básicos.
+
+Objetivo geral
+
+Adicionar um upsell constante da versão Pro (€29) durante toda a jornada (incluindo o QUIZ), implementar uma página/tela comparativa Free vs Pro com formulário de contato (persistência em DB + envio por email), ajustar tela de sucesso do PDF para doação/compartilhamento, atualizar as perguntas do QUIZ, e melhorar o resultado do guia + PDF com endereços e links afiliados (Winalist, GetYourGuide, Booking via AWIN, DiscoverCars), incluindo uma função central de geração automática de links de afiliado.
+
+1) Upsell Pro sempre presente + Página comparativa + Formulário (DB + email)
+1.1 Mensagem obrigatória durante o fluxo (incluindo o QUIZ)
+
+Em todas as telas do fluxo de construção do roteiro, incluindo:
+
+telas do quiz
+
+telas de carregamento/geração
+
+tela de preview do roteiro (se existir)
+
+tela de download/sucesso do PDF
+
+Exibir a mensagem (texto exatamente assim):
+"Quer um roteiro detalhado e sob medida? Pague a nossa versão Pro por €29"
+
+Regras de UI/UX:
+
+Esse CTA deve ter menor hierarquia visual que o CTA principal de “continuar/concluir” o fluxo (ex.: link secundário, banner discreto, card lateral, etc.).
+
+Deve haver um botão/link “Comparar Free vs Pro” (ou similar) que leva para uma página/tela comparativa.
+
+1.2 Tela comparativa Free vs Pro + Formulário
+
+Criar rota/página (ex.: /pro ou /upgrade) com:
+
+Headline e copy explicando a versão Pro (€29)
+
+Tabela comparativa (exatamente com os dados abaixo)
+
+Um formulário para o usuário enviar preferências para um guia sob medida
+
+Tabela obrigatória:
+
+Feature	Gratuito	Premium (€29)
+Duração	1-7 dias	1-7 dias
+Vinícolas	1-7 detalhes básicas	8-12 detalhadas
+Mapa	Não	Interativo + GPS
+Horários	Não	Otimizados (evita trânsito)
+Restaurantes	Sim (1 recomendação)	Sim (3-5 recomendações)
+PDF Download	Sim	Sim com imagens, telefones e detalhes adicionais
+Dicas Insider	Não	Sim (estacionamento, melhor hora)
+Contatos Diretos	Não	Sim (telefone, WhatsApp)
+Plano B	Não	Roteiro alternativo (chuva)
+Suporte	Não	Email (48h)
+1.2.1 Formulário: requisitos
+
+Campos recomendados (se já existir um schema no projeto, adaptar):
+
+nome (opcional)
+
+email (obrigatório se possível)
+
+telefone/WhatsApp (opcional)
+
+datas/duração (opcional)
+
+preferências (texto livre obrigatório) — ex.: “quero mais vinhos naturais”, “prefiro tour privado”, etc.
+
+respostas do quiz (se existirem no estado, anexar como JSON)
+
+referência/utm/referrer (opcional)
+
+createdAt
+
+1.2.2 Persistência no banco de dados
+
+Criar tabela/coleção pro_requests (ou equivalente).
+
+Ao submeter o formulário:
+
+validar campos (mínimo: preferências não vazias; email se for obrigatório)
+
+salvar no DB
+
+retornar sucesso (tela ou toast)
+
+1.2.3 Envio de email em cópia
+
+Ao submeter com sucesso:
+
+Enviar um email para contacto@lisbonwineroutes.com
+ contendo:
+
+dados do formulário
+
+respostas do quiz (se disponível)
+
+identificador do registro no DB
+
+Se houver provider de email (SendGrid, Resend, Nodemailer SMTP etc.), reutilizar o existente. Se não existir, implementar com a opção mais simples e segura suportada no ambiente do Replit (ex.: Nodemailer via SMTP com variáveis de ambiente).
+
+Garantir que erros de email não apaguem o registro no DB: salvar primeiro, depois tentar email; se falhar, registrar log e mostrar mensagem amigável.
+
+2) Tela de Download do PDF (Success) com doação e compartilhamento
+2.1 Copy e estrutura
+
+Na tela de sucesso do download do PDF, exibir:
+
+"Obrigado por apoiar nosso trabalho! Seu roteiro personalizado está pronto para download."
+
+Depois que o usuário realizar o download (ou imediatamente após mostrar o botão, se não for possível detectar evento de download de forma confiável), pedir colaboração:
+
+Texto sugerido:
+"Este roteiro foi útil? Ajude-nos a continuar criando conteúdo gratuito!"
+
+Adicionar:
+
+Botões de doação rápida: [ €1 ] [ €3 ] [ €5 ] [ Outro valor ]
+
+CTA levando ao checkout Stripe (usar link configurável por env var: STRIPE_DONATION_URL ou similar)
+
+Alternativa: compartilhar em redes sociais (links prontos para WhatsApp, Facebook, X/Twitter, LinkedIn) com mensagem e URL do gerador.
+
+Regras:
+
+Não quebrar o fluxo do usuário: doação/compartilhar é secundário, mas bem visível.
+
+Garantir que exista “Download PDF” principal.
+
+2.2 Telemetria opcional (se existir analytics)
+
+Se existir analytics/event tracking, disparar eventos:
+
+pdf_download_clicked
+
+donation_clicked com valor
+
+share_clicked com rede
+
+3) Atualizar o QUIZ com as perguntas fornecidas
+
+Adicionar/ajustar o quiz para conter exatamente estas perguntas e opções:
+
+Q1: Como você chegará em Lisboa
+
+Avião
+
+Trem
+
+Carro próprio
+
+Outros
+
+Já estou em Lisboa
+
+Q2: Precisa alugar um carro?
+
+Sim
+
+Não
+
+Q3: Gostaria de ter um guia particular com Transfer?
+
+Sim
+
+Não
+
+Q4: Já tem hospedagem pré-definida?
+
+Sim
+
+Não
+
+Q5: Pretende se hospedar na região central de Lisboa ou em Vinícolas ou lugares próximos a elas?
+
+Central de Lisboa
+
+Vinícolas próximos a elas
+
+Regras do CTA Pro:
+
+O call to action Pro deve acompanhar a jornada com menor hierarquia do que o botão primário do quiz (continuar/gerar).
+
+Não atrapalhar validação e navegação do quiz.
+
+Persistência:
+
+Garantir que as respostas do quiz sejam salvas no estado da sessão (local storage / session / backend) e possam ser usadas na geração do roteiro e no PDF.
+
+4) Resultado do guia e PDF com endereços + links de parceiros (afiliados)
+4.1 Endereços no resultado
+
+No resultado do guia (UI e PDF), garantir que cada item escolhido (Adegas/Vinícolas, bares, restaurantes) apresente:
+
+Nome
+
+Endereço completo (quando disponível)
+
+Link de reserva/experiência quando aplicável (com afiliado)
+
+Se o usuário selecionou no quiz que não tem hospedagem, incluir no roteiro uma seção “Hospedagem” com um link do Booking (afiliado via AWIN) sugerindo busca na região adequada.
+
+4.2 PDF: links de reservas e parceiros
+
+No PDF, para experiências e tours:
+
+Preferir sempre links afiliados de:
+
+Winalist
+
+GetYourGuide
+
+Para hotéis/hospedagem:
+
+Booking via AWIN (regras abaixo)
+
+Para aluguel de carros:
+
+DiscoverCars com a_aid=lisbonwineroutes
+
+Caso restaurantes e vinícolas não sejam encontrados em Winalist ou GetYourGuide:
+
+Incluir link alternativo:
+
+Google Maps (pesquisa pelo nome/endereço), ou
+
+site oficial (se já existir no dataset)
+
+Mesmo sem afiliado nesses casos, não deixar sem link.
+
+Importante:
+
+Os links devem “vir com os parâmetros de parceiro do Lisbon Wine Routes” conforme regras.
+
+Criar uma função central para gerar links afiliados (abaixo).
+
+5) Implementar função central de geração de links afiliados
+
+Criar um módulo utilitário único (ex.: affiliateLinks.ts / affiliateLinks.js) com funções puras, bem testadas, usadas por UI e por gerador de PDF.
+
+5.1 DISCOVERCARS
+
+Base:
+
+URL: https://www.discovercars.com/pt
+
+Param afiliado: ?a_aid=lisbonwineroutes
+Saída:
+
+https://www.discovercars.com/pt?a_aid=lisbonwineroutes
+
+Se no futuro houver querystring adicional, preservar e anexar corretamente (usar URL API).
+
+5.2 WINALIST
+
+Adicionar ao final da URL da experiência:
+?utm_source=lisbonwineroutes&utm_medium=affiliate&utm_campaign=lisbonwineroutes
+Exemplo:
+https://www.winalist.pt/hosts/3134/adegamae?utm_source=lisbonwineroutes&utm_medium=affiliate&utm_campaign=lisbonwineroutes
+
+Se já existir query, adicionar com &....
+
+5.3 GET YOUR GUIDE
+
+Adicionar (ou mesclar) os parâmetros:
+?partner_id=FZRKIIT&utm_medium=online_publisher&cmp=lisbonwineroutes
+Exemplo:
+https://www.getyourguide.com/lisbon-l42/from-lisbon-private-wine-tour-with-wine-cheese-tasting-t493003/?partner_id=FZRKIIT&utm_medium=online_publisher&cmp=lisbonwineroutes
+
+Se já existir query, adicionar com &....
+
+5.4 BOOKING via AWIN (regras obrigatórias)
+
+Regras:
+
+URL base: https://www.awin1.com/cread.php
+
+Parâmetros fixos:
+
+awinmid=18120
+
+awinaffid=1914530
+
+clickref opcional (string livre)
+
+URL de destino do Booking vai em ued e deve ser totalmente URL-encoded
+
+Nunca aplicar URL encoding nos parâmetros da AWIN, apenas no valor de ued.
+
+Fluxo da função buildBookingAwinUrl(destinationUrl: string, clickref?: string): string:
+
+Receber destinationUrl obrigatório e clickref opcional
+
+Aplicar encode completo no destinationUrl (encodeURIComponent)
+
+Montar URL final:
+https://www.awin1.com/cread.php?awinmid=18120&awinaffid=1914530[&clickref=CLICKREF]&ued=ENCODED_DESTINATION_URL
+
+Exemplo final:
+https://www.awin1.com/cread.php?awinmid=18120&awinaffid=1914530&ued=https%3A%2F%2Fwww.booking.com%2Fhotel%2Fpt%2Fbaixa-suites-apartments.pt-pt.html
+
+5.5 Interface única de alto nível
+
+Criar uma função única (ex.: toAffiliateUrl({ provider, url, clickref })) que:
+
+Detecte provider por enum explícito
+
+Valide URL
+
+Retorne string final
+
+Seja usada em:
+
+renderização do resultado (UI)
+
+geração de conteúdo do PDF
+
+Adicionar testes unitários simples (ou script de verificação) para:
+
+urls com e sem querystring
+
+Booking com clickref e sem clickref
+
+6) Integrações e segurança (mínimo necessário)
+
+Variáveis de ambiente para:
+
+SMTP / provider de email
+
+URL do Stripe checkout (doação)
+
+Sanitização/validação de inputs do formulário (anti-injection)
+
+Rate limiting básico se já existir infra (evitar spam no form)
+
+Logs para falhas de email e DB
+
+7) Critérios de aceite (Definition of Done)
+
+O CTA “Quer um roteiro…” aparece em todas as telas do fluxo, incluindo quiz, sem competir com o CTA principal.
+
+Página comparativa existe com tabela correta + formulário funcional.
+
+Submissões do formulário:
+
+são salvas no DB
+
+enviam email para contacto@lisbonwineroutes.com
+ (em cópia) com os dados
+
+Quiz contém exatamente as perguntas/opções especificadas e respostas são usadas no resultado.
+
+Tela de sucesso do PDF contém texto de agradecimento + doação (Stripe) + botões de share.
+
+Resultado do guia + PDF exibem endereços e links; se “sem hospedagem”, inclui link Booking afiliado.
+
+Existe módulo central de links afiliados com regras implementadas e testes básicos.
+
+Não quebrou o download gratuito do PDF.
+
+Plano de execução sugerido (ordem)
+
+Mapear estrutura do projeto (rotas, componentes, backend endpoints, PDF generator, DB)
+
+Implementar CTA global secundário
+
+Criar página Pro + tabela + formulário + endpoint DB + envio email
+
+Ajustar quiz e persistência
+
+Ajustar tela de sucesso do PDF (doação + share)
+
+Implementar módulo de affiliate links + integrar UI/PDF
+
+Testes manuais end-to-end + testes unitários do módulo afiliado

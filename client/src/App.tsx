@@ -9,6 +9,7 @@ import LandingPage from "@/pages/LandingPage";
 import QuizPage from "@/pages/QuizPage";
 import ItineraryPage from "@/pages/ItineraryPage";
 import SuccessPage from "@/pages/SuccessPage";
+import ProPage from "@/pages/ProPage";
 import type { QuizResponse, Itinerary } from "@shared/schema";
 
 function ItineraryPageWrapper({ itinerary }: { itinerary: Itinerary | null }) {
@@ -69,7 +70,11 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
       'Paisagens deslumbrantes das vinhas'
     ],
     recommendations: {
-      restaurants: ['Adega das Gravatas', 'Tasca do Celso', 'O Celeiro'],
+      restaurants: [
+        { name: 'Adega das Gravatas', address: 'Rua do Vinho, 15, Torres Vedras' },
+        { name: 'Tasca do Celso', address: 'Praça Central, Bucelas' },
+        { name: 'O Celeiro', address: 'Estrada Nacional 8, Alenquer' }
+      ],
       tips: [
         'Reserve as visitas com antecedência',
         'Leve protetor solar e chapéu',
@@ -107,6 +112,9 @@ function App() {
               </Route>
               <Route path="/success">
                 <SuccessPage />
+              </Route>
+              <Route path="/pro">
+                <ProPage />
               </Route>
               <Route path="/">
                 <LandingPage />

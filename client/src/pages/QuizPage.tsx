@@ -3,13 +3,14 @@ import { useLocation } from "wouter";
 import Header from "@/components/Header";
 import QuizProgress from "@/components/QuizProgress";
 import QuizQuestion from "@/components/QuizQuestion";
+import ProUpsellBanner from "@/components/ProUpsellBanner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, User, UsersRound, Home } from "lucide-react";
+import { Users, User, UsersRound, Home, Plane, Train, Car, CircleDot } from "lucide-react";
 import type { QuizResponse } from "@shared/schema";
 
 interface QuizPageProps {
@@ -334,6 +335,8 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
             </div>
           </QuizQuestion>
         )}
+
+        <ProUpsellBanner className="mt-6" />
       </div>
       </div>
     </div>
