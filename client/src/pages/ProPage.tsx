@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Check, X, Sparkles, Wine, MapPin, Clock, UtensilsCrossed, FileText, Lightbulb, Phone, CloudRain, Headphones } from "lucide-react";
+import { Check, X, Sparkles, Wine, MapPin, Clock, UtensilsCrossed, FileText, Lightbulb, Phone, CloudRain, Headphones, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { insertProRequestSchema, type InsertProRequest } from "@shared/schema";
@@ -160,7 +160,7 @@ export default function ProPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="mb-12">
             <CardHeader>
               <CardTitle className="text-center">{t('pro.formTitle')}</CardTitle>
               <p className="text-center text-muted-foreground">{t('pro.formSubtitle')}</p>
@@ -256,6 +256,25 @@ export default function ProPage() {
                   </Button>
                 </form>
               </Form>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border">
+            <CardContent className="p-6 text-center">
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <Mail className="w-5 h-5 text-primary" />
+                <h4 className="font-semibold text-lg">{t('pro.supportTitle')}</h4>
+              </div>
+              <p className="text-muted-foreground text-sm mb-2">
+                {t('pro.supportText')}
+              </p>
+              <a 
+                href="mailto:contacto@lisbonwineroutes.com" 
+                className="text-primary font-medium hover:underline"
+                data-testid="link-contact-email"
+              >
+                contacto@lisbonwineroutes.com
+              </a>
             </CardContent>
           </Card>
         </div>

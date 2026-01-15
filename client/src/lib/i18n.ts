@@ -189,6 +189,9 @@ export const translations = {
       maybeLater: 'Talvez mais tarde',
       supportTitle: 'Precisa de Ajuda Personalizada?',
       supportText: 'Se deseja apoio para realizar as reservas ou um roteiro ainda mais personalizado, entre em contato conosco em',
+      proUpsellTitle: 'Quer um Roteiro Mais Detalhado?',
+      proUpsellText: 'Quer um roteiro mais detalhado e sob medida? Pague a nossa versão Pro por €29 e obtenha mapas, mais opções e dicas.',
+      proUpsellButton: 'Quero um Roteiro à Medida',
       days: 'dias',
       budgetTypes: {
         economico: 'Econômico',
@@ -276,6 +279,8 @@ export const translations = {
       formSubmitting: 'Enviando...',
       formSuccess: 'Solicitação enviada com sucesso! Entraremos em contato em breve.',
       formError: 'Erro ao enviar solicitação. Tente novamente.',
+      supportTitle: 'Precisa de Ajuda Personalizada?',
+      supportText: 'Se deseja apoio para realizar as reservas ou um roteiro ainda mais personalizado, entre em contato conosco em',
     },
     quizNew: {
       q7: {
@@ -500,6 +505,9 @@ export const translations = {
       maybeLater: 'Maybe later',
       supportTitle: 'Need Personalized Help?',
       supportText: 'If you need support for making reservations or want an even more personalized itinerary, contact us at',
+      proUpsellTitle: 'Want a More Detailed Itinerary?',
+      proUpsellText: 'Want a more detailed and tailored itinerary? Get our Pro version for €29 and receive maps, more options, and insider tips.',
+      proUpsellButton: 'I Want a Custom Itinerary',
       days: 'days',
       budgetTypes: {
         economico: 'Economic',
@@ -587,6 +595,8 @@ export const translations = {
       formSubmitting: 'Submitting...',
       formSuccess: 'Request submitted successfully! We will contact you soon.',
       formError: 'Error submitting request. Please try again.',
+      supportTitle: 'Need Personalized Help?',
+      supportText: 'If you need support for making reservations or want an even more personalized itinerary, contact us at',
     },
     quizNew: {
       q7: {
@@ -811,6 +821,9 @@ export const translations = {
       maybeLater: 'Quizás más tarde',
       supportTitle: '¿Necesitas Ayuda Personalizada?',
       supportText: 'Si deseas apoyo para realizar las reservas o un itinerario aún más personalizado, contáctanos en',
+      proUpsellTitle: '¿Quieres un Itinerario Más Detallado?',
+      proUpsellText: '¿Quieres un itinerario más detallado y a medida? Obtén nuestra versión Pro por €29 y recibe mapas, más opciones y consejos.',
+      proUpsellButton: 'Quiero un Itinerario a Medida',
       days: 'días',
       budgetTypes: {
         economico: 'Económico',
@@ -898,6 +911,8 @@ export const translations = {
       formSubmitting: 'Enviando...',
       formSuccess: '¡Solicitud enviada con éxito! Te contactaremos pronto.',
       formError: 'Error al enviar solicitud. Intenta de nuevo.',
+      supportTitle: '¿Necesitas Ayuda Personalizada?',
+      supportText: 'Si deseas apoyo para realizar las reservas o un itinerario aún más personalizado, contáctanos en',
     },
     quizNew: {
       q7: {
@@ -1122,6 +1137,9 @@ export const translations = {
       maybeLater: 'Vielleicht später',
       supportTitle: 'Benötigen Sie Persönliche Hilfe?',
       supportText: 'Wenn Sie Unterstützung bei Reservierungen oder eine noch persönlichere Route wünschen, kontaktieren Sie uns unter',
+      proUpsellTitle: 'Möchten Sie eine detailliertere Route?',
+      proUpsellText: 'Möchten Sie eine detailliertere und maßgeschneiderte Route? Holen Sie sich unsere Pro-Version für €29 mit Karten, mehr Optionen und Insider-Tipps.',
+      proUpsellButton: 'Ich möchte eine maßgeschneiderte Route',
       days: 'Tage',
       budgetTypes: {
         economico: 'Wirtschaftlich',
@@ -1209,6 +1227,8 @@ export const translations = {
       formSubmitting: 'Wird gesendet...',
       formSuccess: 'Anfrage erfolgreich gesendet! Wir werden Sie bald kontaktieren.',
       formError: 'Fehler beim Senden der Anfrage. Bitte versuchen Sie es erneut.',
+      supportTitle: 'Benötigen Sie Persönliche Hilfe?',
+      supportText: 'Wenn Sie Unterstützung bei Reservierungen oder eine noch persönlichere Route wünschen, kontaktieren Sie uns unter',
     },
     quizNew: {
       q7: {

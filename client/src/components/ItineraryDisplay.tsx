@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, Calendar, Download, DollarSign, Mail, ExternalLink, Car, Building2 } from "lucide-react";
+import { MapPin, Clock, Calendar, Download, DollarSign, ExternalLink, Car, Building2, Sparkles } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { Itinerary, Activity } from "@shared/schema";
 
@@ -256,21 +256,22 @@ export default function ItineraryDisplay({ itinerary, onDownload, isDownloading 
         </CardContent>
       </Card>
       
-      <Card className="border-border">
+      <Card className="border-accent/20 bg-accent/5">
         <CardContent className="p-6 text-center">
           <div className="flex items-center justify-center gap-2 mb-3">
-            <Mail className="w-5 h-5 text-primary" />
-            <h4 className="font-semibold text-lg">{t('itinerary.supportTitle')}</h4>
+            <Sparkles className="w-5 h-5 text-accent" />
+            <h4 className="font-semibold text-lg">{t('itinerary.proUpsellTitle')}</h4>
           </div>
-          <p className="text-muted-foreground text-sm mb-2">
-            {t('itinerary.supportText')}
+          <p className="text-muted-foreground text-sm mb-4">
+            {t('itinerary.proUpsellText')}
           </p>
-          <a 
-            href="mailto:contacto@lisbonwineroutes.com" 
-            className="text-primary font-medium hover:underline"
-            data-testid="link-contact-email"
-          >
-            contacto@lisbonwineroutes.com
+          <a href="/pro">
+            <Button 
+              variant="default"
+              data-testid="button-pro-upsell"
+            >
+              {t('itinerary.proUpsellButton')}
+            </Button>
           </a>
         </CardContent>
       </Card>
