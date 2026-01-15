@@ -53,10 +53,17 @@ Preferred communication style: Simple, everyday language.
 - **Neon Database**: Serverless PostgreSQL hosting
 
 ### Affiliate Integrations
-- **Winalist**: Wine experience bookings
+- **Winalist**: Wine experience bookings (hosts/{id}/{slug} format with UTM tracking, Google Maps fallback)
 - **GetYourGuide**: Tours and activities
-- **Booking.com**: Accommodation (via Awin affiliate network)
-- **DiscoverCars**: Car rental
+- **Booking.com**: Accommodation via AWIN (awinmid=18120, awinaffid=1914530, properly encoded ued parameter)
+- **DiscoverCars**: Car rental (fixed link: discovercars.com/pt?a_aid=lisbonwineroutes)
+
+### Affiliate Link Implementation (shared/affiliateLinks.ts)
+- **WINALIST_URL_MAP**: Maps winery keys to real Winalist URLs
+- **resolveWinalistUrl()**: Returns real URL or Google Maps fallback with logging
+- **buildBookingAwinUrl()**: Creates AWIN wrapper with encoded Booking.com URL
+- **DISCOVERCARS_AFFILIATE_URL**: Single constant for all DiscoverCars references
+- **STRIPE_DONATION_URL**: Fixed Stripe checkout for pay-what-you-want donations
 
 ### Environment Variables Required
 - `DATABASE_URL`: PostgreSQL connection string
