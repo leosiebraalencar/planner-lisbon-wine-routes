@@ -9,32 +9,102 @@ if (!fs.existsSync(PDFS_DIR)) {
   fs.mkdirSync(PDFS_DIR, { recursive: true });
 }
 
-function renderActivity(doc: PDFKit.PDFDocument, activity: Activity, period: string) {
-  doc.fontSize(12).font('Helvetica-Bold').text(period, { underline: true });
+const WINE_RED = '#722F37';
+const DARK_TEXT = '#1a1a1a';
+const GRAY_TEXT = '#4a4a4a';
+const LIGHT_GRAY = '#f5f5f5';
+
+const LOGO_PATH = path.join(process.cwd(), 'attached_assets', 'marca-lisbon-wine-routes-1_1763141966678.png');
+
+function renderActivityBlock(
+  doc: PDFKit.PDFDocument, 
+  activity: Activity, 
+  period: string,
+  periodLabel: string
+) {
+  const startY = doc.y;
+  const pageWidth = doc.page.width - 100;
+  
+  doc.fillColor(WINE_RED)
+    .fontSize(11)
+    .font('Helvetica-Bold')
+    .text(periodLabel.toUpperCase(), 50, startY);
+  
+  doc.fillColor(GRAY_TEXT)
+    .fontSize(10)
+    .font('Helvetica')
+    .text(`Time: ${activity.time}`, pageWidth - 80, startY, { align: 'right', width: 130 });
+  
+  doc.y = startY + 25;
+  
+  doc.rect(50, doc.y, pageWidth, 1).fill(LIGHT_GRAY);
+  doc.y += 15;
+  
+  doc.fillColor(DARK_TEXT)
+    .fontSize(11)
+    .font('Helvetica-Bold')
+    .text(`Location: `, 60)
+    .font('Helvetica')
+    .text(activity.location, 120, doc.y - 13);
+  
   doc.moveDown(0.3);
-  doc.fontSize(11).font('Helvetica');
-  doc.text(`Time: ${activity.time}`);
-  doc.text(`Location: ${activity.location}`);
-  doc.text(`Activity: ${activity.activity}`);
-  doc.text(`Duration: ${activity.duration}`);
+  
+  doc.font('Helvetica-Bold')
+    .text(`Activity: `, 60)
+    .font('Helvetica')
+    .text(activity.activity, 120, doc.y - 13);
+  
+  doc.moveDown(0.3);
+  
+  doc.font('Helvetica-Bold')
+    .text(`Duration: `, 60)
+    .font('Helvetica')
+    .text(activity.duration, 120, doc.y - 13);
+  
+  doc.moveDown(0.3);
   
   if (activity.address) {
-    doc.text(`Address: ${activity.address}`);
+    doc.font('Helvetica-Bold')
+      .text(`Address: `, 60)
+      .font('Helvetica')
+      .text(activity.address, 120, doc.y - 13);
+    doc.moveDown(0.3);
   }
   
   doc.moveDown(0.3);
-  doc.text(activity.description, { width: 500 });
+  doc.fillColor(GRAY_TEXT)
+    .fontSize(10)
+    .font('Helvetica')
+    .text(activity.description, 60, doc.y, { width: pageWidth - 20 });
+  
+  doc.moveDown(0.5);
+  doc.fillColor(GRAY_TEXT)
+    .fontSize(9)
+    .text('Preço médio:', 60);
+  
+  doc.moveDown(0.5);
   
   if (activity.affiliateUrl) {
-    doc.moveDown(0.2);
-    doc.fillColor('#7c3aed').text('Book Now', { 
-      link: activity.affiliateUrl,
-      underline: true 
-    });
-    doc.fillColor('#000000');
+    const buttonY = doc.y;
+    const buttonWidth = 100;
+    const buttonHeight = 24;
+    
+    doc.roundedRect(60, buttonY, buttonWidth, buttonHeight, 4)
+      .fill(WINE_RED);
+    
+    doc.fillColor('#ffffff')
+      .fontSize(10)
+      .font('Helvetica-Bold')
+      .text('Book now', 60, buttonY + 7, { 
+        width: buttonWidth, 
+        align: 'center',
+        link: activity.affiliateUrl
+      });
+    
+    doc.y = buttonY + buttonHeight + 5;
   }
   
-  doc.moveDown(1);
+  doc.moveDown(1.5);
 }
 
 export async function generateItineraryPDF(itinerary: Itinerary, sessionId: string): Promise<string> {
@@ -44,118 +114,213 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
     
     const doc = new PDFDocument({
       size: 'A4',
-      margins: { top: 50, bottom: 50, left: 50, right: 50 }
+      margins: { top: 40, bottom: 40, left: 50, right: 50 }
     });
 
     const stream = fs.createWriteStream(filePath);
     doc.pipe(stream);
 
-    doc.fontSize(24).font('Helvetica-Bold').text('Lisbon Wine Routes', { align: 'center' });
-    doc.moveDown(0.5);
-    doc.fontSize(16).font('Helvetica').text('Personalized Wine Tourism Itinerary', { align: 'center' });
+    const pageWidth = doc.page.width - 100;
+
+    if (fs.existsSync(LOGO_PATH)) {
+      try {
+        doc.image(LOGO_PATH, (doc.page.width - 150) / 2, 30, { width: 150 });
+        doc.y = 100;
+      } catch (e) {
+        doc.y = 40;
+      }
+    }
+
+    doc.fillColor(WINE_RED)
+      .fontSize(22)
+      .font('Helvetica-Bold')
+      .text('Personalized Wine Tourism Itinerary', { align: 'center' });
+    
     doc.moveDown(2);
 
-    doc.fontSize(12).font('Helvetica');
-    doc.text(`Duration: ${itinerary.days.length} days`);
-    doc.text(`Budget: ${itinerary.quizData.budget}`);
-    doc.text(`Travel Type: ${itinerary.quizData.travelers}`);
+    const infoStartY = doc.y;
+    const columnWidth = pageWidth / 2 - 20;
+
+    doc.fillColor(DARK_TEXT)
+      .fontSize(11)
+      .font('Helvetica-Bold')
+      .text('Duration: ', 50, infoStartY)
+      .font('Helvetica')
+      .text(`${itinerary.days.length} day${itinerary.days.length > 1 ? 's' : ''}`, 110, infoStartY);
+    
+    doc.font('Helvetica-Bold')
+      .text('Budget: ', 50)
+      .font('Helvetica')
+      .text(itinerary.quizData.budget, 110, doc.y - 13);
+    
+    doc.font('Helvetica-Bold')
+      .text('Travel Type: ', 50)
+      .font('Helvetica')
+      .text(itinerary.quizData.travelers, 130, doc.y - 13);
     
     if (itinerary.quizData.startDate && itinerary.quizData.endDate) {
-      doc.text(`Dates: ${itinerary.quizData.startDate} to ${itinerary.quizData.endDate}`);
+      doc.font('Helvetica-Bold')
+        .text('Dates: ', 50)
+        .font('Helvetica')
+        .text(`${itinerary.quizData.startDate} to ${itinerary.quizData.endDate}`, 90, doc.y - 13);
     }
-    
-    doc.moveDown(2);
 
-    doc.fontSize(14).font('Helvetica-Bold').text('Itinerary Highlights');
+    const highlightsX = doc.page.width / 2 + 20;
+    
+    doc.fillColor(WINE_RED)
+      .fontSize(12)
+      .font('Helvetica-Bold')
+      .text('ITINERARY HIGHLIGHTS', highlightsX, infoStartY, { width: columnWidth });
+    
     doc.moveDown(0.5);
-    doc.fontSize(11).font('Helvetica');
     
-    itinerary.highlights.forEach((highlight, index) => {
-      doc.text(`${index + 1}. ${highlight}`, { indent: 20 });
+    doc.fillColor(DARK_TEXT)
+      .fontSize(10)
+      .font('Helvetica');
+    
+    const highlights = itinerary.highlights.slice(0, 4);
+    highlights.forEach((highlight, index) => {
+      doc.text(`${index + 1}. ${highlight}`, highlightsX, doc.y, { width: columnWidth });
+      doc.moveDown(0.3);
     });
-    
-    doc.moveDown(2);
 
     itinerary.days.forEach((day) => {
       doc.addPage();
       
-      doc.fontSize(18).font('Helvetica-Bold').text(`Day ${day.day} - ${day.region}`, { underline: true });
-      doc.moveDown(1);
+      doc.fillColor(WINE_RED)
+        .fontSize(16)
+        .font('Helvetica-Bold')
+        .text(`DAY ${day.day} - ${day.region.toUpperCase()}`, 50, 50);
+      
+      doc.moveDown(1.5);
 
-      renderActivity(doc, day.morning, 'Morning');
-      renderActivity(doc, day.afternoon, 'Afternoon');
-      renderActivity(doc, day.evening, 'Evening');
+      renderActivityBlock(doc, day.morning, 'morning', 'Morning');
+      renderActivityBlock(doc, day.afternoon, 'afternoon', 'Afternoon');
+      renderActivityBlock(doc, day.evening, 'evening', 'Evening');
     });
 
-    doc.addPage();
-    doc.fontSize(16).font('Helvetica-Bold').text('Recommendations');
-    doc.moveDown(1);
-
-    if (itinerary.recommendations.restaurants.length > 0) {
-      doc.fontSize(14).font('Helvetica-Bold').text('Recommended Restaurants');
-      doc.moveDown(0.5);
-      doc.fontSize(11).font('Helvetica');
+    if (itinerary.recommendations.accommodation || itinerary.recommendations.carRental) {
+      doc.addPage();
       
-      itinerary.recommendations.restaurants.forEach((restaurant, index) => {
-        doc.font('Helvetica-Bold').text(`${index + 1}. ${restaurant.name}`, { indent: 20 });
-        if (restaurant.address) {
-          doc.font('Helvetica').text(`   Address: ${restaurant.address}`, { indent: 20 });
-        }
-        if (restaurant.description) {
-          doc.font('Helvetica').text(`   ${restaurant.description}`, { indent: 20 });
-        }
-        doc.moveDown(0.3);
-      });
+      doc.fillColor(WINE_RED)
+        .fontSize(16)
+        .font('Helvetica-Bold')
+        .text('RECOMMENDATIONS', 50, 50);
       
-      doc.moveDown(1);
-    }
+      doc.moveDown(1.5);
 
-    if (itinerary.recommendations.accommodation) {
-      doc.fontSize(14).font('Helvetica-Bold').text('Accommodation');
-      doc.moveDown(0.5);
-      doc.fontSize(11).font('Helvetica');
-      doc.text(`${itinerary.recommendations.accommodation.name}`, { indent: 20 });
-      if (itinerary.recommendations.accommodation.address) {
-        doc.text(`Address: ${itinerary.recommendations.accommodation.address}`, { indent: 20 });
+      if (itinerary.recommendations.accommodation) {
+        doc.fillColor(WINE_RED)
+          .fontSize(12)
+          .font('Helvetica-Bold')
+          .text('Accommodation');
+        
+        doc.moveDown(0.5);
+        
+        doc.fillColor(DARK_TEXT)
+          .fontSize(11)
+          .font('Helvetica-Bold')
+          .text(itinerary.recommendations.accommodation.name);
+        
+        if (itinerary.recommendations.accommodation.address) {
+          doc.fontSize(10)
+            .font('Helvetica')
+            .fillColor(GRAY_TEXT)
+            .text(itinerary.recommendations.accommodation.address);
+        }
+        
+        if (itinerary.recommendations.accommodation.affiliateUrl) {
+          doc.moveDown(0.5);
+          const buttonY = doc.y;
+          const buttonWidth = 100;
+          const buttonHeight = 24;
+          
+          doc.roundedRect(50, buttonY, buttonWidth, buttonHeight, 4)
+            .fill(WINE_RED);
+          
+          doc.fillColor('#ffffff')
+            .fontSize(10)
+            .font('Helvetica-Bold')
+            .text('Book now', 50, buttonY + 7, { 
+              width: buttonWidth, 
+              align: 'center',
+              link: itinerary.recommendations.accommodation.affiliateUrl
+            });
+          
+          doc.y = buttonY + buttonHeight + 20;
+        }
+        
+        doc.moveDown(1.5);
       }
-      if (itinerary.recommendations.accommodation.affiliateUrl) {
-        doc.fillColor('#7c3aed').text('Book Now', { 
-          indent: 20,
-          link: itinerary.recommendations.accommodation.affiliateUrl,
-          underline: true 
-        });
-        doc.fillColor('#000000');
-      }
-      doc.moveDown(1);
-    }
 
-    if (itinerary.recommendations.carRental) {
-      doc.fontSize(14).font('Helvetica-Bold').text('Car Rental');
-      doc.moveDown(0.5);
-      doc.fontSize(11).font('Helvetica');
-      doc.text(`Provider: ${itinerary.recommendations.carRental.provider}`, { indent: 20 });
-      doc.fillColor('#7c3aed').text('Book Your Car', { 
-        indent: 20,
-        link: itinerary.recommendations.carRental.affiliateUrl,
-        underline: true 
-      });
-      doc.fillColor('#000000');
-      doc.moveDown(1);
+      if (itinerary.recommendations.carRental) {
+        doc.fillColor(WINE_RED)
+          .fontSize(12)
+          .font('Helvetica-Bold')
+          .text('Car Rental');
+        
+        doc.moveDown(0.5);
+        
+        doc.fillColor(DARK_TEXT)
+          .fontSize(11)
+          .font('Helvetica-Bold')
+          .text(itinerary.recommendations.carRental.provider);
+        
+        doc.moveDown(0.5);
+        
+        const buttonY = doc.y;
+        const buttonWidth = 100;
+        const buttonHeight = 24;
+        
+        doc.roundedRect(50, buttonY, buttonWidth, buttonHeight, 4)
+          .fill(WINE_RED);
+        
+        doc.fillColor('#ffffff')
+          .fontSize(10)
+          .font('Helvetica-Bold')
+          .text('Book now', 50, buttonY + 7, { 
+            width: buttonWidth, 
+            align: 'center',
+            link: itinerary.recommendations.carRental.affiliateUrl
+          });
+        
+        doc.y = buttonY + buttonHeight + 20;
+      }
     }
 
     if (itinerary.recommendations.tips.length > 0) {
-      doc.fontSize(14).font('Helvetica-Bold').text('Travel Tips');
+      doc.moveDown(1);
+      
+      doc.fillColor(WINE_RED)
+        .fontSize(12)
+        .font('Helvetica-Bold')
+        .text('Travel Tips');
+      
       doc.moveDown(0.5);
-      doc.fontSize(11).font('Helvetica');
+      
+      doc.fillColor(DARK_TEXT)
+        .fontSize(10)
+        .font('Helvetica');
       
       itinerary.recommendations.tips.forEach((tip, index) => {
-        doc.text(`${index + 1}. ${tip}`, { indent: 20 });
+        doc.text(`${index + 1}. ${tip}`, { indent: 10 });
+        doc.moveDown(0.3);
       });
     }
 
     doc.moveDown(3);
-    doc.fontSize(10).font('Helvetica').text('For support or personalized assistance:', { align: 'center' });
-    doc.text('contacto@lisbonwineroutes.com', { align: 'center', link: 'mailto:contacto@lisbonwineroutes.com' });
+    
+    doc.fillColor(GRAY_TEXT)
+      .fontSize(9)
+      .font('Helvetica')
+      .text('For support or personalized assistance:', { align: 'center' });
+    
+    doc.fillColor(WINE_RED)
+      .text('contacto@lisbonwineroutes.com', { 
+        align: 'center', 
+        link: 'mailto:contacto@lisbonwineroutes.com',
+        underline: true
+      });
 
     doc.end();
 
