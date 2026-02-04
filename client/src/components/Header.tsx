@@ -40,10 +40,6 @@ export default function Header() {
             <a 
               href="/" 
               className="inline-block"
-              onClick={(e) => {
-                e.preventDefault();
-                window.location.reload();
-              }}
               data-testid="link-logo"
             >
               <img 
