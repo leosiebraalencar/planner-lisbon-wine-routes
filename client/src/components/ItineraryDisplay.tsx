@@ -18,8 +18,15 @@ function ActivityCard({ activity, periodLabel, t }: { activity: Activity; period
       )}
       <div className="text-sm text-muted-foreground mb-2">{activity.activity}</div>
       <p className="text-sm">{activity.description}</p>
-      <div className="flex items-center justify-between mt-2">
-        <div className="text-sm text-muted-foreground">{t('itinerary.durationLabel')}: {activity.duration}</div>
+      <div className="flex items-center justify-between mt-2 flex-wrap gap-2">
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-muted-foreground">{t('itinerary.durationLabel')}: {activity.duration}</span>
+          {activity.price != null && activity.price > 0 && (
+            <span className="text-sm font-medium" data-testid={`text-price-${periodLabel.toLowerCase()}`}>
+              {t('itinerary.priceFrom')} €{activity.price.toFixed(2)}
+            </span>
+          )}
+        </div>
         {activity.affiliateUrl && (
           <a
             href={activity.affiliateUrl}

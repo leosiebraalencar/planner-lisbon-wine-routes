@@ -21,7 +21,19 @@ Preferred communication style: Simple, everyday language.
 - **Runtime**: Node.js with Express
 - **Language**: TypeScript with ESM modules
 - **API Pattern**: RESTful endpoints under /api/ prefix
-- **PDF Generation**: PDFKit for creating downloadable itinerary PDFs
+- **PDF Generation**: PDFKit with custom fonts (Gilda Display for titles, Open Sans for body text)
+
+### Custom Fonts (server/fonts/)
+- **GildaDisplay-Regular.ttf**: Used for PDF titles, section headings (wine red #722F37)
+- **OpenSans-Regular.ttf**: Used for PDF body text
+- **OpenSans-Bold.ttf**: Used for PDF labels and emphasis
+- Fonts cached at startup via `CUSTOM_FONTS_AVAILABLE` constant with Helvetica fallback
+
+### Winery Data (shared/wineryData.ts)
+- 31 wineries from Excel file organized by 4 regions: Região Oeste (19), Setúbal (6), Sintra (4), Oeiras (2)
+- Each winery has experiences array with prices, URLs, durations
+- `getExperienceByBudget()` selects experience based on user budget preference
+- All affiliate URLs pre-parametrized with utm_source=lisbonwineroutes
 
 ### Data Storage
 - **Database**: PostgreSQL via Neon serverless

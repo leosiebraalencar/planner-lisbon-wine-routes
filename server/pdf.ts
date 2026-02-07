@@ -16,10 +16,28 @@ const LIGHT_GRAY = '#f5f5f5';
 
 const LOGO_PATH = path.join(process.cwd(), 'attached_assets', 'marca-lisbon-wine-routes-1_1763141966678.png');
 
+const FONTS_DIR = path.join(process.cwd(), 'server', 'fonts');
+const GILDA_REGULAR = path.join(FONTS_DIR, 'GildaDisplay-Regular.ttf');
+const OPENSANS_REGULAR = path.join(FONTS_DIR, 'OpenSans-Regular.ttf');
+const OPENSANS_BOLD = path.join(FONTS_DIR, 'OpenSans-Bold.ttf');
+
+const CUSTOM_FONTS_AVAILABLE = fs.existsSync(GILDA_REGULAR) && fs.existsSync(OPENSANS_REGULAR) && fs.existsSync(OPENSANS_BOLD);
+
+function registerFonts(doc: PDFKit.PDFDocument) {
+  if (CUSTOM_FONTS_AVAILABLE) {
+    doc.registerFont('GildaDisplay', GILDA_REGULAR);
+    doc.registerFont('OpenSans', OPENSANS_REGULAR);
+    doc.registerFont('OpenSans-Bold', OPENSANS_BOLD);
+  }
+}
+
+const TITLE_FONT = CUSTOM_FONTS_AVAILABLE ? 'GildaDisplay' : 'Helvetica-Bold';
+const BODY_FONT = CUSTOM_FONTS_AVAILABLE ? 'OpenSans' : 'Helvetica';
+const BOLD_FONT = CUSTOM_FONTS_AVAILABLE ? 'OpenSans-Bold' : 'Helvetica-Bold';
+
 function renderActivityBlock(
   doc: PDFKit.PDFDocument, 
   activity: Activity, 
-  period: string,
   periodLabel: string
 ) {
   const startY = doc.y;
@@ -27,13 +45,13 @@ function renderActivityBlock(
   
   doc.fillColor(WINE_RED)
     .fontSize(11)
-    .font('Helvetica-Bold')
+    .font(BOLD_FONT)
     .text(periodLabel.toUpperCase(), 50, startY);
   
   doc.fillColor(GRAY_TEXT)
     .fontSize(10)
-    .font('Helvetica')
-    .text(`Time: ${activity.time}`, pageWidth - 80, startY, { align: 'right', width: 130 });
+    .font(BODY_FONT)
+    .text(activity.time, pageWidth - 80, startY, { align: 'right', width: 130 });
   
   doc.y = startY + 25;
   
@@ -42,45 +60,45 @@ function renderActivityBlock(
   
   doc.fillColor(DARK_TEXT)
     .fontSize(11)
-    .font('Helvetica-Bold')
-    .text(`Location: `, 60)
-    .font('Helvetica')
-    .text(activity.location, 120, doc.y - 13);
+    .font(BOLD_FONT)
+    .text(activity.location, 60);
   
   doc.moveDown(0.3);
   
-  doc.font('Helvetica-Bold')
-    .text(`Activity: `, 60)
-    .font('Helvetica')
-    .text(activity.activity, 120, doc.y - 13);
-  
-  doc.moveDown(0.3);
-  
-  doc.font('Helvetica-Bold')
-    .text(`Duration: `, 60)
-    .font('Helvetica')
-    .text(activity.duration, 120, doc.y - 13);
+  doc.fillColor(GRAY_TEXT)
+    .fontSize(10)
+    .font(BODY_FONT)
+    .text(activity.activity, 60);
   
   doc.moveDown(0.3);
   
   if (activity.address) {
-    doc.font('Helvetica-Bold')
-      .text(`Address: `, 60)
-      .font('Helvetica')
-      .text(activity.address, 120, doc.y - 13);
+    doc.fontSize(9)
+      .fillColor(GRAY_TEXT)
+      .text(activity.address, 60);
     doc.moveDown(0.3);
   }
   
-  doc.moveDown(0.3);
+  doc.moveDown(0.2);
   doc.fillColor(GRAY_TEXT)
     .fontSize(10)
-    .font('Helvetica')
+    .font(BODY_FONT)
     .text(activity.description, 60, doc.y, { width: pageWidth - 20 });
   
   doc.moveDown(0.5);
-  doc.fillColor(GRAY_TEXT)
-    .fontSize(9)
-    .text('Preço médio:', 60);
+  
+  if (activity.price && activity.price > 0) {
+    doc.fillColor(DARK_TEXT)
+      .fontSize(9)
+      .font(BOLD_FONT)
+      .text(`Preço médio: €${activity.price.toFixed(2)}`, 60);
+    doc.moveDown(0.3);
+  }
+  
+  doc.fontSize(9)
+    .font(BODY_FONT)
+    .fillColor(GRAY_TEXT)
+    .text(`Duração: ${activity.duration}`, 60);
   
   doc.moveDown(0.5);
   
@@ -94,7 +112,7 @@ function renderActivityBlock(
     
     doc.fillColor('#ffffff')
       .fontSize(10)
-      .font('Helvetica-Bold')
+      .font(BOLD_FONT)
       .text('Book now', 60, buttonY + 7, { 
         width: buttonWidth, 
         align: 'center',
@@ -117,6 +135,8 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
       margins: { top: 40, bottom: 40, left: 50, right: 50 }
     });
 
+    registerFonts(doc);
+
     const stream = fs.createWriteStream(filePath);
     doc.pipe(stream);
 
@@ -133,7 +153,7 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
 
     doc.fillColor(WINE_RED)
       .fontSize(22)
-      .font('Helvetica-Bold')
+      .font(TITLE_FONT)
       .text('Personalized Wine Tourism Itinerary', { align: 'center' });
     
     doc.moveDown(2);
@@ -143,40 +163,43 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
 
     doc.fillColor(DARK_TEXT)
       .fontSize(11)
-      .font('Helvetica-Bold')
-      .text('Duration: ', 50, infoStartY)
-      .font('Helvetica')
-      .text(`${itinerary.days.length} day${itinerary.days.length > 1 ? 's' : ''}`, 110, infoStartY);
+      .font(BOLD_FONT)
+      .text('Duration: ', 50, infoStartY);
+    doc.font(BODY_FONT)
+      .text(`${itinerary.days.length} day${itinerary.days.length > 1 ? 's' : ''}`, 120, infoStartY);
     
-    doc.font('Helvetica-Bold')
-      .text('Budget: ', 50)
-      .font('Helvetica')
-      .text(itinerary.quizData.budget, 110, doc.y - 13);
+    doc.font(BOLD_FONT)
+      .text('Budget: ', 50);
+    const budgetY = doc.y - 13;
+    doc.font(BODY_FONT)
+      .text(itinerary.quizData.budget, 120, budgetY);
     
-    doc.font('Helvetica-Bold')
-      .text('Travel Type: ', 50)
-      .font('Helvetica')
-      .text(itinerary.quizData.travelers, 130, doc.y - 13);
+    doc.font(BOLD_FONT)
+      .text('Travel Type: ', 50);
+    const travelY = doc.y - 13;
+    doc.font(BODY_FONT)
+      .text(itinerary.quizData.travelers, 130, travelY);
     
     if (itinerary.quizData.startDate && itinerary.quizData.endDate) {
-      doc.font('Helvetica-Bold')
-        .text('Dates: ', 50)
-        .font('Helvetica')
-        .text(`${itinerary.quizData.startDate} to ${itinerary.quizData.endDate}`, 90, doc.y - 13);
+      doc.font(BOLD_FONT)
+        .text('Dates: ', 50);
+      const datesY = doc.y - 13;
+      doc.font(BODY_FONT)
+        .text(`${itinerary.quizData.startDate} to ${itinerary.quizData.endDate}`, 100, datesY);
     }
 
     const highlightsX = doc.page.width / 2 + 20;
     
     doc.fillColor(WINE_RED)
       .fontSize(12)
-      .font('Helvetica-Bold')
+      .font(TITLE_FONT)
       .text('ITINERARY HIGHLIGHTS', highlightsX, infoStartY, { width: columnWidth });
     
     doc.moveDown(0.5);
     
     doc.fillColor(DARK_TEXT)
       .fontSize(10)
-      .font('Helvetica');
+      .font(BODY_FONT);
     
     const highlights = itinerary.highlights.slice(0, 4);
     highlights.forEach((highlight, index) => {
@@ -189,14 +212,14 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
       
       doc.fillColor(WINE_RED)
         .fontSize(16)
-        .font('Helvetica-Bold')
+        .font(TITLE_FONT)
         .text(`DAY ${day.day} - ${day.region.toUpperCase()}`, 50, 50);
       
       doc.moveDown(1.5);
 
-      renderActivityBlock(doc, day.morning, 'morning', 'Morning');
-      renderActivityBlock(doc, day.afternoon, 'afternoon', 'Afternoon');
-      renderActivityBlock(doc, day.evening, 'evening', 'Evening');
+      renderActivityBlock(doc, day.morning, 'Morning');
+      renderActivityBlock(doc, day.afternoon, 'Afternoon');
+      renderActivityBlock(doc, day.evening, 'Evening');
     });
 
     if (itinerary.recommendations.accommodation || itinerary.recommendations.carRental) {
@@ -204,7 +227,7 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
       
       doc.fillColor(WINE_RED)
         .fontSize(16)
-        .font('Helvetica-Bold')
+        .font(TITLE_FONT)
         .text('RECOMMENDATIONS', 50, 50);
       
       doc.moveDown(1.5);
@@ -212,19 +235,19 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
       if (itinerary.recommendations.accommodation) {
         doc.fillColor(WINE_RED)
           .fontSize(12)
-          .font('Helvetica-Bold')
+          .font(TITLE_FONT)
           .text('Accommodation');
         
         doc.moveDown(0.5);
         
         doc.fillColor(DARK_TEXT)
           .fontSize(11)
-          .font('Helvetica-Bold')
+          .font(BOLD_FONT)
           .text(itinerary.recommendations.accommodation.name);
         
         if (itinerary.recommendations.accommodation.address) {
           doc.fontSize(10)
-            .font('Helvetica')
+            .font(BODY_FONT)
             .fillColor(GRAY_TEXT)
             .text(itinerary.recommendations.accommodation.address);
         }
@@ -240,7 +263,7 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
           
           doc.fillColor('#ffffff')
             .fontSize(10)
-            .font('Helvetica-Bold')
+            .font(BOLD_FONT)
             .text('Book now', 50, buttonY + 7, { 
               width: buttonWidth, 
               align: 'center',
@@ -256,14 +279,14 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
       if (itinerary.recommendations.carRental) {
         doc.fillColor(WINE_RED)
           .fontSize(12)
-          .font('Helvetica-Bold')
+          .font(TITLE_FONT)
           .text('Car Rental');
         
         doc.moveDown(0.5);
         
         doc.fillColor(DARK_TEXT)
           .fontSize(11)
-          .font('Helvetica-Bold')
+          .font(BOLD_FONT)
           .text(itinerary.recommendations.carRental.provider);
         
         doc.moveDown(0.5);
@@ -277,7 +300,7 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
         
         doc.fillColor('#ffffff')
           .fontSize(10)
-          .font('Helvetica-Bold')
+          .font(BOLD_FONT)
           .text('Book now', 50, buttonY + 7, { 
             width: buttonWidth, 
             align: 'center',
@@ -293,14 +316,14 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
       
       doc.fillColor(WINE_RED)
         .fontSize(12)
-        .font('Helvetica-Bold')
+        .font(TITLE_FONT)
         .text('Travel Tips');
       
       doc.moveDown(0.5);
       
       doc.fillColor(DARK_TEXT)
         .fontSize(10)
-        .font('Helvetica');
+        .font(BODY_FONT);
       
       itinerary.recommendations.tips.forEach((tip, index) => {
         doc.text(`${index + 1}. ${tip}`, { indent: 10 });
@@ -312,7 +335,7 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
     
     doc.fillColor(GRAY_TEXT)
       .fontSize(9)
-      .font('Helvetica')
+      .font(BODY_FONT)
       .text('For support or personalized assistance:', { align: 'center' });
     
     doc.fillColor(WINE_RED)

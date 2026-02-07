@@ -79,6 +79,7 @@ export const activitySchema = z.object({
   description: z.string(),
   duration: z.string(),
   address: z.string().optional(),
+  price: z.number().optional(),
   affiliateUrl: z.string().optional(),
   affiliateProvider: z.enum(['winalist', 'getyourguide', 'booking', 'discovercars', 'googlemaps']).optional(),
 });

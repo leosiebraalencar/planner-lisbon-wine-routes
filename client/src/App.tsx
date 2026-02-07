@@ -12,12 +12,16 @@ import SuccessPage from "@/pages/SuccessPage";
 import ProPage from "@/pages/ProPage";
 import type { QuizResponse, Itinerary } from "@shared/schema";
 import { 
-  resolveWinalistUrl, 
-  addGetYourGuideParams, 
   buildBookingAwinUrl, 
   DISCOVERCARS_AFFILIATE_URL,
   buildGoogleMapsUrl
 } from "@shared/affiliateLinks";
+import { 
+  ALL_WINERIES, 
+  REGIONS, 
+  getExperienceByBudget,
+  type WineryData 
+} from "@shared/wineryData";
 
 function ItineraryPageWrapper({ itinerary }: { itinerary: Itinerary | null }) {
   const [, setLocation] = useLocation();
@@ -35,238 +39,105 @@ function ItineraryPageWrapper({ itinerary }: { itinerary: Itinerary | null }) {
   return <ItineraryPage itinerary={itinerary} />;
 }
 
-interface WineryInfo {
-  location: string;
-  address: string;
-  winalistKey?: string;
-  getyourguideUrl?: string;
-}
-
-interface RestaurantInfo {
-  location: string;
-  address: string;
-}
-
-interface RegionData {
-  region: string;
-  wineries: WineryInfo[];
-  restaurants: RestaurantInfo[];
-}
-
-function resolveActivityUrl(
-  winalistKey: string | undefined,
-  getyourguideUrl: string | undefined,
-  locationName: string,
-  address: string
-): { affiliateUrl: string; affiliateProvider: 'winalist' | 'getyourguide' | 'googlemaps' } {
-  if (getyourguideUrl) {
-    return {
-      affiliateUrl: addGetYourGuideParams(getyourguideUrl),
-      affiliateProvider: 'getyourguide'
-    };
-  }
-  
-  if (winalistKey) {
-    const result = resolveWinalistUrl(winalistKey, locationName, address);
-    return {
-      affiliateUrl: result.url,
-      affiliateProvider: result.isFallback ? 'googlemaps' : 'winalist'
-    };
-  }
-  
-  return {
-    affiliateUrl: buildGoogleMapsUrl(locationName, address),
-    affiliateProvider: 'googlemaps'
-  };
-}
-
 const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
   const days = [];
-  
-  // All regions with multiple wineries each (no repetition possible)
-  const regionData: RegionData[] = [
-    {
-      region: 'Região Oeste',
-      wineries: [
-        { location: 'Quinta do Gradil', address: 'Estrada do Gradil, 2580-081 Alenquer', winalistKey: 'quinta_do_gradil' },
-        { location: 'Adega Mãe', address: 'Quinta da Folgorosa, 2565-641 Torres Vedras', winalistKey: 'adega_mae' },
-        { location: 'Quinta da Lapa', address: 'Rua da Lapa, 2580-341 Alenquer' },
-        { location: 'Quinta do Monte d\'Oiro', address: 'Estrada Nacional 1, 2580-081 Alenquer' }
-      ],
-      restaurants: [
-        { location: 'Restaurante O Celeiro', address: 'Estrada Nacional 8, Alenquer' },
-        { location: 'Tasca da Vinha', address: 'Largo Central, Torres Vedras' }
-      ]
-    },
-    {
-      region: 'Sintra e Colares',
-      wineries: [
-        { location: 'Adega Regional de Colares', address: 'Alameda do Coronel Linhares de Lima, 2705-189 Colares', getyourguideUrl: 'https://www.getyourguide.com/sintra-l170/wine-tour-colares-t123456' },
-        { location: 'Casal Santa Maria', address: 'Estrada de Colares, 2710-453 Sintra', winalistKey: 'casal_santa_maria' },
-        { location: 'Quinta da Folgorosa', address: 'Estrada de Colares, 2710-405 Sintra' },
-        { location: 'Adega Viúva Gomes', address: 'Rua de Colares, 2710-421 Colares' }
-      ],
-      restaurants: [
-        { location: 'Restaurante Monserrate', address: 'Parque de Monserrate, Sintra' },
-        { location: 'Incomum by Luis Santos', address: 'Rua Dr. Alfredo Costa, Sintra' }
-      ]
-    },
-    {
-      region: 'Bucelas e Arruda',
-      wineries: [
-        { location: 'Quinta da Murta', address: 'Rua da Murta, 2670-701 Bucelas', winalistKey: 'quinta_da_murta' },
-        { location: 'Quinta de Chocapalha', address: 'Aldeia Galega, 2615-128 Aldeia Galega da Merceana', winalistKey: 'quinta_de_chocapalha' },
-        { location: 'Quinta da Romeira', address: 'Estrada de Bucelas, 2670-575 Bucelas' },
-        { location: 'Casa Santos Lima', address: 'Quinta da Boavista, 2070-043 Cartaxo' }
-      ],
-      restaurants: [
-        { location: 'Adega das Gravatas', address: 'Rua do Vinho, 15, Torres Vedras' },
-        { location: 'Restaurante Típico Bucelas', address: 'Praça Miguel Bombarda, Bucelas' }
-      ]
-    },
-    {
-      region: 'Setúbal e Azeitão',
-      wineries: [
-        { location: 'José Maria da Fonseca', address: 'Rua José Augusto Coelho, 2925-901 Azeitão' },
-        { location: 'Bacalhôa Vinhos', address: 'Estrada Nacional 10, 2925-901 Azeitão' },
-        { location: 'Quinta de Alcube', address: 'Estrada de Palmela, 2950-805 Palmela' },
-        { location: 'Casa Ermelinda Freitas', address: 'Estrada Nacional 379, 2965-575 Fernando Pó' }
-      ],
-      restaurants: [
-        { location: 'O Velho e o Mar', address: 'Largo da Ribeira, Setúbal' },
-        { location: 'Ribamar', address: 'Av. Luísa Todi, 2900-461 Setúbal' }
-      ]
-    },
-    {
-      region: 'Palmela',
-      wineries: [
-        { location: 'Venâncio da Costa Lima', address: 'Rua das Vinhas, 2950-703 Palmela' },
-        { location: 'Cooperativa de Palmela', address: 'Rua da Adega, 2950-217 Palmela' },
-        { location: 'Quinta do Piloto', address: 'Estrada Nacional 252, 2950-421 Palmela' },
-        { location: 'Adega de Pegões', address: 'Herdade do Monte Novo, 2985-117 Pegões' }
-      ],
-      restaurants: [
-        { location: 'Pousada de Palmela', address: 'Castelo de Palmela, 2950-317 Palmela' },
-        { location: 'Taberna Ideal', address: 'Praça de Palmela, 2950-203 Palmela' }
-      ]
-    }
-  ];
 
-  // Track used wineries to avoid repetition
+  const regionWineries: Record<string, WineryData[]> = {};
+  REGIONS.forEach(r => {
+    regionWineries[r] = ALL_WINERIES.filter(w => w.region === r);
+  });
+
   const usedWineries = new Set<string>();
-  
-  // For 4+ days, stay 2 days in same region before moving on
-  // For 1-3 days, change region each day
+
   const daysPerRegion = quizData.duration >= 4 ? 2 : 1;
   let currentRegionIndex = 0;
   let daysInCurrentRegion = 0;
-  
+
+  const getUnusedWinery = (region: string): WineryData | undefined => {
+    const wineries = regionWineries[region] || [];
+    return wineries.find(w => !usedWineries.has(w.name));
+  };
+
+  const findWineryAnyRegion = (): WineryData | undefined => {
+    for (const r of REGIONS) {
+      const w = getUnusedWinery(r);
+      if (w) return w;
+    }
+    return undefined;
+  };
+
   for (let i = 1; i <= quizData.duration; i++) {
-    const region = regionData[currentRegionIndex];
-    
-    // Get two wineries from current region that haven't been used
-    let morningWinery: WineryInfo | undefined;
-    let afternoonWinery: WineryInfo | undefined;
-    
-    for (const winery of region.wineries) {
-      if (!usedWineries.has(winery.location)) {
-        if (!morningWinery) {
-          morningWinery = winery;
-          usedWineries.add(winery.location);
-        } else if (!afternoonWinery) {
-          afternoonWinery = winery;
-          usedWineries.add(winery.location);
-          break;
-        }
-      }
+    const regionName = REGIONS[currentRegionIndex];
+
+    let morningWinery = getUnusedWinery(regionName);
+    if (morningWinery) usedWineries.add(morningWinery.name);
+    else {
+      morningWinery = findWineryAnyRegion();
+      if (morningWinery) usedWineries.add(morningWinery.name);
     }
-    
-    // If we couldn't find unused wineries in this region, move to next region
-    if (!morningWinery || !afternoonWinery) {
-      currentRegionIndex = (currentRegionIndex + 1) % regionData.length;
-      const nextRegion = regionData[currentRegionIndex];
-      for (const winery of nextRegion.wineries) {
-        if (!usedWineries.has(winery.location)) {
-          if (!morningWinery) {
-            morningWinery = winery;
-            usedWineries.add(winery.location);
-          } else if (!afternoonWinery) {
-            afternoonWinery = winery;
-            usedWineries.add(winery.location);
-            break;
-          }
-        }
-      }
+
+    let afternoonWinery = getUnusedWinery(regionName);
+    if (afternoonWinery) usedWineries.add(afternoonWinery.name);
+    else {
+      afternoonWinery = findWineryAnyRegion();
+      if (afternoonWinery) usedWineries.add(afternoonWinery.name);
     }
-    
-    // Final fallback (should never happen with 20 wineries and max 5 days)
-    if (!morningWinery) morningWinery = region.wineries[0];
-    if (!afternoonWinery) afternoonWinery = region.wineries[1];
-    
-    const restaurant = region.restaurants[daysInCurrentRegion % region.restaurants.length];
-    
-    const morningResolved = resolveActivityUrl(
-      morningWinery.winalistKey,
-      morningWinery.getyourguideUrl,
-      morningWinery.location,
-      morningWinery.address
-    );
-    
-    const afternoonResolved = resolveActivityUrl(
-      afternoonWinery.winalistKey,
-      undefined,
-      afternoonWinery.location,
-      afternoonWinery.address
-    );
-    
+
+    if (!morningWinery) morningWinery = regionWineries[regionName][0] || ALL_WINERIES[0];
+    if (!afternoonWinery) afternoonWinery = regionWineries[regionName][1] || ALL_WINERIES[1];
+
+    const morningExp = getExperienceByBudget(morningWinery, quizData.budget);
+    const afternoonExp = getExperienceByBudget(afternoonWinery, quizData.budget);
+
+    const actualRegion = morningWinery.region;
+
     days.push({
       day: i,
-      region: region.region,
+      region: actualRegion,
       morning: {
         time: '09:00-12:00',
-        activity: 'Visita e Degustação',
-        location: morningWinery.location,
-        description: 'Visita guiada às vinhas e caves com degustação de vinhos premiados',
-        duration: '3 horas',
+        activity: morningExp?.name || 'Visita e Degustação',
+        location: morningWinery.name,
+        description: `Visita guiada com degustação de vinhos`,
+        duration: morningExp?.duration || '2h',
         address: morningWinery.address,
-        affiliateUrl: morningResolved.affiliateUrl,
-        affiliateProvider: morningResolved.affiliateProvider
+        price: morningExp?.price || 0,
+        affiliateUrl: morningExp?.url || morningWinery.hostUrl || buildGoogleMapsUrl(morningWinery.name, morningWinery.address),
+        affiliateProvider: (morningExp?.url || morningWinery.hostUrl) ? 'winalist' as const : 'googlemaps' as const
       },
       afternoon: {
         time: '14:00-18:00',
-        activity: 'Tour pela Adega',
-        location: afternoonWinery.location,
-        description: 'Explore a produção e participe de uma prova comentada',
-        duration: '4 horas',
+        activity: afternoonExp?.name || 'Tour pela Adega',
+        location: afternoonWinery.name,
+        description: `Explore a produção e participe de uma prova comentada`,
+        duration: afternoonExp?.duration || '2h',
         address: afternoonWinery.address,
-        affiliateUrl: afternoonResolved.affiliateUrl,
-        affiliateProvider: afternoonResolved.affiliateProvider
+        price: afternoonExp?.price || 0,
+        affiliateUrl: afternoonExp?.url || afternoonWinery.hostUrl || buildGoogleMapsUrl(afternoonWinery.name, afternoonWinery.address),
+        affiliateProvider: (afternoonExp?.url || afternoonWinery.hostUrl) ? 'winalist' as const : 'googlemaps' as const
       },
       evening: {
         time: '19:30+',
         activity: 'Jantar',
-        location: restaurant.location,
+        location: 'Restaurante local recomendado',
         description: 'Jantar tradicional português com harmonização de vinhos locais',
-        duration: '2 horas',
-        address: restaurant.address,
-        affiliateUrl: buildGoogleMapsUrl(restaurant.location, restaurant.address),
+        duration: '2h',
+        address: '',
+        affiliateUrl: '',
         affiliateProvider: 'googlemaps' as const
       }
     });
-    
-    // Track days in current region and move to next when needed
+
     daysInCurrentRegion++;
     if (daysInCurrentRegion >= daysPerRegion) {
-      currentRegionIndex = (currentRegionIndex + 1) % regionData.length;
+      currentRegionIndex = (currentRegionIndex + 1) % REGIONS.length;
       daysInCurrentRegion = 0;
     }
   }
 
   const recommendations: Itinerary['recommendations'] = {
     restaurants: [
-      { name: 'Adega das Gravatas', address: 'Rua do Vinho, 15, Torres Vedras', description: 'Cozinha tradicional com excelente carta de vinhos regionais' },
-      { name: 'Tasca do Celso', address: 'Praça Central, Bucelas', description: 'Petiscos portugueses autênticos' },
-      { name: 'O Celeiro', address: 'Estrada Nacional 8, Alenquer', description: 'Restaurante rústico com pratos regionais' }
+      { name: 'Restaurante local na região', address: '', description: 'Cozinha tradicional com excelente carta de vinhos regionais' },
     ],
     tips: [
       'Reserve as visitas com antecedência',
@@ -305,8 +176,8 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
     quizData,
     days,
     highlights: [
-      'Vinhos premiados da região',
-      'Adegas históricas centenárias',
+      'Vinhos premiados da região de Lisboa',
+      'Adegas históricas e familiares',
       'Gastronomia portuguesa autêntica',
       'Paisagens deslumbrantes das vinhas'
     ],
