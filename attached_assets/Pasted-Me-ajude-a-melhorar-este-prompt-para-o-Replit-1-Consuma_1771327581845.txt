@@ -1,0 +1,22 @@
+Me ajude a melhorar este prompt para o Replit
+
+1. Consuma alem das experiências do Winalist os hoteis e Restaurantes destas duas planilhas em anexo.
+
+Instruções para restaurantes: Sempre coloque o nome do restaurante preço médio e o botão para reservar. Sempre que o link for o do The Fork inclua a instrução para utilizar o nosso código.  Baseie-se no preço médio para definir se é uma experiência de Orçamento Economico, Moderado ou Premium. Tente verificar se o horario de funcionamento esta de acordo com o itnerario definido do roteiro, sempre que possível para almoço case um restaurante dentro de uma vinicola ou bem proximo deixando o jantar para experiencias mais próximas do local de dormida
+
+Instruções Hoteis
+Analise o Budget do cliente Itnerario e tente casar a melhor experiência para os dois,  priorize os hotéis ja listados quando couber no budget do cliente Para mais opções low e medium budget  no centro visite as opções listadas nos dois primeiros links e escolha uma das opções mais convenientes.
+
+2.   Não deixar finalizar sem ter preenchido alguma das perguntas
+
+3. No Date Picker curante o quiz para montagem do roteiro não deve permitir o cliente selecionar datas inferiores ao current date. E deve iniciar com a data do dia, a data de termino nunca pode ser superior a data de inicio
+
+4. Ter nas opções do Quiz Idioma de Preferência:  Português, Inglês, Espanhol, Francês, Alemão E utilizar este critério para selecionar as vinicolas para visitar analisando a coluna Q: Idioma da planilha winalist
+
+5. Se o cliente escolher a opções grupos durante a pergunta "Como você vai viajar?" Ele deve especificar na sequência a quantidade de pessoas de 3 a 100 pessoas. Se for numero superior mostrar mensagem para grupos superiores a 100 pessoas aconselhamos entrar em contato com: contacto@lisbonwineroutes.com 
+
+6. O Link  Comparar Free vs Pro deve ser da cor hexadecimal: #84270B
+
+7. Repense as opções de resposta para a pergunta: "O que você mais gosta em enoturismo?" Inclua opções que capte os estilos de gastronomia desejados, se prefere hoteis mais modernos, rusticos ou históricos se deseja ficar em um unico local para dormir durante toda viagem ou gosta de mudar e estar em diversos lugares.
+
+8. Em um Roteiro de 4 dias repetiu a Região Oeste e repetiu vinícola quinta do Gradil, Não podemos repetir a mesma vinicola em um mesmo roteiro, podemos até estender a permanencia em uma região se tiver dormida naquele local mas devemos oferecer passeios diferentes por dia, não repetir vinicolas e restaurantes
