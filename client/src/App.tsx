@@ -64,6 +64,80 @@ const getBudgetForRestaurant = (budget: string): 'economico' | 'moderado' | 'pre
   return 'premium';
 };
 
+const generateHighlights = (quizData: QuizResponse, days: Array<{ region: string }>): string[] => {
+  const highlights: string[] = [];
+  const prefs = quizData.preferences || [];
+
+  const regions = Array.from(new Set(days.map(d => d.region)));
+  if (regions.length > 0) {
+    highlights.push(`Vinícolas selecionadas: ${regions.join(', ')}`);
+  }
+
+  if (prefs.includes('Degustações e vinhos exclusivos')) {
+    highlights.push('Degustações e vinhos exclusivos da região');
+  }
+  if (prefs.includes('Gastronomia portuguesa tradicional')) {
+    highlights.push('Gastronomia portuguesa tradicional e autêntica');
+  }
+  if (prefs.includes('Gastronomia internacional e fusion')) {
+    highlights.push('Restaurantes de gastronomia internacional e fusion');
+  }
+  if (prefs.includes('Experiências em vinícolas históricas')) {
+    highlights.push('Visita a adegas históricas e familiares');
+  }
+  if (prefs.includes('Paisagens, natureza e fotografia')) {
+    highlights.push('Paisagens deslumbrantes e oportunidades fotográficas');
+  }
+  if (prefs.includes('Experiências em família com crianças')) {
+    highlights.push('Atividades pensadas para toda a família');
+  }
+  if (prefs.includes('Vinhos biodinâmicos e sustentáveis')) {
+    highlights.push('Vinhos biodinâmicos e produção sustentável');
+  }
+  if (prefs.includes('Tours guiados com sommelier')) {
+    highlights.push('Tours guiados com sommelier especializado');
+  }
+
+  const budgetLabels: Record<string, string> = {
+    economico: 'Experiências acessíveis com excelente custo-benefício',
+    moderado: 'Experiências equilibradas de qualidade e valor',
+    premium: 'Experiências premium e exclusivas',
+  };
+  if (budgetLabels[quizData.budget]) {
+    highlights.push(budgetLabels[quizData.budget]);
+  }
+
+  const travelerLabels: Record<string, string> = {
+    sozinho: 'Roteiro ideal para viajante solo',
+    casal: 'Roteiro romântico para casal',
+    familia: 'Roteiro pensado para família',
+    grupo: `Roteiro para grupo de ${quizData.groupSize || ''} pessoas`.trim(),
+  };
+  if (travelerLabels[quizData.travelers]) {
+    highlights.push(travelerLabels[quizData.travelers]);
+  }
+
+  if (quizData.wantsPrivateGuide) {
+    highlights.push('Guia privado recomendado para acompanhar a viagem');
+  }
+
+  if (quizData.needsCarRental) {
+    highlights.push('Aluguer de carro incluído no planeamento');
+  }
+
+  if (quizData.accommodationPreference === 'central_lisboa') {
+    highlights.push('Alojamento central em Lisboa');
+  } else if (quizData.accommodationPreference === 'vinicolas_proximas') {
+    highlights.push('Alojamento junto às vinícolas');
+  }
+
+  if (highlights.length < 3) {
+    highlights.push('Vinhos premiados da região de Lisboa');
+  }
+
+  return highlights.slice(0, 6);
+};
+
 const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
   const days = [];
   const usedWineries = new Set<string>();
@@ -285,12 +359,7 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
     id: Math.random().toString(36).substring(7),
     quizData,
     days,
-    highlights: [
-      'Vinhos premiados da região de Lisboa',
-      'Adegas históricas e familiares',
-      'Gastronomia portuguesa autêntica',
-      'Paisagens deslumbrantes das vinhas'
-    ],
+    highlights: generateHighlights(quizData, days),
     recommendations
   };
 };
