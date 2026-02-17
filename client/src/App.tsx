@@ -5,6 +5,7 @@ import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { t as translate, type Language } from "@/lib/i18n";
 import LandingPage from "@/pages/LandingPage";
 import QuizPage from "@/pages/QuizPage";
 import ItineraryPage from "@/pages/ItineraryPage";
@@ -65,81 +66,87 @@ const getBudgetForRestaurant = (budget: string): 'economico' | 'moderado' | 'pre
   return 'premium';
 };
 
-const generateHighlights = (quizData: QuizResponse, days: Array<{ region: string }>): string[] => {
+const generateHighlights = (quizData: QuizResponse, days: Array<{ region: string }>, lang: Language): string[] => {
+  const tt = (key: string, replacements?: Record<string, string>) => translate(key, lang, replacements);
   const highlights: string[] = [];
   const prefs = quizData.preferences || [];
 
   const regions = Array.from(new Set(days.map(d => d.region)));
   if (regions.length > 0) {
-    highlights.push(`Vinícolas selecionadas: ${regions.join(', ')}`);
+    highlights.push(`${tt('itinerary.gen.selectedWineries')}: ${regions.join(', ')}`);
   }
 
-  if (prefs.includes('Degustações e vinhos exclusivos')) {
-    highlights.push('Degustações e vinhos exclusivos da região');
+  if (prefs.includes('tastings')) {
+    highlights.push(tt('itinerary.gen.exclusiveTastings'));
   }
-  if (prefs.includes('Gastronomia portuguesa tradicional')) {
-    highlights.push('Gastronomia portuguesa tradicional e autêntica');
+  if (prefs.includes('traditionalGastronomy')) {
+    highlights.push(tt('itinerary.gen.traditionalGastronomy'));
   }
-  if (prefs.includes('Gastronomia internacional e fusion')) {
-    highlights.push('Restaurantes de gastronomia internacional e fusion');
+  if (prefs.includes('internationalGastronomy')) {
+    highlights.push(tt('itinerary.gen.internationalGastronomy'));
   }
-  if (prefs.includes('Experiências em vinícolas históricas')) {
-    highlights.push('Visita a adegas históricas e familiares');
+  if (prefs.includes('historic')) {
+    highlights.push(tt('itinerary.gen.historicWineries'));
   }
-  if (prefs.includes('Paisagens, natureza e fotografia')) {
-    highlights.push('Paisagens deslumbrantes e oportunidades fotográficas');
+  if (prefs.includes('landscapes')) {
+    highlights.push(tt('itinerary.gen.landscapes'));
   }
-  if (prefs.includes('Experiências em família com crianças')) {
-    highlights.push('Atividades pensadas para toda a família');
+  if (prefs.includes('family')) {
+    highlights.push(tt('itinerary.gen.familyActivities'));
   }
-  if (prefs.includes('Vinhos biodinâmicos e sustentáveis')) {
-    highlights.push('Vinhos biodinâmicos e produção sustentável');
+  if (prefs.includes('biodynamic')) {
+    highlights.push(tt('itinerary.gen.biodynamicWines'));
   }
-  if (prefs.includes('Tours guiados com sommelier')) {
-    highlights.push('Tours guiados com sommelier especializado');
+  if (prefs.includes('tours')) {
+    highlights.push(tt('itinerary.gen.sommelierTours'));
   }
 
-  const budgetLabels: Record<string, string> = {
-    economico: 'Experiências acessíveis com excelente custo-benefício',
-    moderado: 'Experiências equilibradas de qualidade e valor',
-    premium: 'Experiências premium e exclusivas',
+  const budgetKeys: Record<string, string> = {
+    economico: 'itinerary.gen.budgetEconomico',
+    moderado: 'itinerary.gen.budgetModerado',
+    premium: 'itinerary.gen.budgetPremium',
   };
-  if (budgetLabels[quizData.budget]) {
-    highlights.push(budgetLabels[quizData.budget]);
+  if (budgetKeys[quizData.budget]) {
+    highlights.push(tt(budgetKeys[quizData.budget]));
   }
 
-  const travelerLabels: Record<string, string> = {
-    sozinho: 'Roteiro ideal para viajante solo',
-    casal: 'Roteiro romântico para casal',
-    familia: 'Roteiro pensado para família',
-    grupo: `Roteiro para grupo de ${quizData.groupSize || ''} pessoas`.trim(),
+  const travelerKeys: Record<string, string> = {
+    sozinho: 'itinerary.gen.travelerSolo',
+    casal: 'itinerary.gen.travelerCouple',
+    familia: 'itinerary.gen.travelerFamily',
+    grupo: 'itinerary.gen.travelerGroup',
   };
-  if (travelerLabels[quizData.travelers]) {
-    highlights.push(travelerLabels[quizData.travelers]);
+  if (travelerKeys[quizData.travelers]) {
+    if (quizData.travelers === 'grupo') {
+      highlights.push(tt(travelerKeys[quizData.travelers], { size: String(quizData.groupSize || '') }));
+    } else {
+      highlights.push(tt(travelerKeys[quizData.travelers]));
+    }
   }
 
   if (quizData.wantsPrivateGuide) {
-    highlights.push('Guia privado recomendado para acompanhar a viagem');
+    highlights.push(tt('itinerary.gen.privateGuide'));
   }
 
   if (quizData.needsCarRental) {
-    highlights.push('Aluguer de carro incluído no planeamento');
+    highlights.push(tt('itinerary.gen.carRentalIncluded'));
   }
 
   if (quizData.accommodationPreference === 'central_lisboa') {
-    highlights.push('Alojamento central em Lisboa');
+    highlights.push(tt('itinerary.gen.centralAccommodation'));
   } else if (quizData.accommodationPreference === 'vinicolas_proximas') {
-    highlights.push('Alojamento junto às vinícolas');
+    highlights.push(tt('itinerary.gen.wineryAccommodation'));
   }
 
   if (highlights.length < 3) {
-    highlights.push('Vinhos premiados da região de Lisboa');
+    highlights.push(tt('itinerary.gen.awardWines'));
   }
 
   return highlights.slice(0, 6);
 };
 
-const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
+const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerary => {
+  const tt = (key: string, replacements?: Record<string, string>) => translate(key, lang, replacements);
   const days = [];
   const usedWineries = new Set<string>();
   const usedRestaurants = new Set<string>();
@@ -239,7 +246,7 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
 
     const eveningActivity = dinnerRestaurant ? {
       time: '19:30+',
-      activity: 'Jantar',
+      activity: tt('itinerary.gen.dinner'),
       location: dinnerRestaurant.name,
       description: dinnerRestaurant.description,
       duration: '2h',
@@ -251,9 +258,9 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
       theForkPromoCode: dinnerRestaurant.theForkPromoCode || undefined,
     } : {
       time: '19:30+',
-      activity: 'Jantar',
-      location: 'Restaurante local recomendado',
-      description: 'Jantar tradicional português com harmonização de vinhos locais',
+      activity: tt('itinerary.gen.dinner'),
+      location: tt('itinerary.gen.localRestaurant'),
+      description: tt('itinerary.gen.traditionalDinner'),
       duration: '2h',
       address: '',
       affiliateUrl: '',
@@ -265,9 +272,9 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
       region: actualRegion,
       morning: {
         time: '09:00-12:00',
-        activity: morningExp?.name || 'Visita e Degustação',
+        activity: morningExp?.name || tt('itinerary.gen.visitAndTasting'),
         location: morningWinery.name,
-        description: `Visita guiada com degustação de vinhos`,
+        description: tt('itinerary.gen.guidedVisitWithTasting'),
         duration: morningExp?.duration || '2h',
         address: morningWinery.address,
         price: morningExp?.price || 0,
@@ -276,9 +283,9 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
       },
       afternoon: {
         time: '14:00-18:00',
-        activity: afternoonExp?.name || 'Tour pela Adega',
+        activity: afternoonExp?.name || tt('itinerary.gen.cellarTour'),
         location: afternoonWinery.name,
-        description: `Explore a produção e participe de uma prova comentada`,
+        description: tt('itinerary.gen.exploreAndTaste'),
         duration: afternoonExp?.duration || '2h',
         address: afternoonWinery.address,
         price: afternoonExp?.price || 0,
@@ -322,13 +329,13 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
 
   const recommendations: Itinerary['recommendations'] = {
     restaurants: recommendedRestaurants.length > 0 ? recommendedRestaurants : [
-      { name: 'Restaurante local na região', address: '', description: 'Cozinha tradicional com excelente carta de vinhos regionais' },
+      { name: tt('itinerary.gen.localRestaurantRegion'), address: '', description: tt('itinerary.gen.fallbackRestaurant') },
     ],
     tips: [
-      'Reserve as visitas com antecedência',
-      'Leve protetor solar e chapéu',
-      'Câmera para registrar as paisagens',
-      'Considere contratar motorista particular'
+      tt('itinerary.gen.tipReserve'),
+      tt('itinerary.gen.tipSunscreen'),
+      tt('itinerary.gen.tipCamera'),
+      tt('itinerary.gen.tipDriver'),
     ]
   };
 
@@ -389,7 +396,7 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
     id: Math.random().toString(36).substring(7),
     quizData,
     days,
-    highlights: generateHighlights(quizData, days),
+    highlights: generateHighlights(quizData, days, lang),
     recommendations
   };
 };
@@ -404,12 +411,12 @@ function App() {
   });
 
   const handleQuizComplete = async (data: QuizResponse) => {
-    const generatedItinerary = generateMockItinerary(data);
+    const currentLang = (sessionStorage.getItem('selectedLanguage') || 'PT') as Language;
+    const generatedItinerary = generateMockItinerary(data, currentLang);
     setItinerary(generatedItinerary);
     sessionStorage.setItem('currentItinerary', JSON.stringify(generatedItinerary));
 
     try {
-      const currentLang = sessionStorage.getItem('selectedLanguage') || 'PT';
       const res = await fetch('/api/quiz-submission', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
