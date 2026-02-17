@@ -268,9 +268,9 @@ export const ALL_HOTELS: HotelData[] = [
 
 export function getHotelsByBudget(budget: 'economico' | 'moderado' | 'premium'): HotelData[] {
   const budgetMap: Record<string, string[]> = {
-    'economico': ['low', 'medium'],
-    'moderado': ['medium', 'high'],
-    'premium': ['high'],
+    'economico': ['low'],
+    'moderado': ['low', 'medium'],
+    'premium': ['medium', 'high'],
   };
   const allowed = budgetMap[budget] || ['medium'];
   return ALL_HOTELS.filter(h => allowed.includes(h.budgetCategory));
