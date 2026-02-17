@@ -41,3 +41,9 @@ waitForPort = 5000
 
 [agent]
 integrations = ["javascript_stripe:1.0.0", "javascript_openai_ai_integrations:1.0.0", "javascript_database:1.0.0"]
+
+[userenv]
+
+[userenv.shared]
+ADMIN_EMAIL = "leosiebra@gmail.com"
+ADMIN_PASSWORD = "po,m0#TDxGrmk}MN5PR1"

@@ -1,6 +1,6 @@
-import { users, paymentSessions, proRequests, type User, type InsertUser, type PaymentSession, type InsertPaymentSession, type ProRequest, type InsertProRequest } from "@shared/schema";
+import { users, paymentSessions, proRequests, quizSubmissions, type User, type InsertUser, type PaymentSession, type InsertPaymentSession, type ProRequest, type InsertProRequest, type QuizSubmission, type InsertQuizSubmission } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -11,6 +11,9 @@ export interface IStorage {
   updatePaymentSession(stripeSessionId: string, updates: Partial<PaymentSession>): Promise<PaymentSession | undefined>;
   createProRequest(request: InsertProRequest): Promise<ProRequest>;
   getProRequests(): Promise<ProRequest[]>;
+  createQuizSubmission(submission: InsertQuizSubmission): Promise<QuizSubmission>;
+  getQuizSubmissions(): Promise<QuizSubmission[]>;
+  updateQuizSubmissionEmail(id: string, email: string, consent: string): Promise<QuizSubmission | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -67,6 +70,27 @@ export class DatabaseStorage implements IStorage {
 
   async getProRequests(): Promise<ProRequest[]> {
     return await db.select().from(proRequests);
+  }
+
+  async createQuizSubmission(submission: InsertQuizSubmission): Promise<QuizSubmission> {
+    const [result] = await db
+      .insert(quizSubmissions)
+      .values(submission)
+      .returning();
+    return result;
+  }
+
+  async getQuizSubmissions(): Promise<QuizSubmission[]> {
+    return await db.select().from(quizSubmissions).orderBy(desc(quizSubmissions.createdAt));
+  }
+
+  async updateQuizSubmissionEmail(id: string, email: string, consent: string): Promise<QuizSubmission | undefined> {
+    const [updated] = await db
+      .update(quizSubmissions)
+      .set({ customerEmail: email, marketingConsent: consent })
+      .where(eq(quizSubmissions.id, id))
+      .returning();
+    return updated || undefined;
   }
 }
 

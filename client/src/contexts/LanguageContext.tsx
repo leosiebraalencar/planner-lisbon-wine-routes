@@ -10,7 +10,12 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>('PT');
+  const [language, setLanguageState] = useState<Language>('PT');
+
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    try { sessionStorage.setItem('selectedLanguage', lang); } catch {}
+  };
 
   const t = (key: string, replacements?: Record<string, string>) => {
     return translate(key, language, replacements);

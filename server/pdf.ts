@@ -159,10 +159,15 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
       }
     }
 
+    const customerName = itinerary.quizData.customerName;
+    const pdfTitle = customerName 
+      ? `${customerName}, Your Personalized Wine Tourism Itinerary`
+      : 'Personalized Wine Tourism Itinerary';
+    
     doc.fillColor(WINE_RED)
       .fontSize(22)
       .font(TITLE_FONT)
-      .text('Personalized Wine Tourism Itinerary', { align: 'center' });
+      .text(pdfTitle, { align: 'center' });
     
     doc.moveDown(2);
 

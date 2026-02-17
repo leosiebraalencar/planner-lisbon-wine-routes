@@ -38,7 +38,7 @@ Preferred communication style: Simple, everyday language.
 ### Data Storage
 - **Database**: PostgreSQL via Neon serverless
 - **ORM**: Drizzle ORM with Zod schema validation
-- **Tables**: users, payment_sessions, pro_requests
+- **Tables**: users, payment_sessions, pro_requests, quiz_submissions
 - **Migrations**: Drizzle Kit with migrations in /migrations folder
 
 ### Payment Integration
@@ -96,8 +96,17 @@ Preferred communication style: Simple, everyday language.
 - **DISCOVERCARS_AFFILIATE_URL**: Single constant for all DiscoverCars references
 - **STRIPE_DONATION_URL**: Fixed Stripe checkout for pay-what-you-want donations
 
+### Quiz Submissions & Admin (quiz_submissions table)
+- **Quiz Steps**: 13 steps total (name → duration → dates → budget → travelers → language → preferences → arrival → car rental → guide → accommodation → location → special requests)
+- **Customer Name**: Collected as first quiz step, displayed in itinerary title and PDF
+- **Email Collection**: Modal before PDF download collects email + optional marketing consent
+- **Admin Panel**: /data-admin route with login (ADMIN_EMAIL/ADMIN_PASSWORD env vars), CSV export
+- **Data**: customerName, customerEmail, marketingConsent, quizData (JSONB), language, createdAt
+
 ### Environment Variables Required
 - `DATABASE_URL`: PostgreSQL connection string
 - `STRIPE_SECRET_KEY`: Stripe API key
 - `STRIPE_WEBHOOK_SECRET`: Webhook signature verification
 - `VITE_STRIPE_DONATION_URL`: Optional donation link
+- `ADMIN_EMAIL`: Admin panel login email
+- `ADMIN_PASSWORD`: Admin panel login password

@@ -54,16 +54,21 @@ interface ItineraryDisplayProps {
   itinerary: Itinerary;
   onDownload: () => void;
   isDownloading?: boolean;
+  customerName?: string;
 }
 
-export default function ItineraryDisplay({ itinerary, onDownload, isDownloading = false }: ItineraryDisplayProps) {
+export default function ItineraryDisplay({ itinerary, onDownload, isDownloading = false, customerName }: ItineraryDisplayProps) {
   const { t } = useLanguage();
+  
+  const personalizedTitle = customerName
+    ? `${customerName}, ${t('itinerary.personalizedReady')}`
+    : t('itinerary.title');
   
   return (
     <div className="w-full max-w-5xl mx-auto">
       <div className="mb-8 text-center">
-        <h1 className="font-serif font-bold text-3xl md:text-4xl mb-4">
-          {t('itinerary.title')}
+        <h1 className="font-serif font-bold text-3xl md:text-4xl mb-4" data-testid="text-itinerary-title">
+          {personalizedTitle}
         </h1>
         <p className="text-muted-foreground">
           {t('itinerary.subtitle')}

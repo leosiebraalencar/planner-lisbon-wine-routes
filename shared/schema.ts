@@ -55,7 +55,26 @@ export const insertProRequestSchema = createInsertSchema(proRequests).omit({
 export type InsertProRequest = z.infer<typeof insertProRequestSchema>;
 export type ProRequest = typeof proRequests.$inferSelect;
 
+export const quizSubmissions = pgTable("quiz_submissions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  customerName: text("customer_name").notNull(),
+  customerEmail: text("customer_email"),
+  marketingConsent: text("marketing_consent").default('false'),
+  quizData: jsonb("quiz_data").notNull(),
+  language: text("language").default('PT'),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertQuizSubmissionSchema = createInsertSchema(quizSubmissions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertQuizSubmission = z.infer<typeof insertQuizSubmissionSchema>;
+export type QuizSubmission = typeof quizSubmissions.$inferSelect;
+
 export const quizResponseSchema = z.object({
+  customerName: z.string().optional(),
   duration: z.number().min(1).max(10),
   startDate: z.string().optional(),
   endDate: z.string().optional(),

@@ -21,7 +21,7 @@ interface QuizPageProps {
   onComplete: (data: QuizResponse) => void;
 }
 
-const TOTAL_STEPS = 12;
+const TOTAL_STEPS = 13;
 
 const preferences = [
   "Degustações e vinhos exclusivos",
@@ -60,6 +60,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const today = new Date().toISOString().split('T')[0];
   const [formData, setFormData] = useState<Partial<QuizResponse>>({
+    customerName: '',
     duration: 3,
     startDate: today,
     budget: 'moderado',
@@ -80,8 +81,8 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
 
   const handleNext = () => {
     let nextStep = currentStep + 1;
-    if (currentStep === 10 && formData.hasAccommodation) {
-      nextStep = 12;
+    if (currentStep === 11 && formData.hasAccommodation) {
+      nextStep = 13;
     }
     if (nextStep > TOTAL_STEPS) {
       onComplete(formData as QuizResponse);
@@ -93,8 +94,8 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
 
   const handleBack = () => {
     let prevStep = currentStep - 1;
-    if (currentStep === 12 && formData.hasAccommodation) {
-      prevStep = 10;
+    if (currentStep === 13 && formData.hasAccommodation) {
+      prevStep = 11;
     }
     if (prevStep >= 1) {
       setCurrentStep(prevStep);
@@ -104,28 +105,30 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
   const canGoNext = () => {
     switch (currentStep) {
       case 1:
-        return formData.duration !== undefined;
+        return !!formData.customerName && formData.customerName.trim().length > 0;
       case 2:
-        return !!formData.startDate && !!formData.endDate;
+        return formData.duration !== undefined;
       case 3:
-        return formData.budget !== undefined;
+        return !!formData.startDate && !!formData.endDate;
       case 4:
-        return formData.travelers !== undefined && (formData.travelers !== 'grupo' || (formData.groupSize !== undefined && formData.groupSize >= 3 && formData.groupSize <= 100));
+        return formData.budget !== undefined;
       case 5:
-        return formData.languagePreference !== undefined;
+        return formData.travelers !== undefined && (formData.travelers !== 'grupo' || (formData.groupSize !== undefined && formData.groupSize >= 3 && formData.groupSize <= 100));
       case 6:
-        return (formData.preferences?.length ?? 0) > 0;
+        return formData.languagePreference !== undefined;
       case 7:
-        return formData.arrival !== undefined;
+        return (formData.preferences?.length ?? 0) > 0;
       case 8:
-        return formData.needsCarRental !== undefined;
+        return formData.arrival !== undefined;
       case 9:
-        return formData.wantsPrivateGuide !== undefined;
+        return formData.needsCarRental !== undefined;
       case 10:
-        return formData.hasAccommodation !== undefined;
+        return formData.wantsPrivateGuide !== undefined;
       case 11:
-        return formData.hasAccommodation || formData.accommodationPreference !== undefined;
+        return formData.hasAccommodation !== undefined;
       case 12:
+        return formData.hasAccommodation || formData.accommodationPreference !== undefined;
+      case 13:
         return true;
       default:
         return false;
@@ -139,7 +142,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
     { value: 'grupo', label: 'Em Grupo', icon: UsersRound }
   ];
 
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const seo = getSeoData('quiz', language);
 
   return (
@@ -153,6 +156,29 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
         {currentStep === 1 && (
           <QuizQuestion
             questionNumber={1}
+            totalQuestions={TOTAL_STEPS}
+            question={t('quiz.q0.question')}
+            onNext={handleNext}
+            onBack={handleBack}
+            canGoNext={canGoNext()}
+            canGoBack={false}
+          >
+            <div className="space-y-4">
+              <input
+                type="text"
+                className="w-full px-4 py-3 rounded-lg border border-input bg-background"
+                placeholder={t('quiz.q0.placeholder')}
+                value={formData.customerName || ''}
+                onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
+                data-testid="input-customer-name"
+              />
+            </div>
+          </QuizQuestion>
+        )}
+
+        {currentStep === 2 && (
+          <QuizQuestion
+            questionNumber={2}
             totalQuestions={TOTAL_STEPS}
             question="Quantos dias durará sua viagem?"
             onNext={handleNext}
@@ -180,9 +206,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 2 && (
+        {currentStep === 3 && (
           <QuizQuestion
-            questionNumber={2}
+            questionNumber={3}
             totalQuestions={TOTAL_STEPS}
             question="Quando você pretende viajar?"
             onNext={handleNext}
@@ -231,9 +257,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 3 && (
+        {currentStep === 4 && (
           <QuizQuestion
-            questionNumber={3}
+            questionNumber={4}
             totalQuestions={TOTAL_STEPS}
             question="Qual é o seu orçamento?"
             onNext={handleNext}
@@ -293,9 +319,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 4 && (
+        {currentStep === 5 && (
           <QuizQuestion
-            questionNumber={4}
+            questionNumber={5}
             totalQuestions={TOTAL_STEPS}
             question="Como você vai viajar?"
             onNext={handleNext}
@@ -354,9 +380,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 5 && (
+        {currentStep === 6 && (
           <QuizQuestion
-            questionNumber={5}
+            questionNumber={6}
             totalQuestions={TOTAL_STEPS}
             question="Qual idioma de preferência para as experiências?"
             onNext={handleNext}
@@ -385,9 +411,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 6 && (
+        {currentStep === 7 && (
           <QuizQuestion
-            questionNumber={6}
+            questionNumber={7}
             totalQuestions={TOTAL_STEPS}
             question="O que você mais procura na sua viagem?"
             onNext={handleNext}
@@ -437,9 +463,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 7 && (
+        {currentStep === 8 && (
           <QuizQuestion
-            questionNumber={7}
+            questionNumber={8}
             totalQuestions={TOTAL_STEPS}
             question="Como você vai chegar a Lisboa?"
             onNext={handleNext}
@@ -473,9 +499,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 8 && (
+        {currentStep === 9 && (
           <QuizQuestion
-            questionNumber={8}
+            questionNumber={9}
             totalQuestions={TOTAL_STEPS}
             question="Precisa de aluguel de carro?"
             onNext={handleNext}
@@ -521,9 +547,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 9 && (
+        {currentStep === 10 && (
           <QuizQuestion
-            questionNumber={9}
+            questionNumber={10}
             totalQuestions={TOTAL_STEPS}
             question="Gostaria de um guia privado?"
             onNext={handleNext}
@@ -569,9 +595,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 10 && (
+        {currentStep === 11 && (
           <QuizQuestion
-            questionNumber={10}
+            questionNumber={11}
             totalQuestions={TOTAL_STEPS}
             question="Já tem alojamento reservado?"
             onNext={handleNext}
@@ -612,9 +638,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 11 && !formData.hasAccommodation && (
+        {currentStep === 12 && !formData.hasAccommodation && (
           <QuizQuestion
-            questionNumber={11}
+            questionNumber={12}
             totalQuestions={TOTAL_STEPS}
             question="Onde prefere se hospedar?"
             onNext={handleNext}
@@ -661,9 +687,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 12 && (
+        {currentStep === 13 && (
           <QuizQuestion
-            questionNumber={12}
+            questionNumber={13}
             totalQuestions={TOTAL_STEPS}
             question="Alguma preferência especial?"
             onNext={handleNext}

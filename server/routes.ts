@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import Stripe from "stripe";
-import { itinerarySchema, insertProRequestSchema } from "@shared/schema";
+import { itinerarySchema, insertProRequestSchema, insertQuizSubmissionSchema } from "@shared/schema";
 import { generateItineraryPDF } from "./pdf";
 import path from "path";
 import fs from "fs";
@@ -228,6 +228,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error creating checkout session:', error);
       res.status(500).json({ error: 'Failed to create checkout session' });
+    }
+  });
+
+  app.post("/api/quiz-submission", async (req, res) => {
+    try {
+      const validationResult = insertQuizSubmissionSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({ error: 'Validation failed', details: validationResult.error.errors });
+      }
+      const submission = await storage.createQuizSubmission(validationResult.data);
+      res.json({ success: true, id: submission.id });
+    } catch (error) {
+      console.error('Error creating quiz submission:', error);
+      res.status(500).json({ error: 'Failed to save quiz submission' });
+    }
+  });
+
+  app.post("/api/quiz-submission/:id/email", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { email, consent } = req.body;
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+      const updated = await storage.updateQuizSubmissionEmail(id, email, consent ? 'true' : 'false');
+      if (!updated) {
+        return res.status(404).json({ error: 'Submission not found' });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error updating quiz submission email:', error);
+      res.status(500).json({ error: 'Failed to update email' });
+    }
+  });
+
+  app.post("/api/admin/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      const adminEmail = process.env.ADMIN_EMAIL;
+      const adminPassword = process.env.ADMIN_PASSWORD;
+      if (!adminEmail || !adminPassword) {
+        return res.status(500).json({ error: 'Admin credentials not configured' });
+      }
+      if (email === adminEmail && password === adminPassword) {
+        const token = Buffer.from(`${email}:${Date.now()}`).toString('base64');
+        return res.json({ success: true, token });
+      }
+      return res.status(401).json({ error: 'Invalid credentials' });
+    } catch (error) {
+      console.error('Error in admin login:', error);
+      res.status(500).json({ error: 'Login failed' });
+    }
+  });
+
+  app.get("/api/admin/submissions", async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+      const token = authHeader.substring(7);
+      try {
+        const decoded = Buffer.from(token, 'base64').toString('utf8');
+        const [email] = decoded.split(':');
+        if (email !== process.env.ADMIN_EMAIL) {
+          return res.status(401).json({ error: 'Unauthorized' });
+        }
+      } catch {
+        return res.status(401).json({ error: 'Invalid token' });
+      }
+      const submissions = await storage.getQuizSubmissions();
+      res.json(submissions);
+    } catch (error) {
+      console.error('Error fetching submissions:', error);
+      res.status(500).json({ error: 'Failed to fetch submissions' });
     }
   });
 

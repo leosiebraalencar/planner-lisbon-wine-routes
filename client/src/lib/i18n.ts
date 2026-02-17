@@ -70,6 +70,10 @@ export const translations = {
       back: 'Voltar',
       next: 'Próximo',
       generate: 'Gerar Roteiro',
+      q0: {
+        question: 'Como se chama?',
+        placeholder: 'O seu nome',
+      },
       q1: {
         question: 'Quantos dias durará sua viagem?',
         day: 'dia',
@@ -193,6 +197,11 @@ export const translations = {
       proUpsellTitle: 'Quer um Roteiro Mais Detalhado?',
       proUpsellText: 'Quer um roteiro mais detalhado e sob medida? Pague a nossa versão Pro por €29 e obtenha mapas, mais opções e dicas.',
       proUpsellButton: 'Quero um Roteiro à Medida',
+      personalizedReady: 'Seu Roteiro Personalizado de Enoturismo está pronto!',
+      emailTitle: 'Receba o seu roteiro por email',
+      emailSubtitle: 'Insira o seu email para fazer o download do PDF gratuito',
+      emailPlaceholder: 'seu@email.com',
+      consentText: 'Aceito receber novidades e ofertas exclusivas de enoturismo da Lisbon Wine Routes',
       days: 'dias',
       budgetTypes: {
         economico: 'Econômico',
@@ -387,6 +396,10 @@ export const translations = {
       back: 'Back',
       next: 'Next',
       generate: 'Generate Itinerary',
+      q0: {
+        question: 'What is your name?',
+        placeholder: 'Your name',
+      },
       q1: {
         question: 'How many days will your trip last?',
         day: 'day',
@@ -510,6 +523,11 @@ export const translations = {
       proUpsellTitle: 'Want a More Detailed Itinerary?',
       proUpsellText: 'Want a more detailed and tailored itinerary? Get our Pro version for €29 and receive maps, more options, and insider tips.',
       proUpsellButton: 'I Want a Custom Itinerary',
+      personalizedReady: 'Your Personalized Wine Tourism Itinerary is ready!',
+      emailTitle: 'Receive your itinerary by email',
+      emailSubtitle: 'Enter your email to download the free PDF',
+      emailPlaceholder: 'your@email.com',
+      consentText: 'I agree to receive news and exclusive wine tourism offers from Lisbon Wine Routes',
       days: 'days',
       budgetTypes: {
         economico: 'Economic',
@@ -704,6 +722,10 @@ export const translations = {
       back: 'Volver',
       next: 'Siguiente',
       generate: 'Generar Itinerario',
+      q0: {
+        question: '¿Cómo te llamas?',
+        placeholder: 'Tu nombre',
+      },
       q1: {
         question: '¿Cuántos días durará tu viaje?',
         day: 'día',
@@ -827,6 +849,11 @@ export const translations = {
       proUpsellTitle: '¿Quieres un Itinerario Más Detallado?',
       proUpsellText: '¿Quieres un itinerario más detallado y a medida? Obtén nuestra versión Pro por €29 y recibe mapas, más opciones y consejos.',
       proUpsellButton: 'Quiero un Itinerario a Medida',
+      personalizedReady: '¡Tu Itinerario Personalizado de Enoturismo está listo!',
+      emailTitle: 'Recibe tu itinerario por email',
+      emailSubtitle: 'Ingresa tu email para descargar el PDF gratuito',
+      emailPlaceholder: 'tu@email.com',
+      consentText: 'Acepto recibir novedades y ofertas exclusivas de enoturismo de Lisbon Wine Routes',
       days: 'días',
       budgetTypes: {
         economico: 'Económico',
@@ -1021,6 +1048,10 @@ export const translations = {
       back: 'Zurück',
       next: 'Weiter',
       generate: 'Route Erstellen',
+      q0: {
+        question: 'Wie heißen Sie?',
+        placeholder: 'Ihr Name',
+      },
       q1: {
         question: 'Wie viele Tage wird Ihre Reise dauern?',
         day: 'Tag',
@@ -1144,6 +1175,11 @@ export const translations = {
       proUpsellTitle: 'Möchten Sie eine detailliertere Route?',
       proUpsellText: 'Möchten Sie eine detailliertere und maßgeschneiderte Route? Holen Sie sich unsere Pro-Version für €29 mit Karten, mehr Optionen und Insider-Tipps.',
       proUpsellButton: 'Ich möchte eine maßgeschneiderte Route',
+      personalizedReady: 'Ihre Personalisierte Weintourismus-Route ist fertig!',
+      emailTitle: 'Erhalten Sie Ihre Route per E-Mail',
+      emailSubtitle: 'Geben Sie Ihre E-Mail ein, um das kostenlose PDF herunterzuladen',
+      emailPlaceholder: 'ihre@email.com',
+      consentText: 'Ich stimme zu, Neuigkeiten und exklusive Weintourismus-Angebote von Lisbon Wine Routes zu erhalten',
       days: 'Tage',
       budgetTypes: {
         economico: 'Wirtschaftlich',

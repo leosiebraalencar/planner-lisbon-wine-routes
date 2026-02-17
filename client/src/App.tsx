@@ -10,6 +10,7 @@ import QuizPage from "@/pages/QuizPage";
 import ItineraryPage from "@/pages/ItineraryPage";
 import SuccessPage from "@/pages/SuccessPage";
 import ProPage from "@/pages/ProPage";
+import AdminPage from "@/pages/AdminPage";
 import type { QuizResponse, Itinerary } from "@shared/schema";
 import { 
   buildBookingAwinUrl, 
@@ -25,7 +26,7 @@ import {
 import { ALL_RESTAURANTS, type RestaurantData } from "@shared/restaurantData";
 import { getHotelsByBudgetAndRegion } from "@shared/hotelData";
 
-function ItineraryPageWrapper({ itinerary }: { itinerary: Itinerary | null }) {
+function ItineraryPageWrapper({ itinerary, submissionId }: { itinerary: Itinerary | null; submissionId: string | null }) {
   const [, setLocation] = useLocation();
 
   useEffect(() => {
@@ -38,7 +39,7 @@ function ItineraryPageWrapper({ itinerary }: { itinerary: Itinerary | null }) {
     return null;
   }
 
-  return <ItineraryPage itinerary={itinerary} />;
+  return <ItineraryPage itinerary={itinerary} submissionId={submissionId} />;
 }
 
 const LANGUAGE_MAP: Record<string, string[]> = {
@@ -398,11 +399,34 @@ function App() {
     const stored = sessionStorage.getItem('currentItinerary');
     return stored ? JSON.parse(stored) : null;
   });
+  const [submissionId, setSubmissionId] = useState<string | null>(() => {
+    return sessionStorage.getItem('currentSubmissionId');
+  });
 
-  const handleQuizComplete = (data: QuizResponse) => {
+  const handleQuizComplete = async (data: QuizResponse) => {
     const generatedItinerary = generateMockItinerary(data);
     setItinerary(generatedItinerary);
     sessionStorage.setItem('currentItinerary', JSON.stringify(generatedItinerary));
+
+    try {
+      const currentLang = sessionStorage.getItem('selectedLanguage') || 'PT';
+      const res = await fetch('/api/quiz-submission', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName: data.customerName || 'Anonymous',
+          quizData: data,
+          language: currentLang,
+        }),
+      });
+      const result = await res.json();
+      if (result.id) {
+        setSubmissionId(result.id);
+        sessionStorage.setItem('currentSubmissionId', result.id);
+      }
+    } catch (err) {
+      console.error('Failed to save quiz submission:', err);
+    }
   };
 
   return (
@@ -415,13 +439,16 @@ function App() {
                 <QuizPage onComplete={handleQuizComplete} />
               </Route>
               <Route path="/itinerary">
-                <ItineraryPageWrapper itinerary={itinerary} />
+                <ItineraryPageWrapper itinerary={itinerary} submissionId={submissionId} />
               </Route>
               <Route path="/success">
                 <SuccessPage />
               </Route>
               <Route path="/pro">
                 <ProPage />
+              </Route>
+              <Route path="/data-admin">
+                <AdminPage />
               </Route>
               <Route path="/">
                 <LandingPage />
