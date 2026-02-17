@@ -87,7 +87,7 @@ export default function ItineraryPage({ itinerary }: ItineraryPageProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="absolute right-3 top-3 z-10"
+              className="absolute right-[10px] top-[10px] z-10"
               onClick={() => setShowDonationModal(false)}
               data-testid="button-close-donation"
             >

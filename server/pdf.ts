@@ -120,6 +120,14 @@ function renderActivityBlock(
       });
     
     doc.y = buttonY + buttonHeight + 5;
+
+    if (activity.isTheFork || activity.theForkPromoCode) {
+      doc.fillColor(WINE_RED)
+        .fontSize(8)
+        .font(BOLD_FONT)
+        .text('Use o código 30B64ED e receba 1000 Yums!', 60);
+      doc.moveDown(0.3);
+    }
   }
   
   doc.moveDown(1.5);
@@ -342,6 +350,20 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
       .text('contacto@lisbonwineroutes.com', { 
         align: 'center', 
         link: 'mailto:contacto@lisbonwineroutes.com',
+        underline: true
+      });
+
+    doc.moveDown(1.5);
+
+    doc.fillColor(GRAY_TEXT)
+      .fontSize(9)
+      .font(BODY_FONT)
+      .text('Para mais informações sobre enoturismo visite:', { align: 'center' });
+
+    doc.fillColor(WINE_RED)
+      .text('www.lisbonwineroutes.com', {
+        align: 'center',
+        link: 'https://www.lisbonwineroutes.com/',
         underline: true
       });
 
