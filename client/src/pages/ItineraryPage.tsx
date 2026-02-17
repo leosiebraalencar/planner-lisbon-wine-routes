@@ -82,31 +82,32 @@ export default function ItineraryPage({ itinerary }: ItineraryPageProps) {
 
       {/* Donation Modal */}
       {showDonationModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <Card className="w-full max-w-md animate-in fade-in zoom-in">
-            <CardHeader className="relative">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-2 top-2"
-                onClick={() => setShowDonationModal(false)}
-                data-testid="button-close-donation"
-              >
-                <X className="w-4 h-4" />
-              </Button>
-              <CardTitle className="flex items-center gap-2 text-lg pr-8">
-                <Heart className="w-5 h-5 text-red-500" />
-                {t('success.donateTitle')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <Card className="w-[90vw] max-w-xl animate-in fade-in zoom-in relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-3 top-3 z-10"
+              onClick={() => setShowDonationModal(false)}
+              data-testid="button-close-donation"
+            >
+              <X className="w-5 h-5" />
+            </Button>
+            <CardContent className="p-8 md:p-10">
+              <div className="text-center mb-6">
+                <Heart className="w-10 h-10 text-red-500 mx-auto mb-4" />
+                <CardTitle className="text-2xl md:text-3xl font-serif mb-3">
+                  {t('success.donateTitle')}
+                </CardTitle>
+              </div>
+              <p className="text-muted-foreground text-center mb-8 text-base">
                 {t('success.thankYou')}
               </p>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3">
                 <Button 
+                  size="lg"
                   onClick={handleDonation}
-                  className="w-full"
+                  className="w-full text-base"
                   data-testid="button-donate"
                 >
                   {t('success.donateButton')}

@@ -200,7 +200,7 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
     }
   }
 
-  const usedRegions = [...new Set(days.map(d => d.region))];
+  const usedRegions = Array.from(new Set(days.map(d => d.region)));
   const recommendedRestaurants = ALL_RESTAURANTS
     .filter(r => !usedRestaurants.has(r.name))
     .filter(r => usedRegions.includes(r.region) || r.region === 'Lisboa')
@@ -236,11 +236,36 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
   }
 
   if (!quizData.hasAccommodation) {
-    const primaryRegion = days[0]?.region || 'Lisboa';
-    const matchedHotels = getHotelsByBudgetAndRegion(quizData.budget, primaryRegion);
+    const wantsCenter = quizData.accommodationPreference === 'central_lisboa';
+    const hotelRegion = wantsCenter ? 'Lisboa' : (days[0]?.region || 'Lisboa');
+    const matchedHotels = getHotelsByBudgetAndRegion(quizData.budget, hotelRegion);
 
-    if (matchedHotels.length > 0) {
-      const topHotel = matchedHotels.find(h => !h.isGenericListing) || matchedHotels[0];
+    const nonGenericHotels = matchedHotels.filter(h => !h.isGenericListing);
+    const genericHotels = matchedHotels.filter(h => h.isGenericListing);
+
+    const diverseHotels: typeof matchedHotels = [];
+    const seenRegions = new Set<string>();
+    for (const h of nonGenericHotels) {
+      if (!seenRegions.has(h.region) || diverseHotels.length < 3) {
+        diverseHotels.push(h);
+        seenRegions.add(h.region);
+      }
+    }
+    for (const h of genericHotels) {
+      if (diverseHotels.length < 4) {
+        diverseHotels.push(h);
+      }
+    }
+
+    if (!wantsCenter && diverseHotels.length < 4) {
+      const extraLisboa = getHotelsByBudgetAndRegion(quizData.budget, 'Lisboa')
+        .filter(h => !diverseHotels.some(d => d.name === h.name))
+        .slice(0, 4 - diverseHotels.length);
+      diverseHotels.push(...extraLisboa);
+    }
+
+    if (diverseHotels.length > 0) {
+      const topHotel = diverseHotels.find(h => !h.isGenericListing) || diverseHotels[0];
       recommendations.accommodation = {
         name: topHotel.name,
         address: topHotel.region,
@@ -248,7 +273,7 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
       };
     }
 
-    recommendations.hotels = matchedHotels.slice(0, 4).map(h => ({
+    recommendations.hotels = diverseHotels.slice(0, 4).map(h => ({
       name: h.name,
       description: h.description,
       budgetCategory: h.budgetCategory,

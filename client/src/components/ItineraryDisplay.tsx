@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, Calendar, Download, DollarSign, ExternalLink, Car, Building2, Sparkles, UtensilsCrossed, Hotel } from "lucide-react";
+import { MapPin, Clock, Calendar, Download, DollarSign, ExternalLink, Car, Building2, Sparkles, UtensilsCrossed, Hotel, Compass, Mail } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { Itinerary, Activity } from "@shared/schema";
 
@@ -346,6 +346,48 @@ export default function ItineraryDisplay({ itinerary, onDownload, isDownloading 
         </div>
       )}
       
+      {itinerary.quizData.wantsPrivateGuide && (
+        <Card className="border-border mb-8">
+          <CardHeader className="pb-3">
+            <CardTitle className="font-serif flex items-center gap-2">
+              <Compass className="w-5 h-5 text-primary" />
+              Passeios Guiados
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="bg-card p-4 rounded-lg border border-border">
+                <p className="text-sm mb-3">
+                  Deseja realizar passeios com o Guia? Explore as opções no Get Your Guide
+                </p>
+                <a
+                  href="https://gyg.me/PDKSl5qX"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-primary text-sm font-medium hover:underline"
+                  data-testid="link-getyourguide"
+                >
+                  Ver passeios no GetYourGuide <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+              <div className="bg-card p-4 rounded-lg border border-border">
+                <p className="text-sm mb-2">
+                  Deseja um guia exclusivo? Entre em contato conosco e lhe enviaremos opções.
+                </p>
+                <a
+                  href="mailto:contacto@lisbonwineroutes.com"
+                  className="inline-flex items-center gap-1 text-primary text-sm font-medium hover:underline"
+                  data-testid="link-guide-contact"
+                >
+                  <Mail className="w-3 h-3" />
+                  contacto@lisbonwineroutes.com
+                </a>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card className="border-primary/20 bg-primary/5 mb-6">
         <CardContent className="p-8 text-center">
           <h3 className="font-serif font-bold text-2xl mb-4">

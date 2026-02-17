@@ -1,5 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, ExternalLink } from "lucide-react";
+import { STRIPE_DONATION_URL } from "@shared/affiliateLinks";
+
+const DONATION_URL = import.meta.env.VITE_STRIPE_DONATION_URL || STRIPE_DONATION_URL;
 
 const benefits = [
   "Roteiros personalizados por IA especializada",
@@ -42,9 +45,19 @@ export default function PricingSection() {
                   <div className="font-serif font-bold text-5xl text-primary">$1</div>
                   <div className="text-sm text-muted-foreground mt-1">USD</div>
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground mb-4">
                   Você escolhe o valor após ver seu roteiro personalizado
                 </p>
+                <a
+                  href={DONATION_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sm font-medium underline"
+                  style={{ color: '#84270B' }}
+                  data-testid="link-quero-apoiar"
+                >
+                  Quero apoiar o projeto <ExternalLink className="w-3 h-3" />
+                </a>
               </div>
             </div>
           </CardContent>
