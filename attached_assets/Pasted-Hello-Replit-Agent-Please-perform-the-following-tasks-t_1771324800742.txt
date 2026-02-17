@@ -1,0 +1,374 @@
+Hello Replit Agent. Please perform the following tasks to optimize my React (Vite) application for multilingual SEO and LLMs, using tours.lisbonwineroutes.com as the official subdomain.
+
+Assumed Project Structure:
+
+•
+Framework: React with Vite
+
+•
+Routing: react-router-dom
+
+•
+Main component: src/App.tsx
+
+•
+Source code directory: src/
+
+•
+Static assets directory: public/
+
+
+
+
+Task 1: Install Dependencies
+
+Open the shell and run this command to install react-helmet-async for managing dynamic head tags:
+
+Bash
+
+
+npm install react-helmet-async
+
+
+
+
+
+
+Task 2: Create Static SEO Files
+
+Create the following three files inside the public/ directory.
+
+File 1: public/robots.txt
+
+Plain Text
+
+
+# Allow all user agents to crawl the site
+User-agent: *
+Allow: /
+
+# Disallow crawling of specific directories
+Disallow: /admin/
+Disallow: /api/
+
+# Location of the sitemap
+Sitemap: https://tours.lisbonwineroutes.com/sitemap.xml
+
+
+
+File 2: public/sitemap.xml
+
+XML
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://tours.lisbonwineroutes.com/</loc>
+    <lastmod>2026-02-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://tours.lisbonwineroutes.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://tours.lisbonwineroutes.com/en/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://tours.lisbonwineroutes.com/es/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tours.lisbonwineroutes.com/en/" />
+  </url>
+
+  <url>
+    <loc>https://tours.lisbonwineroutes.com/en/</loc>
+    <lastmod>2026-02-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://tours.lisbonwineroutes.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://tours.lisbonwineroutes.com/en/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://tours.lisbonwineroutes.com/es/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tours.lisbonwineroutes.com/en/" />
+  </url>
+
+  <url>
+    <loc>https://tours.lisbonwineroutes.com/es/</loc>
+    <lastmod>2026-02-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://tours.lisbonwineroutes.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://tours.lisbonwineroutes.com/en/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://tours.lisbonwineroutes.com/es/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tours.lisbonwineroutes.com/en/" />
+  </url>
+
+</urlset>
+
+
+
+File 3: public/llms.txt
+
+Plain Text
+
+
+# LLM Guidance for Lisbon Wine Routes
+
+User-agent: *
+
+## About
+Lisbon Wine Routes is a service that uses AI to generate personalized wine tourism itineraries for Lisbon, Portugal. The service is available in Portuguese, English, and Spanish.
+
+## Keywords
+- Roteiro personalizado de enoturismo (PT )
+- Wine tourism itinerary in Lisbon (EN)
+- Ruta enoturística en Lisboa (ES)
+
+## Service Summary
+- AI-powered itinerary creation
+- Curated winery, restaurant, and accommodation suggestions
+- Downloadable PDF guides
+- Pay-what-you-want model
+
+## URLs
+- EN (Default): https://tours.lisbonwineroutes.com/en/
+- PT: https://tours.lisbonwineroutes.com/
+- ES: https://tours.lisbonwineroutes.com/es/
+
+
+
+
+
+
+Task 3: Refactor the App for Multilingual SEO
+
+This task involves creating separate components for each language and setting up routing and dynamic meta tags.
+
+Step 1: Create a Seo.tsx component
+
+Create a new file at src/components/Seo.tsx and add the following code. This component will manage all SEO-related tags for each page.
+
+TypeScript
+
+
+import React from 'react';
+import { Helmet } from 'react-helmet-async';
+
+interface SeoProps {
+  lang: 'pt' | 'en' | 'es';
+  title: string;
+  description: string;
+  keywords: string;
+  canonicalUrl: string;
+}
+
+const Seo: React.FC<SeoProps> = ({ lang, title, description, keywords, canonicalUrl } ) => {
+  const domain = 'https://tours.lisbonwineroutes.com';
+
+  return (
+    <Helmet>
+      <html lang={lang} />
+      <title>{title}</title>
+      <meta name="description" content={description} />
+      <meta name="keywords" content={keywords} />
+      <link rel="canonical" href={canonicalUrl} />
+
+      {/* Hreflang Tags */}
+      <link rel="alternate" hreflang="pt" href={`${domain}/`} />
+      <link rel="alternate" hreflang="en" href={`${domain}/en/`} />
+      <link rel="alternate" hreflang="es" href={`${domain}/es/`} />
+      <link rel="alternate" hreflang="x-default" href={`${domain}/en/`} />
+
+      {/* Open Graph */}
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      <meta property="og:url" content={canonicalUrl} />
+      <meta property="og:type" content="website" />
+      <meta property="og:image" content={`${domain}/og-image.jpg`} />
+      <meta property="og:locale" content={lang === 'pt' ? 'pt_PT' : lang === 'en' ? 'en_US' : 'es_ES'} />
+
+      {/* Twitter Card */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={`${domain}/twitter-card.jpg`} />
+
+      {/* Schema.org JSON-LD */}
+      <script type="application/ld+json">{`
+        {
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "Lisbon Wine Routes - Personalized Wine Itineraries",
+          "description": "Create your personalized wine tourism itinerary in Lisbon with AI-powered curation.",
+          "url": "${domain}",
+          "provider": {
+            "@type": "Organization",
+            "name": "Lisbon Wine Routes",
+            "url": "https://www.lisbonwineroutes.com"
+          },
+          "areaServed": {
+            "@type": "City",
+            "name": "Lisboa"
+          },
+          "serviceType": "Wine Tourism Planning"
+        }
+      `}</script>
+    </Helmet>
+   );
+};
+
+export default Seo;
+
+
+
+Step 2: Create Language-Specific Page Components
+
+Create three new files for each language's main page content.
+
+File 1: src/pages/HomePagePT.tsx
+
+TypeScript
+
+
+import React from 'react';
+import Seo from '../components/Seo';
+
+const HomePagePT: React.FC = () => {
+  return (
+    <>
+      <Seo 
+        lang='pt'
+        title='Roteiro Personalizado de Enoturismo em Lisboa | Lisbon Wine Routes'
+        description='Crie o seu roteiro personalizado de enoturismo em Lisboa. Responda a um quiz e receba um guia de vinícolas, degustações e experiências únicas.'
+        keywords='roteiro personalizado de enoturismo, roteiro de enoturismo, enoturismo lisboa, vinhos lisboa'
+        canonicalUrl='https://tours.lisbonwineroutes.com/'
+      />
+      {/* Your existing Portuguese page content goes here. */}
+      {/* IMPORTANT: Change the H1 to: */}
+      <h1>Roteiro Personalizado de Enoturismo em Lisboa</h1>
+      {/* Rest of the page content... */}
+    </>
+   );
+};
+
+export default HomePagePT;
+
+
+
+File 2: src/pages/HomePageEN.tsx
+
+TypeScript
+
+
+import React from 'react';
+import Seo from '../components/Seo';
+
+const HomePageEN: React.FC = () => {
+  return (
+    <>
+      <Seo 
+        lang='en'
+        title='Personalized Wine Tourism Itinerary in Lisbon | Lisbon Wine Routes'
+        description='Create your personalized wine tourism itinerary in Lisbon. Take a quiz and get a guide to unique wineries, tastings, and experiences.'
+        keywords='wine tourism itinerary, wine tourism itinerary in lisbon, lisbon wine tours, portugal wine'
+        canonicalUrl='https://tours.lisbonwineroutes.com/en/'
+      />
+      {/* Your existing English page content goes here. */}
+      {/* IMPORTANT: Change the H1 to: */}
+      <h1>Personalized Wine Tourism Itinerary in Lisbon</h1>
+      {/* Rest of the page content... */}
+    </>
+   );
+};
+
+export default HomePageEN;
+
+
+
+File 3: src/pages/HomePageES.tsx
+
+TypeScript
+
+
+import React from 'react';
+import Seo from '../components/Seo';
+
+const HomePageES: React.FC = () => {
+  return (
+    <>
+      <Seo 
+        lang='es'
+        title='Ruta Enoturística Personalizada en Lisboa | Lisbon Wine Routes'
+        description='Crea tu ruta enoturística personalizada en Lisboa. Responde a un cuestionario y recibe una guía de bodegas, catas y experiencias únicas.'
+        keywords='ruta enoturística en lisboa, ruta enoturística, enoturismo lisboa, vinos de lisboa'
+        canonicalUrl='https://tours.lisbonwineroutes.com/es/'
+      />
+      {/* Your existing Spanish page content goes here. */}
+      {/* IMPORTANT: Change the H1 to: */}
+      <h1>Ruta Enoturística Personalizada en Lisboa</h1>
+      {/* Rest of the page content... */}
+    </>
+   );
+};
+
+export default HomePageES;
+
+
+
+Step 3: Update main.tsx and App.tsx
+
+Now, wire everything together.
+
+File: src/main.tsx (or wherever you initialize your app)
+
+Wrap your <App /> component with <HelmetProvider>.
+
+TypeScript
+
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import { HelmetProvider } from 'react-helmet-async';
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <HelmetProvider>
+      <App />
+    </HelmetProvider>
+  </React.StrictMode>
+);
+
+
+
+File: src/App.tsx
+
+Set up the routes for each language. Note that English (/en/) is now the default route.
+
+TypeScript
+
+
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import HomePagePT from './pages/HomePagePT';
+import HomePageEN from './pages/HomePageEN';
+import HomePageES from './pages/HomePageES';
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePagePT />} />
+        <Route path="/en" element={<HomePageEN />} />
+        <Route path="/es" element={<HomePageES />} />
+        {/* Redirect any other path to the default English page */}
+        <Route path="*" element={<Navigate to="/en" replace />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
+
+
+
+
+
+
+After completing these tasks, deploy the application. The site will be properly optimized for search engines and LLMs, with correct internationalization under the new subdomain. Thank you!
+
