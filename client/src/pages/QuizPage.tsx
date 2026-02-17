@@ -23,37 +23,7 @@ interface QuizPageProps {
 
 const TOTAL_STEPS = 13;
 
-const preferences = [
-  "Degustações e vinhos exclusivos",
-  "Gastronomia portuguesa tradicional",
-  "Gastronomia internacional e fusion",
-  "Experiências em vinícolas históricas",
-  "Paisagens, natureza e fotografia",
-  "Experiências em família com crianças",
-  "Vinhos biodinâmicos e sustentáveis",
-  "Tours guiados com sommelier",
-  "Hotéis modernos e contemporâneos",
-  "Hotéis rústicos e rurais",
-  "Hotéis históricos e palacetes",
-  "Ficar num único local durante toda a viagem",
-  "Explorar diferentes locais e mudar de hotel",
-];
-
-const arrivalOptions = [
-  { value: 'aviao', label: 'Avião', icon: Plane },
-  { value: 'trem', label: 'Trem', icon: Train },
-  { value: 'carro', label: 'Carro próprio', icon: Car },
-  { value: 'ja_em_lisboa', label: 'Já em Lisboa', icon: MapPin },
-  { value: 'outros', label: 'Outros', icon: CircleDot },
-];
-
-const languageOptions = [
-  { value: 'portugues', label: 'Português' },
-  { value: 'ingles', label: 'Inglês' },
-  { value: 'espanhol', label: 'Espanhol' },
-  { value: 'frances', label: 'Francês' },
-  { value: 'alemao', label: 'Alemão' },
-];
+const languageOptionKeys = ['portugues', 'ingles', 'espanhol', 'frances', 'alemao'] as const;
 
 export default function QuizPage({ onComplete }: QuizPageProps) {
   const [, setLocation] = useLocation();
@@ -135,15 +105,34 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
     }
   };
 
-  const travelerOptions = [
-    { value: 'sozinho', label: 'Sozinho(a)', icon: User },
-    { value: 'casal', label: 'Em Casal', icon: Users },
-    { value: 'familia', label: 'Em Família', icon: Home },
-    { value: 'grupo', label: 'Em Grupo', icon: UsersRound }
-  ];
-
   const { language, t } = useLanguage();
   const seo = getSeoData('quiz', language);
+
+  const travelerOptions = [
+    { value: 'sozinho', label: t('quiz.q4.alone'), icon: User },
+    { value: 'casal', label: t('quiz.q4.couple'), icon: Users },
+    { value: 'familia', label: t('quiz.q4.family'), icon: Home },
+    { value: 'grupo', label: t('quiz.q4.group'), icon: UsersRound }
+  ];
+
+  const arrivalOptions = [
+    { value: 'aviao', label: t('quiz.q6.options.aviao'), icon: Plane },
+    { value: 'trem', label: t('quiz.q6.options.trem'), icon: Train },
+    { value: 'carro', label: t('quiz.q6.options.carro'), icon: Car },
+    { value: 'ja_em_lisboa', label: t('quiz.q6.options.ja_em_lisboa'), icon: MapPin },
+    { value: 'outros', label: t('quiz.q6.options.outros'), icon: CircleDot },
+  ];
+
+  const preferenceKeys = [
+    'tastings', 'traditionalGastronomy', 'internationalGastronomy', 'historic',
+    'landscapes', 'family', 'biodynamic', 'tours',
+    'modernHotels', 'rusticHotels', 'historicHotels',
+    'singleLocation', 'multipleLocations'
+  ];
+  const preferences = preferenceKeys.map(key => ({
+    key,
+    label: t(`quiz.q5.preferences.${key}`)
+  }));
 
   return (
     <div className="min-h-screen bg-background">
@@ -180,7 +169,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           <QuizQuestion
             questionNumber={2}
             totalQuestions={TOTAL_STEPS}
-            question="Quantos dias durará sua viagem?"
+            question={t('quiz.q1.question')}
             onNext={handleNext}
             onBack={handleBack}
             canGoNext={canGoNext()}
@@ -198,7 +187,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                 >
                   <RadioGroupItem value={String(day)} id={`day-${day}`} data-testid={`radio-duration-${day}`} />
                   <Label htmlFor={`day-${day}`} className="cursor-pointer flex-1">
-                    {day === 1 ? '1 dia' : `${day} dias`}
+                    {day === 1 ? `1 ${t('quiz.q1.day')}` : `${day} ${t('quiz.q1.days')}`}
                   </Label>
                 </div>
               ))}
@@ -210,7 +199,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           <QuizQuestion
             questionNumber={3}
             totalQuestions={TOTAL_STEPS}
-            question="Quando você pretende viajar?"
+            question={t('quiz.q2.question')}
             onNext={handleNext}
             onBack={handleBack}
             canGoNext={canGoNext()}
@@ -218,11 +207,11 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           >
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Selecione as datas da sua viagem
+                {t('quiz.q2.info')}
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="start-date" className="mb-2 block">Data de Início</Label>
+                  <Label htmlFor="start-date" className="mb-2 block">{t('quiz.q2.startDate')}</Label>
                   <input
                     id="start-date"
                     type="date"
@@ -241,7 +230,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="end-date" className="mb-2 block">Data de Término</Label>
+                  <Label htmlFor="end-date" className="mb-2 block">{t('quiz.q2.endDate')}</Label>
                   <input
                     id="end-date"
                     type="date"
@@ -261,7 +250,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           <QuizQuestion
             questionNumber={4}
             totalQuestions={TOTAL_STEPS}
-            question="Qual é o seu orçamento?"
+            question={t('quiz.q3.question')}
             onNext={handleNext}
             onBack={handleBack}
             canGoNext={canGoNext()}
@@ -278,10 +267,10 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                 <RadioGroupItem value="economico" id="economico" data-testid="radio-budget-economico" />
                 <div className="flex-1">
                   <Label htmlFor="economico" className="cursor-pointer font-semibold">
-                    Econômico
+                    {t('quiz.q3.economic.title')}
                   </Label>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Adegas familiares, degustações simples, restaurantes locais
+                    {t('quiz.q3.economic.description')}
                   </p>
                 </div>
               </div>
@@ -293,10 +282,10 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                 <RadioGroupItem value="moderado" id="moderado" data-testid="radio-budget-moderado" />
                 <div className="flex-1">
                   <Label htmlFor="moderado" className="cursor-pointer font-semibold">
-                    Moderado
+                    {t('quiz.q3.moderate.title')}
                   </Label>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Quintas renomadas, tours guiados, harmonizações gastronômicas
+                    {t('quiz.q3.moderate.description')}
                   </p>
                 </div>
               </div>
@@ -308,10 +297,10 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                 <RadioGroupItem value="premium" id="premium" data-testid="radio-budget-premium" />
                 <div className="flex-1">
                   <Label htmlFor="premium" className="cursor-pointer font-semibold">
-                    Premium
+                    {t('quiz.q3.premium.title')}
                   </Label>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Experiências exclusivas, vinhos raros, restaurantes com estrela Michelin
+                    {t('quiz.q3.premium.description')}
                   </p>
                 </div>
               </div>
@@ -323,7 +312,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           <QuizQuestion
             questionNumber={5}
             totalQuestions={TOTAL_STEPS}
-            question="Como você vai viajar?"
+            question={t('quiz.q4.question')}
             onNext={handleNext}
             onBack={handleBack}
             canGoNext={canGoNext()}
@@ -354,7 +343,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
             </div>
             {formData.travelers === 'grupo' && (
               <div className="mt-6 space-y-3">
-                <Label>Quantas pessoas no grupo?</Label>
+                <Label>{t('quiz.q4.groupSizeLabel')}</Label>
                 <input
                   type="number"
                   min={3}
@@ -370,7 +359,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                 {formData.groupSize !== undefined && formData.groupSize > 100 && (
                   <Card className="border-amber-500 bg-amber-50 dark:bg-amber-950 mt-4">
                     <CardContent className="p-4">
-                      <p className="text-sm">Para grupos superiores a 100 pessoas, aconselhamos entrar em contacto com:</p>
+                      <p className="text-sm">{t('quiz.q4.groupSizeWarning')}</p>
                       <a href="mailto:contacto@lisbonwineroutes.com" className="text-primary font-semibold" data-testid="link-large-group-email">contacto@lisbonwineroutes.com</a>
                     </CardContent>
                   </Card>
@@ -384,7 +373,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           <QuizQuestion
             questionNumber={6}
             totalQuestions={TOTAL_STEPS}
-            question="Qual idioma de preferência para as experiências?"
+            question={t('quiz.q5lang.question')}
             onNext={handleNext}
             onBack={handleBack}
             canGoNext={canGoNext()}
@@ -394,16 +383,16 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
               value={formData.languagePreference} 
               onValueChange={(value: any) => setFormData({ ...formData, languagePreference: value })}
             >
-              {languageOptions.map((option) => (
+              {languageOptionKeys.map((key) => (
                 <div 
-                  key={option.value}
+                  key={key}
                   className="flex items-center space-x-3 p-4 rounded-lg border border-border hover-elevate active-elevate-2 cursor-pointer"
-                  onClick={() => setFormData({ ...formData, languagePreference: option.value as any })}
+                  onClick={() => setFormData({ ...formData, languagePreference: key as any })}
                 >
-                  <RadioGroupItem value={option.value} id={`lang-${option.value}`} data-testid={`radio-language-${option.value}`} />
-                  <Label htmlFor={`lang-${option.value}`} className="cursor-pointer flex-1 flex items-center gap-2">
+                  <RadioGroupItem value={key} id={`lang-${key}`} data-testid={`radio-language-${key}`} />
+                  <Label htmlFor={`lang-${key}`} className="cursor-pointer flex-1 flex items-center gap-2">
                     <Globe className="w-4 h-4 text-muted-foreground" />
-                    {option.label}
+                    {t(`quiz.q5lang.options.${key}`)}
                   </Label>
                 </div>
               ))}
@@ -415,7 +404,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           <QuizQuestion
             questionNumber={7}
             totalQuestions={TOTAL_STEPS}
-            question="O que você mais procura na sua viagem?"
+            question={t('quiz.q5.question')}
             onNext={handleNext}
             onBack={handleBack}
             canGoNext={canGoNext()}
@@ -423,38 +412,38 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           >
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground mb-4">
-                Selecione todas as opções que lhe interessam
+                {t('quiz.q5.info')}
               </p>
               {preferences.map((pref) => {
-                const isChecked = formData.preferences?.includes(pref);
+                const isChecked = formData.preferences?.includes(pref.key);
                 return (
                   <div 
-                    key={pref} 
+                    key={pref.key} 
                     className={`flex items-center space-x-3 p-4 rounded-lg border border-border hover-elevate active-elevate-2 cursor-pointer ${
                       isChecked ? 'bg-primary/5 border-primary/20' : ''
                     }`}
                     onClick={() => {
                       const current = formData.preferences || [];
-                      const updated = current.includes(pref)
-                        ? current.filter(p => p !== pref)
-                        : [...current, pref];
+                      const updated = current.includes(pref.key)
+                        ? current.filter(p => p !== pref.key)
+                        : [...current, pref.key];
                       setFormData({ ...formData, preferences: updated });
                     }}
                   >
                     <Checkbox 
-                      id={pref} 
+                      id={pref.key} 
                       checked={isChecked}
                       onCheckedChange={(checked) => {
                         const current = formData.preferences || [];
                         const updated = checked
-                          ? [...current, pref]
-                          : current.filter(p => p !== pref);
+                          ? [...current, pref.key]
+                          : current.filter(p => p !== pref.key);
                         setFormData({ ...formData, preferences: updated });
                       }}
-                      data-testid={`checkbox-preference-${pref.toLowerCase().replace(/\s+/g, '-')}`}
+                      data-testid={`checkbox-preference-${pref.key}`}
                     />
-                    <Label htmlFor={pref} className="cursor-pointer flex-1">
-                      {pref}
+                    <Label htmlFor={pref.key} className="cursor-pointer flex-1">
+                      {pref.label}
                     </Label>
                   </div>
                 );
@@ -467,7 +456,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           <QuizQuestion
             questionNumber={8}
             totalQuestions={TOTAL_STEPS}
-            question="Como você vai chegar a Lisboa?"
+            question={t('quiz.q6.question')}
             onNext={handleNext}
             onBack={handleBack}
             canGoNext={canGoNext()}
@@ -503,7 +492,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           <QuizQuestion
             questionNumber={9}
             totalQuestions={TOTAL_STEPS}
-            question="Precisa de aluguel de carro?"
+            question={t('quiz.q7.question')}
             onNext={handleNext}
             onBack={handleBack}
             canGoNext={canGoNext()}
@@ -511,7 +500,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           >
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground mb-4">
-                Recomendamos carro para visitar as vinícolas com mais flexibilidade
+                {t('quiz.q7.info')}
               </p>
               <div className="grid grid-cols-2 gap-4">
                 <Card
@@ -524,7 +513,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                   <CardContent className="p-6 text-center">
                     <Car className={`w-8 h-8 mx-auto mb-3 ${formData.needsCarRental ? 'text-primary' : 'text-muted-foreground'}`} />
                     <div className={`font-semibold ${formData.needsCarRental ? 'text-primary' : ''}`}>
-                      Sim, preciso
+                      {t('quiz.q7.yes')}
                     </div>
                   </CardContent>
                 </Card>
@@ -538,7 +527,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                   <CardContent className="p-6 text-center">
                     <CircleDot className={`w-8 h-8 mx-auto mb-3 ${formData.needsCarRental === false ? 'text-primary' : 'text-muted-foreground'}`} />
                     <div className={`font-semibold ${formData.needsCarRental === false ? 'text-primary' : ''}`}>
-                      Não preciso
+                      {t('quiz.q7.no')}
                     </div>
                   </CardContent>
                 </Card>
@@ -551,7 +540,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           <QuizQuestion
             questionNumber={10}
             totalQuestions={TOTAL_STEPS}
-            question="Gostaria de um guia privado?"
+            question={t('quiz.q8.question')}
             onNext={handleNext}
             onBack={handleBack}
             canGoNext={canGoNext()}
@@ -559,7 +548,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           >
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground mb-4">
-                Um guia especializado pode enriquecer sua experiência com conhecimentos locais
+                {t('quiz.q8.info')}
               </p>
               <div className="grid grid-cols-2 gap-4">
                 <Card
@@ -572,7 +561,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                   <CardContent className="p-6 text-center">
                     <User className={`w-8 h-8 mx-auto mb-3 ${formData.wantsPrivateGuide ? 'text-primary' : 'text-muted-foreground'}`} />
                     <div className={`font-semibold ${formData.wantsPrivateGuide ? 'text-primary' : ''}`}>
-                      Sim, quero
+                      {t('quiz.q8.yes')}
                     </div>
                   </CardContent>
                 </Card>
@@ -586,7 +575,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                   <CardContent className="p-6 text-center">
                     <CircleDot className={`w-8 h-8 mx-auto mb-3 ${formData.wantsPrivateGuide === false ? 'text-primary' : 'text-muted-foreground'}`} />
                     <div className={`font-semibold ${formData.wantsPrivateGuide === false ? 'text-primary' : ''}`}>
-                      Não preciso
+                      {t('quiz.q8.no')}
                     </div>
                   </CardContent>
                 </Card>
@@ -599,7 +588,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           <QuizQuestion
             questionNumber={11}
             totalQuestions={TOTAL_STEPS}
-            question="Já tem alojamento reservado?"
+            question={t('quiz.q9.question')}
             onNext={handleNext}
             onBack={handleBack}
             canGoNext={canGoNext()}
@@ -616,7 +605,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                 <CardContent className="p-6 text-center">
                   <Building2 className={`w-8 h-8 mx-auto mb-3 ${formData.hasAccommodation ? 'text-primary' : 'text-muted-foreground'}`} />
                   <div className={`font-semibold ${formData.hasAccommodation ? 'text-primary' : ''}`}>
-                    Sim, já tenho
+                    {t('quiz.q9.yes')}
                   </div>
                 </CardContent>
               </Card>
@@ -630,7 +619,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                 <CardContent className="p-6 text-center">
                   <CircleDot className={`w-8 h-8 mx-auto mb-3 ${formData.hasAccommodation === false ? 'text-primary' : 'text-muted-foreground'}`} />
                   <div className={`font-semibold ${formData.hasAccommodation === false ? 'text-primary' : ''}`}>
-                    Preciso de sugestões
+                    {t('quiz.q9.no')}
                   </div>
                 </CardContent>
               </Card>
@@ -642,7 +631,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           <QuizQuestion
             questionNumber={12}
             totalQuestions={TOTAL_STEPS}
-            question="Onde prefere se hospedar?"
+            question={t('quiz.q10.question')}
             onNext={handleNext}
             onBack={handleBack}
             canGoNext={canGoNext()}
@@ -660,10 +649,10 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                   <RadioGroupItem value="central_lisboa" id="central_lisboa" data-testid="radio-location-central" />
                   <div className="flex-1">
                     <Label htmlFor="central_lisboa" className="cursor-pointer font-semibold">
-                      Centro de Lisboa
+                      {t('quiz.q10.central.title')}
                     </Label>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Ideal para explorar a cidade e fazer day-trips às vinícolas
+                      {t('quiz.q10.central.description')}
                     </p>
                   </div>
                 </div>
@@ -675,10 +664,10 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                   <RadioGroupItem value="vinicolas_proximas" id="vinicolas_proximas" data-testid="radio-location-wineries" />
                   <div className="flex-1">
                     <Label htmlFor="vinicolas_proximas" className="cursor-pointer font-semibold">
-                      Perto das Vinícolas
+                      {t('quiz.q10.wineries.title')}
                     </Label>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Mergulhe na experiência enoturística com hotéis em quintas
+                      {t('quiz.q10.wineries.description')}
                     </p>
                   </div>
                 </div>
@@ -691,7 +680,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           <QuizQuestion
             questionNumber={13}
             totalQuestions={TOTAL_STEPS}
-            question="Alguma preferência especial?"
+            question={t('quiz.q11.question')}
             onNext={handleNext}
             onBack={handleBack}
             canGoNext={canGoNext()}
@@ -699,10 +688,10 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           >
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Compartilhe qualquer informação adicional que possa nos ajudar a personalizar seu roteiro
+                {t('quiz.q11.info')}
               </p>
               <Textarea
-                placeholder="Ex: Preferência por vinhos tintos, restrições alimentares, interesse em vinhos orgânicos..."
+                placeholder={t('quiz.q11.placeholder')}
                 className="min-h-[120px]"
                 value={formData.specialRequests || ''}
                 onChange={(e) => setFormData({ ...formData, specialRequests: e.target.value })}

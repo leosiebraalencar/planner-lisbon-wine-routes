@@ -21,7 +21,7 @@ function ActivityCard({ activity, periodLabel, t }: { activity: Activity; period
       {activity.isTheFork && activity.theForkPromoCode && (
         <div className="mt-2 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-md p-2">
           <p className="text-xs font-medium text-green-800 dark:text-green-200">
-            Use o código <span className="font-bold">{activity.theForkPromoCode}</span> e receba 1000 Yums!
+            {t('itinerary.theForkPromoPrefix')}<span className="font-bold">{activity.theForkPromoCode}</span>{t('itinerary.theForkPromoSuffix')}
           </p>
         </div>
       )}
@@ -42,7 +42,7 @@ function ActivityCard({ activity, periodLabel, t }: { activity: Activity; period
             className="text-primary text-sm font-medium hover:underline flex items-center gap-1"
             data-testid={`link-book-${periodLabel.toLowerCase()}`}
           >
-            {activity.isTheFork ? 'Reservar no TheFork' : t('itinerary.book')} <ExternalLink className="w-3 h-3" />
+            {activity.isTheFork ? t('itinerary.bookOnTheFork') : t('itinerary.book')} <ExternalLink className="w-3 h-3" />
           </a>
         )}
       </div>
@@ -198,7 +198,7 @@ export default function ItineraryDisplay({ itinerary, onDownload, isDownloading 
           <CardHeader className="pb-3">
             <CardTitle className="font-serif flex items-center gap-2">
               <UtensilsCrossed className="w-5 h-5 text-primary" />
-              Restaurantes Recomendados
+              {t('itinerary.recommendedRestaurants')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -219,7 +219,7 @@ export default function ItineraryDisplay({ itinerary, onDownload, isDownloading 
                       )}
                       {rest.price != null && rest.price > 0 && (
                         <div className="text-sm font-medium mt-1">
-                          Preço médio: €{rest.price.toFixed(2)}
+                          {t('itinerary.averagePrice')}: €{rest.price.toFixed(2)}
                         </div>
                       )}
                     </div>
@@ -231,14 +231,14 @@ export default function ItineraryDisplay({ itinerary, onDownload, isDownloading 
                         className="text-primary text-sm font-medium hover:underline flex items-center gap-1 flex-shrink-0"
                         data-testid={`link-restaurant-${idx}`}
                       >
-                        {rest.isTheFork ? 'Reservar no TheFork' : 'Ver'} <ExternalLink className="w-3 h-3" />
+                        {rest.isTheFork ? t('itinerary.bookOnTheFork') : t('itinerary.viewLink')} <ExternalLink className="w-3 h-3" />
                       </a>
                     )}
                   </div>
                   {rest.isTheFork && rest.theForkPromoCode && (
                     <div className="mt-2 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-md p-2">
                       <p className="text-xs font-medium text-green-800 dark:text-green-200">
-                        Use o código <span className="font-bold">{rest.theForkPromoCode}</span> e receba 1000 Yums!
+                        {t('itinerary.theForkPromoPrefix')}<span className="font-bold">{rest.theForkPromoCode}</span>{t('itinerary.theForkPromoSuffix')}
                       </p>
                     </div>
                   )}
@@ -256,7 +256,7 @@ export default function ItineraryDisplay({ itinerary, onDownload, isDownloading 
               <CardHeader className="pb-3">
                 <CardTitle className="font-serif flex items-center gap-2">
                   <Hotel className="w-5 h-5 text-primary" />
-                  Hotéis Sugeridos
+                  {t('itinerary.suggestedHotels')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -269,7 +269,7 @@ export default function ItineraryDisplay({ itinerary, onDownload, isDownloading 
                       )}
                       {hotel.budgetCategory && (
                         <Badge variant="secondary" className="mt-2">
-                          {hotel.budgetCategory === 'low' ? 'Econômico' : hotel.budgetCategory === 'medium' ? 'Moderado' : 'Premium'}
+                          {hotel.budgetCategory === 'low' ? t('itinerary.budgetTypes.economico') : hotel.budgetCategory === 'medium' ? t('itinerary.budgetTypes.moderado') : t('itinerary.budgetTypes.premium')}
                         </Badge>
                       )}
                       {hotel.affiliateUrl && (
@@ -356,14 +356,14 @@ export default function ItineraryDisplay({ itinerary, onDownload, isDownloading 
           <CardHeader className="pb-3">
             <CardTitle className="font-serif flex items-center gap-2">
               <Compass className="w-5 h-5 text-primary" />
-              Passeios Guiados
+              {t('itinerary.guidedTours')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="bg-card p-4 rounded-lg border border-border">
                 <p className="text-sm mb-3">
-                  Deseja realizar passeios com o Guia? Explore as opções no Get Your Guide
+                  {t('itinerary.guidedToursDescription')}
                 </p>
                 <a
                   href="https://gyg.me/PDKSl5qX"
@@ -372,12 +372,12 @@ export default function ItineraryDisplay({ itinerary, onDownload, isDownloading 
                   className="inline-flex items-center gap-1 text-primary text-sm font-medium hover:underline"
                   data-testid="link-getyourguide"
                 >
-                  Ver passeios no GetYourGuide <ExternalLink className="w-3 h-3" />
+                  {t('itinerary.viewToursGetYourGuide')} <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
               <div className="bg-card p-4 rounded-lg border border-border">
                 <p className="text-sm mb-2">
-                  Deseja um guia exclusivo? Entre em contato conosco e lhe enviaremos opções.
+                  {t('itinerary.exclusiveGuideText')}
                 </p>
                 <a
                   href="mailto:contacto@lisbonwineroutes.com"

@@ -35,10 +35,112 @@ const TITLE_FONT = CUSTOM_FONTS_AVAILABLE ? 'GildaDisplay' : 'Helvetica-Bold';
 const BODY_FONT = CUSTOM_FONTS_AVAILABLE ? 'OpenSans' : 'Helvetica';
 const BOLD_FONT = CUSTOM_FONTS_AVAILABLE ? 'OpenSans-Bold' : 'Helvetica-Bold';
 
+type PdfLang = 'PT' | 'EN' | 'ES' | 'DE';
+
+const pdfTranslations: Record<PdfLang, Record<string, string>> = {
+  PT: {
+    title: 'Seu Roteiro Personalizado de Enoturismo',
+    titlePersonalized: ', Seu Roteiro Personalizado de Enoturismo está pronto!',
+    duration: 'Duração:',
+    days: 'dias',
+    day: 'dia',
+    dayLabel: 'DIA',
+    budget: 'Orçamento:',
+    travelType: 'Tipo de Viagem:',
+    dates: 'Datas:',
+    datesTo: 'a',
+    highlights: 'DESTAQUES DO ROTEIRO',
+    travelTips: 'Dicas de Viagem',
+    recommendations: 'RECOMENDAÇÕES',
+    accommodation: 'Alojamento',
+    carRental: 'Aluguel de Carro',
+    averagePrice: 'Preço médio',
+    support: 'Para apoio ou assistência personalizada:',
+    moreInfo: 'Para mais informações sobre enoturismo visite:',
+    bookNow: 'Reservar',
+    morning: 'Manhã',
+    afternoon: 'Tarde',
+    evening: 'Noite',
+  },
+  EN: {
+    title: 'Your Personalized Wine Tourism Itinerary',
+    titlePersonalized: ', Your Personalized Wine Tourism Itinerary is ready!',
+    duration: 'Duration:',
+    days: 'days',
+    day: 'day',
+    dayLabel: 'DAY',
+    budget: 'Budget:',
+    travelType: 'Travel Type:',
+    dates: 'Dates:',
+    datesTo: 'to',
+    highlights: 'ITINERARY HIGHLIGHTS',
+    travelTips: 'Travel Tips',
+    recommendations: 'RECOMMENDATIONS',
+    accommodation: 'Accommodation',
+    carRental: 'Car Rental',
+    averagePrice: 'Average price',
+    support: 'For support or personalized assistance:',
+    moreInfo: 'For more information about wine tourism visit:',
+    bookNow: 'Book now',
+    morning: 'Morning',
+    afternoon: 'Afternoon',
+    evening: 'Evening',
+  },
+  ES: {
+    title: 'Tu Itinerario Personalizado de Enoturismo',
+    titlePersonalized: ', Tu Itinerario Personalizado de Enoturismo está listo!',
+    duration: 'Duración:',
+    days: 'días',
+    day: 'día',
+    dayLabel: 'DÍA',
+    budget: 'Presupuesto:',
+    travelType: 'Tipo de Viaje:',
+    dates: 'Fechas:',
+    datesTo: 'a',
+    highlights: 'DESTACADOS DEL ITINERARIO',
+    travelTips: 'Consejos de Viaje',
+    recommendations: 'RECOMENDACIONES',
+    accommodation: 'Alojamiento',
+    carRental: 'Alquiler de Coche',
+    averagePrice: 'Precio medio',
+    support: 'Para soporte o asistencia personalizada:',
+    moreInfo: 'Para más información sobre enoturismo visite:',
+    bookNow: 'Reservar',
+    morning: 'Mañana',
+    afternoon: 'Tarde',
+    evening: 'Noche',
+  },
+  DE: {
+    title: 'Ihre Personalisierte Weintourismus-Route',
+    titlePersonalized: ', Ihre Personalisierte Weintourismus-Route ist fertig!',
+    duration: 'Dauer:',
+    days: 'Tage',
+    day: 'Tag',
+    dayLabel: 'TAG',
+    budget: 'Budget:',
+    travelType: 'Reiseart:',
+    dates: 'Datum:',
+    datesTo: 'bis',
+    highlights: 'ROUTE-HIGHLIGHTS',
+    travelTips: 'Reisetipps',
+    recommendations: 'EMPFEHLUNGEN',
+    accommodation: 'Unterkunft',
+    carRental: 'Autovermietung',
+    averagePrice: 'Durchschnittspreis',
+    support: 'Für Unterstützung oder persönliche Beratung:',
+    moreInfo: 'Für weitere Informationen über Weintourismus besuchen Sie:',
+    bookNow: 'Jetzt buchen',
+    morning: 'Morgen',
+    afternoon: 'Nachmittag',
+    evening: 'Abend',
+  },
+};
+
 function renderActivityBlock(
   doc: PDFKit.PDFDocument, 
   activity: Activity, 
-  periodLabel: string
+  periodLabel: string,
+  pt: Record<string, string> = pdfTranslations.EN
 ) {
   const startY = doc.y;
   const pageWidth = doc.page.width - 100;
@@ -91,14 +193,14 @@ function renderActivityBlock(
     doc.fillColor(DARK_TEXT)
       .fontSize(9)
       .font(BOLD_FONT)
-      .text(`Preço médio: €${activity.price.toFixed(2)}`, 60);
+      .text(`${pt.averagePrice || 'Average price'}: €${activity.price.toFixed(2)}`, 60);
     doc.moveDown(0.3);
   }
   
   doc.fontSize(9)
     .font(BODY_FONT)
     .fillColor(GRAY_TEXT)
-    .text(`Duração: ${activity.duration}`, 60);
+    .text(`${pt.duration.replace(':', '')}: ${activity.duration}`, 60);
   
   doc.moveDown(0.5);
   
@@ -113,7 +215,7 @@ function renderActivityBlock(
     doc.fillColor('#ffffff')
       .fontSize(10)
       .font(BOLD_FONT)
-      .text('Book now', 60, buttonY + 7, { 
+      .text(pt.bookNow, 60, buttonY + 7, { 
         width: buttonWidth, 
         align: 'center',
         link: activity.affiliateUrl
@@ -133,10 +235,11 @@ function renderActivityBlock(
   doc.moveDown(1.5);
 }
 
-export async function generateItineraryPDF(itinerary: Itinerary, sessionId: string): Promise<string> {
+export async function generateItineraryPDF(itinerary: Itinerary, sessionId: string, lang: PdfLang = 'EN'): Promise<string> {
   return new Promise((resolve, reject) => {
     const fileName = `itinerary_${sessionId}.pdf`;
     const filePath = path.join(PDFS_DIR, fileName);
+    const pt = pdfTranslations[lang] || pdfTranslations.EN;
     
     const doc = new PDFDocument({
       size: 'A4',
@@ -161,8 +264,8 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
 
     const customerName = itinerary.quizData.customerName;
     const pdfTitle = customerName 
-      ? `${customerName}, Your Personalized Wine Tourism Itinerary`
-      : 'Personalized Wine Tourism Itinerary';
+      ? `${customerName}${pt.titlePersonalized}`
+      : pt.title;
     
     doc.fillColor(WINE_RED)
       .fontSize(22)
@@ -177,28 +280,28 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
     doc.fillColor(DARK_TEXT)
       .fontSize(11)
       .font(BOLD_FONT)
-      .text('Duration: ', 50, infoStartY);
+      .text(`${pt.duration} `, 50, infoStartY);
     doc.font(BODY_FONT)
-      .text(`${itinerary.days.length} day${itinerary.days.length > 1 ? 's' : ''}`, 120, infoStartY);
+      .text(`${itinerary.days.length} ${itinerary.days.length > 1 ? pt.days : pt.day}`, 120, infoStartY);
     
     doc.font(BOLD_FONT)
-      .text('Budget: ', 50);
+      .text(`${pt.budget} `, 50);
     const budgetY = doc.y - 13;
     doc.font(BODY_FONT)
       .text(itinerary.quizData.budget, 120, budgetY);
     
     doc.font(BOLD_FONT)
-      .text('Travel Type: ', 50);
+      .text(`${pt.travelType} `, 50);
     const travelY = doc.y - 13;
     doc.font(BODY_FONT)
       .text(itinerary.quizData.travelers, 130, travelY);
     
     if (itinerary.quizData.startDate && itinerary.quizData.endDate) {
       doc.font(BOLD_FONT)
-        .text('Dates: ', 50);
+        .text(`${pt.dates} `, 50);
       const datesY = doc.y - 13;
       doc.font(BODY_FONT)
-        .text(`${itinerary.quizData.startDate} to ${itinerary.quizData.endDate}`, 100, datesY);
+        .text(`${itinerary.quizData.startDate} ${pt.datesTo} ${itinerary.quizData.endDate}`, 100, datesY);
     }
 
     const highlightsX = doc.page.width / 2 + 20;
@@ -206,7 +309,7 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
     doc.fillColor(WINE_RED)
       .fontSize(12)
       .font(TITLE_FONT)
-      .text('ITINERARY HIGHLIGHTS', highlightsX, infoStartY, { width: columnWidth });
+      .text(pt.highlights, highlightsX, infoStartY, { width: columnWidth });
     
     doc.moveDown(0.5);
     
@@ -226,13 +329,13 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
       doc.fillColor(WINE_RED)
         .fontSize(16)
         .font(TITLE_FONT)
-        .text(`DAY ${day.day} - ${day.region.toUpperCase()}`, 50, 50);
+        .text(`${pt.dayLabel} ${day.day} - ${day.region.toUpperCase()}`, 50, 50);
       
       doc.moveDown(1.5);
 
-      renderActivityBlock(doc, day.morning, 'Morning');
-      renderActivityBlock(doc, day.afternoon, 'Afternoon');
-      renderActivityBlock(doc, day.evening, 'Evening');
+      renderActivityBlock(doc, day.morning, pt.morning, pt);
+      renderActivityBlock(doc, day.afternoon, pt.afternoon, pt);
+      renderActivityBlock(doc, day.evening, pt.evening, pt);
     });
 
     if (itinerary.recommendations.accommodation || itinerary.recommendations.carRental) {
@@ -241,7 +344,7 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
       doc.fillColor(WINE_RED)
         .fontSize(16)
         .font(TITLE_FONT)
-        .text('RECOMMENDATIONS', 50, 50);
+        .text(pt.recommendations, 50, 50);
       
       doc.moveDown(1.5);
 
@@ -249,7 +352,7 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
         doc.fillColor(WINE_RED)
           .fontSize(12)
           .font(TITLE_FONT)
-          .text('Accommodation');
+          .text(pt.accommodation);
         
         doc.moveDown(0.5);
         
@@ -277,7 +380,7 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
           doc.fillColor('#ffffff')
             .fontSize(10)
             .font(BOLD_FONT)
-            .text('Book now', 50, buttonY + 7, { 
+            .text(pt.bookNow, 50, buttonY + 7, { 
               width: buttonWidth, 
               align: 'center',
               link: itinerary.recommendations.accommodation.affiliateUrl
@@ -293,7 +396,7 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
         doc.fillColor(WINE_RED)
           .fontSize(12)
           .font(TITLE_FONT)
-          .text('Car Rental');
+          .text(pt.carRental);
         
         doc.moveDown(0.5);
         
@@ -314,7 +417,7 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
         doc.fillColor('#ffffff')
           .fontSize(10)
           .font(BOLD_FONT)
-          .text('Book now', 50, buttonY + 7, { 
+          .text(pt.bookNow, 50, buttonY + 7, { 
             width: buttonWidth, 
             align: 'center',
             link: itinerary.recommendations.carRental.affiliateUrl
@@ -330,7 +433,7 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
       doc.fillColor(WINE_RED)
         .fontSize(12)
         .font(TITLE_FONT)
-        .text('Travel Tips');
+        .text(pt.travelTips);
       
       doc.moveDown(0.5);
       
@@ -349,7 +452,7 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
     doc.fillColor(GRAY_TEXT)
       .fontSize(9)
       .font(BODY_FONT)
-      .text('For support or personalized assistance:', { align: 'center' });
+      .text(pt.support, { align: 'center' });
     
     doc.fillColor(WINE_RED)
       .text('contacto@lisbonwineroutes.com', { 
@@ -363,7 +466,7 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
     doc.fillColor(GRAY_TEXT)
       .fontSize(9)
       .font(BODY_FONT)
-      .text('Para mais informações sobre enoturismo visite:', { align: 'center' });
+      .text(pt.moreInfo, { align: 'center' });
 
     doc.fillColor(WINE_RED)
       .text('www.lisbonwineroutes.com', {

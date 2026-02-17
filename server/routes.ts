@@ -76,12 +76,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/generate-free-pdf", async (req, res) => {
     try {
       const itinerary = itinerarySchema.parse(req.body);
+      const lang = (req.query.lang as string || 'EN').toUpperCase() as 'PT' | 'EN' | 'ES' | 'DE';
+      const validLang = ['PT', 'EN', 'ES', 'DE'].includes(lang) ? lang : 'EN';
       
       // Generate unique ID for this free download
       const downloadId = `free_${Date.now()}_${Math.random().toString(36).substring(7)}`;
       
       // Generate PDF directly
-      const pdfPath = await generateItineraryPDF(itinerary, downloadId);
+      const pdfPath = await generateItineraryPDF(itinerary, downloadId, validLang);
       
       if (!fs.existsSync(pdfPath)) {
         return res.status(500).json({ error: 'PDF generation failed' });

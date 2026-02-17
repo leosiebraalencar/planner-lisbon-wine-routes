@@ -1,7 +1,10 @@
 import { Instagram, Mail } from "lucide-react";
 import logoImage from "@assets/marca-lisbon-wine-routes-1_1763141966678.png";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Footer() {
+  const { t } = useLanguage();
+  
   return (
     <footer className="bg-card border-t border-border py-12">
       <div className="max-w-7xl mx-auto px-4">
@@ -15,12 +18,12 @@ export default function Footer() {
               />
             </div>
             <p className="text-sm text-muted-foreground">
-              Descobrindo as melhores experiências de enoturismo em Lisboa
+              {t('footer.description')}
             </p>
           </div>
           
           <div>
-            <h3 className="font-semibold mb-4">Sobre</h3>
+            <h3 className="font-semibold mb-4">{t('footer.about')}</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <a 
@@ -30,7 +33,7 @@ export default function Footer() {
                   className="text-muted-foreground hover:text-foreground transition-colors"
                   data-testid="link-about"
                 >
-                  Sobre o Projeto
+                  {t('footer.aboutProject')}
                 </a>
               </li>
               <li>
@@ -41,14 +44,14 @@ export default function Footer() {
                   className="text-muted-foreground hover:text-foreground transition-colors"
                   data-testid="link-main-site"
                 >
-                  Blog Principal
+                  {t('footer.mainBlog')}
                 </a>
               </li>
             </ul>
           </div>
           
           <div>
-            <h3 className="font-semibold mb-4">Rotas</h3>
+            <h3 className="font-semibold mb-4">{t('footer.routes')}</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <a 
@@ -57,7 +60,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Rota dos Vinhos Oeste
+                  {t('footer.westRoute')}
                 </a>
               </li>
               <li>
@@ -67,14 +70,14 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Enoturismo em Lisboa
+                  {t('footer.tourism')}
                 </a>
               </li>
             </ul>
           </div>
           
           <div>
-            <h3 className="font-semibold mb-4">Contato</h3>
+            <h3 className="font-semibold mb-4">{t('footer.contact')}</h3>
             <ul className="space-y-3 text-sm">
               <li>
                 <a 
@@ -103,7 +106,7 @@ export default function Footer() {
         </div>
         
         <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
-          <p>© 2025 Lisbon Wine Routes. Todos os direitos reservados.</p>
+          <p>© 2025 Lisbon Wine Routes. {t('footer.rights')}</p>
         </div>
       </div>
     </footer>

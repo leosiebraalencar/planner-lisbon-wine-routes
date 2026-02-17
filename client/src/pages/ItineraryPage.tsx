@@ -37,7 +37,7 @@ export default function ItineraryPage({ itinerary, submissionId }: ItineraryPage
   const doDownload = async () => {
     setIsProcessing(true);
     try {
-      const res = await apiRequest('POST', '/api/generate-free-pdf', itinerary);
+      const res = await apiRequest('POST', `/api/generate-free-pdf?lang=${language}`, itinerary);
 
       if (!res.ok) {
         const error = await res.json();
@@ -63,8 +63,8 @@ export default function ItineraryPage({ itinerary, submissionId }: ItineraryPage
     } catch (error) {
       console.error('Error downloading PDF:', error);
       toast({
-        title: "Error",
-        description: "Failed to download PDF. Please try again.",
+        title: t('itinerary.downloadError'),
+        description: t('itinerary.downloadErrorDescription'),
         variant: "destructive",
       });
     } finally {
