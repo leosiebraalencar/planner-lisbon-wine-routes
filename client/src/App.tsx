@@ -169,16 +169,32 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
     return undefined;
   };
 
+  const preferredCuisines: string[] = [];
+  if (quizData.preferences.includes('Gastronomia internacional e fusion')) {
+    preferredCuisines.push('internacional');
+  }
+  if (quizData.preferences.includes('Gastronomia portuguesa tradicional')) {
+    preferredCuisines.push('tradicional');
+  }
+
   const getUnusedRestaurant = (region: string, forDinner: boolean): RestaurantData | undefined => {
     const candidates = ALL_RESTAURANTS.filter(r => {
       if (usedRestaurants.has(r.name)) return false;
       const regionMatch = r.region === region || r.region === 'Lisboa';
       if (!regionMatch) return false;
+      if (r.cuisineType === 'brunch' && forDinner) return false;
       if (forDinner) {
         return Object.values(r.openingHours).some(h => h !== 'Encerrado' && /19:|20:|21:|18:/.test(h));
       }
       return Object.values(r.openingHours).some(h => h !== 'Encerrado' && /1[0-2]:|09:|10:|11:/.test(h));
     });
+
+    if (preferredCuisines.length > 0) {
+      const cuisineMatched = candidates.filter(r => preferredCuisines.includes(r.cuisineType));
+      const cuisineBudget = cuisineMatched.filter(r => r.budgetCategory === budgetCat);
+      if (cuisineBudget.length > 0) return cuisineBudget[0];
+      if (cuisineMatched.length > 0) return cuisineMatched[0];
+    }
 
     const budgetMatched = candidates.filter(r => r.budgetCategory === budgetCat);
     if (budgetMatched.length > 0) return budgetMatched[0];
@@ -210,7 +226,11 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
     if (!afternoonWinery) afternoonWinery = regionWineries[regionName]?.[1] || ALL_WINERIES[1];
 
     const morningExp = getExperienceByBudget(morningWinery, quizData.budget);
-    const afternoonExp = getExperienceByBudget(afternoonWinery, quizData.budget);
+    let afternoonExp = getExperienceByBudget(afternoonWinery, quizData.budget);
+    if (afternoonExp && /brunch/i.test(afternoonExp.name)) {
+      const alt = afternoonWinery.experiences.find(e => !/brunch/i.test(e.name));
+      afternoonExp = alt || afternoonExp;
+    }
     const actualRegion = morningWinery.region;
 
     const dinnerRestaurant = getUnusedRestaurant(actualRegion, true);
@@ -275,10 +295,19 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
   }
 
   const usedRegions = Array.from(new Set(days.map(d => d.region)));
-  const recommendedRestaurants = ALL_RESTAURANTS
+  const filteredForRec = ALL_RESTAURANTS
     .filter(r => !usedRestaurants.has(r.name))
     .filter(r => usedRegions.includes(r.region) || r.region === 'Lisboa')
-    .filter(r => r.budgetCategory === budgetCat || budgetCat === 'moderado')
+    .filter(r => r.budgetCategory === budgetCat || budgetCat === 'moderado');
+
+  let recommendedList = filteredForRec;
+  if (preferredCuisines.length > 0) {
+    const cuisineFirst = filteredForRec.filter(r => preferredCuisines.includes(r.cuisineType));
+    const rest = filteredForRec.filter(r => !preferredCuisines.includes(r.cuisineType));
+    recommendedList = [...cuisineFirst, ...rest];
+  }
+
+  const recommendedRestaurants = recommendedList
     .slice(0, 3)
     .map(r => ({
       name: r.name,

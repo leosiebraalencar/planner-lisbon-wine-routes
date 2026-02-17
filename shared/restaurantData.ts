@@ -9,6 +9,7 @@ export interface RestaurantData {
   description: string;
   rating: number;
   budgetCategory: 'economico' | 'moderado' | 'premium';
+  cuisineType: 'tradicional' | 'internacional' | 'wine_bar' | 'brunch';
   openingHours: Record<string, string>;
 }
 
@@ -24,6 +25,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Prove os vinhos portugueses de pequenos produtores com os melhores sommelier locais.',
     rating: 5.0,
     budgetCategory: 'premium',
+    cuisineType: 'wine_bar',
     openingHours: {
       'segunda-feira': 'Encerrado',
       'terça-feira': 'Encerrado',
@@ -45,6 +47,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Inclui visita guiada e prova de 3 vinhos',
     rating: 5.0,
     budgetCategory: 'moderado',
+    cuisineType: 'tradicional',
     openingHours: {
       'segunda-feira': '09:30-18:30',
       'terça-feira': '09:30-18:30',
@@ -66,6 +69,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Visita guiada à Casa Museu, Jardins e Adegas, seguida de Prova de 4 vinhos premium com almoço ou jantar',
     rating: 5.0,
     budgetCategory: 'moderado',
+    cuisineType: 'tradicional',
     openingHours: {
       'segunda-feira': '12:00-15:30+19:00-22:30',
       'terça-feira': '12:00-15:30+19:00-22:30',
@@ -87,6 +91,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Brunch Vínico em harmonização com os vinhos da Quinta do Gradil',
     rating: 5.0,
     budgetCategory: 'moderado',
+    cuisineType: 'brunch',
     openingHours: {
       'segunda-feira': '09:00-18:00',
       'terça-feira': '09:00-18:00',
@@ -108,6 +113,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Comida de conforto com um toque sofisticado por Eduardo Araújo e Cristina Soares',
     rating: 4.6,
     budgetCategory: 'economico',
+    cuisineType: 'tradicional',
     openingHours: {
       'segunda-feira': 'Encerrado',
       'terça-feira': '12:30-15:00',
@@ -129,6 +135,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Conceito de amizade e partilha ao sabor de tapas e vinhos regionais com vista para o Castelo de Palmela',
     rating: 4.6,
     budgetCategory: 'economico',
+    cuisineType: 'tradicional',
     openingHours: {
       'segunda-feira': 'Encerrado',
       'terça-feira': 'Encerrado',
@@ -150,6 +157,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Ambiente elegante e acolhedor, ideal para quem busca uma experiência sofisticada de bacalhau',
     rating: 5.0,
     budgetCategory: 'moderado',
+    cuisineType: 'tradicional',
     openingHours: {
       'segunda-feira': '12:00-23:00',
       'terça-feira': '12:00-23:00',
@@ -171,6 +179,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Espaço descontraído e cosmopolita com oferta gastronómica cuidadosamente selecionada',
     rating: 5.0,
     budgetCategory: 'moderado',
+    cuisineType: 'wine_bar',
     openingHours: {
       'segunda-feira': '19:00-00:00',
       'terça-feira': '19:00-00:00',
@@ -192,6 +201,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'O melhor bar de vinhos de Lisboa, liderado por Pedro, com combinações requintadas',
     rating: 5.0,
     budgetCategory: 'economico',
+    cuisineType: 'wine_bar',
     openingHours: {
       'segunda-feira': '16:00-22:00',
       'terça-feira': '16:00-22:00',
@@ -213,6 +223,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Restaurante campestre dentro das vinhas da Quinta Chão do Prado, cozinha Regional e Criativa',
     rating: 4.6,
     budgetCategory: 'economico',
+    cuisineType: 'tradicional',
     openingHours: {
       'segunda-feira': 'Encerrado',
       'terça-feira': '12:00-16:00+19:30-23:00',
@@ -234,6 +245,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Especializado em pratos regionais e tradicionais com toque de modernidade, ambiente familiar',
     rating: 5.0,
     budgetCategory: 'moderado',
+    cuisineType: 'tradicional',
     openingHours: {
       'segunda-feira': 'Encerrado',
       'terça-feira': 'Encerrado',
@@ -255,6 +267,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Visita à adega e prova de vinhos biológicos harmonizados com petiscos regionais',
     rating: 4.5,
     budgetCategory: 'moderado',
+    cuisineType: 'tradicional',
     openingHours: {
       'segunda-feira': 'Encerrado',
       'terça-feira': 'Encerrado',
@@ -276,6 +289,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Ambiente acolhedor remetendo à antiga adega, pratos bem confeccionados com vinhos de produção própria',
     rating: 5.0,
     budgetCategory: 'economico',
+    cuisineType: 'tradicional',
     openingHours: {
       'segunda-feira': '12:00-20:00',
       'terça-feira': 'Encerrado',
@@ -297,6 +311,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Espaço gastronómico dedicado ao Brunch com pratos autorais e cerveja artesanal',
     rating: 4.6,
     budgetCategory: 'economico',
+    cuisineType: 'brunch',
     openingHours: {
       'segunda-feira': 'Encerrado',
       'terça-feira': 'Encerrado',
@@ -318,6 +333,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Ícone gastronómico de cozinha minhota e portuguesa com sabores autênticos',
     rating: 5.0,
     budgetCategory: 'moderado',
+    cuisineType: 'tradicional',
     openingHours: {
       'segunda-feira': '12:00-15:30+18:30-23:00',
       'terça-feira': '12:00-15:30+18:30-23:00',
@@ -339,6 +355,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Decoração deslumbrante e ambiente sofisticado, experiência gastronômica de alto nível',
     rating: 5.0,
     budgetCategory: 'moderado',
+    cuisineType: 'tradicional',
     openingHours: {
       'segunda-feira': 'Encerrado',
       'terça-feira': 'Encerrado',
@@ -360,6 +377,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Ambiente vibrante e decoração requintada, gastronomia asiática de topo',
     rating: 5.0,
     budgetCategory: 'premium',
+    cuisineType: 'internacional',
     openingHours: {
       'segunda-feira': '12:00-00:00',
       'terça-feira': '12:00-00:00',
@@ -381,6 +399,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Ingredientes sazonais de produtores locais, carta de vinhos portugueses orgânicos',
     rating: 5.0,
     budgetCategory: 'premium',
+    cuisineType: 'wine_bar',
     openingHours: {
       'segunda-feira': '16:30-00:00',
       'terça-feira': '16:30-00:00',
@@ -402,6 +421,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Ambiente elegante com sushis selecionados e sobremesas divinais',
     rating: 5.0,
     budgetCategory: 'premium',
+    cuisineType: 'internacional',
     openingHours: {
       'segunda-feira': '12:30-15:00+19:30-23:00',
       'terça-feira': '12:30-15:00+19:30-23:00',
@@ -423,6 +443,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Qualidade excepcional de peixe e marisco, com tártaro de atum e arroz de berbigão',
     rating: 5.0,
     budgetCategory: 'moderado',
+    cuisineType: 'internacional',
     openingHours: {
       'segunda-feira': '12:30-15:45+19:00-22:30',
       'terça-feira': '12:30-15:45+19:00-22:30',
@@ -444,6 +465,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Pizzas bem confecionadas e generosas, massas saborosas e risoto de cogumelos e trufa',
     rating: 4.6,
     budgetCategory: 'economico',
+    cuisineType: 'internacional',
     openingHours: {
       'segunda-feira': '12:00-17:00+19:00-00:00',
       'terça-feira': '12:00-17:00+19:00-00:00',
@@ -465,6 +487,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Ambiente acolhedor com decoração temática de vinhos, cremoso de cogumelos e mousse de chocolate',
     rating: 5.0,
     budgetCategory: 'economico',
+    cuisineType: 'tradicional',
     openingHours: {
       'segunda-feira': '12:00-15:30+19:00-22:30',
       'terça-feira': '12:00-15:30+19:00-22:30',
@@ -486,6 +509,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Vistas panorâmicas de Lisboa com música ao vivo e DJ',
     rating: 5.0,
     budgetCategory: 'premium',
+    cuisineType: 'internacional',
     openingHours: {
       'segunda-feira': '18:30-01:00',
       'terça-feira': '18:30-01:00',
@@ -507,6 +531,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Experiência culinária sublime em ambiente íntimo com vista espetacular de Lisboa',
     rating: 5.0,
     budgetCategory: 'premium',
+    cuisineType: 'internacional',
     openingHours: {
       'segunda-feira': 'Encerrado',
       'terça-feira': '19:30-00:00',
@@ -528,6 +553,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Fusão inovadora de sabores portugueses, franceses e asiáticos com vista histórica',
     rating: 4.6,
     budgetCategory: 'premium',
+    cuisineType: 'internacional',
     openingHours: {
       'segunda-feira': 'Encerrado',
       'terça-feira': '19:30-21:15',
@@ -549,6 +575,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Elegância e vistas deslumbrantes, experiência gastronômica memorável',
     rating: 4.6,
     budgetCategory: 'premium',
+    cuisineType: 'tradicional',
     openingHours: {
       'segunda-feira': '12:30-15:30+19:30-22:30',
       'terça-feira': '12:30-15:30+19:30-22:30',
@@ -570,6 +597,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Taberna com colecção de gravatas autografadas, pratos típicos portugueses',
     rating: 4.6,
     budgetCategory: 'economico',
+    cuisineType: 'tradicional',
     openingHours: {
       'segunda-feira': 'Encerrado',
       'terça-feira': '12:10-15:00+19:00-22:30',
@@ -591,6 +619,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Ambiente sofisticado com chirashi e sobremesas incríveis, técnica e criatividade',
     rating: 4.6,
     budgetCategory: 'premium',
+    cuisineType: 'internacional',
     openingHours: {
       'segunda-feira': 'Encerrado',
       'terça-feira': '12:30-00:00',
@@ -612,6 +641,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Ambiente intimista com sushi e sashimi de qualidade excepcional pelo Chef Paulo Morais',
     rating: 5.0,
     budgetCategory: 'premium',
+    cuisineType: 'internacional',
     openingHours: {
       'segunda-feira': 'Encerrado',
       'terça-feira': '19:00-21:00',
@@ -633,6 +663,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'Restaurante italiano acolhedor e elegante, tagliatelle de camarão tigre e tiramisu',
     rating: 5.0,
     budgetCategory: 'moderado',
+    cuisineType: 'internacional',
     openingHours: {
       'segunda-feira': '12:30-15:00+19:00-22:30',
       'terça-feira': '12:30-15:00+19:00-22:30',
@@ -654,6 +685,7 @@ export const ALL_RESTAURANTS: RestaurantData[] = [
     description: 'No Mercado TimeOut, filetes de peixe galo, Brás de bacalhau e mousse de chocolate',
     rating: 4.6,
     budgetCategory: 'economico',
+    cuisineType: 'tradicional',
     openingHours: {
       'segunda-feira': 'Encerrado',
       'terça-feira': '12:00-17:30+17:45-23:00',
