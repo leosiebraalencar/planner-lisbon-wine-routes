@@ -4,6 +4,9 @@ import Header from "@/components/Header";
 import QuizProgress from "@/components/QuizProgress";
 import QuizQuestion from "@/components/QuizQuestion";
 import ProUpsellBanner from "@/components/ProUpsellBanner";
+import Seo from "@/components/Seo";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { getSeoData } from "@/lib/seoData";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -106,8 +109,12 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
     { value: 'grupo', label: 'Em Grupo', icon: UsersRound }
   ];
 
+  const { language } = useLanguage();
+  const seo = getSeoData('quiz', language);
+
   return (
     <div className="min-h-screen bg-background">
+      <Seo {...seo} />
       <Header />
       <div className="py-8 px-4">
       <div className="max-w-4xl mx-auto">

@@ -58,6 +58,14 @@ Preferred communication style: Simple, everyday language.
 4. Stripe payment for PDF download
 5. Pro upsell banner throughout the flow linking to /pro comparison page
 
+### SEO & Multilingual Optimization
+- **react-helmet-async**: Dynamic meta tags (title, description, OG, Twitter Card, JSON-LD, hreflang)
+- **Seo.tsx component**: Renders per-page, per-language SEO metadata via Helmet
+- **seoData.ts**: Centralized SEO metadata for all pages (home, quiz, itinerary, pro) x languages (PT, EN, ES, DE)
+- **Static files**: robots.txt, sitemap.xml, llms.txt in client/public/
+- **Subdomain**: tours.lisbonwineroutes.com (no conflict with main domain robots/sitemap)
+- **Hreflang**: Page-specific alternate links for pt/en/es/x-default
+
 ## External Dependencies
 
 ### Third-Party Services

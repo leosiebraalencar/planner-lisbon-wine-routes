@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <!-- Home Page -->
+  <url>
+    <loc>https://tours.lisbonwineroutes.com/</loc>
+    <lastmod>2026-02-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://tours.lisbonwineroutes.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://tours.lisbonwineroutes.com/en/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://tours.lisbonwineroutes.com/es/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tours.lisbonwineroutes.com/en/" />
+  </url>
+
+  <url>
+    <loc>https://tours.lisbonwineroutes.com/en/</loc>
+    <lastmod>2026-02-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://tours.lisbonwineroutes.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://tours.lisbonwineroutes.com/en/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://tours.lisbonwineroutes.com/es/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tours.lisbonwineroutes.com/en/" />
+  </url>
+
+  <url>
+    <loc>https://tours.lisbonwineroutes.com/es/</loc>
+    <lastmod>2026-02-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://tours.lisbonwineroutes.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://tours.lisbonwineroutes.com/en/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://tours.lisbonwineroutes.com/es/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tours.lisbonwineroutes.com/en/" />
+  </url>
+
+  <!-- Quiz Page -->
+  <url>
+    <loc>https://tours.lisbonwineroutes.com/quiz</loc>
+    <lastmod>2026-02-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://tours.lisbonwineroutes.com/quiz" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://tours.lisbonwineroutes.com/en/quiz" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://tours.lisbonwineroutes.com/es/quiz" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tours.lisbonwineroutes.com/en/quiz" />
+  </url>
+
+  <url>
+    <loc>https://tours.lisbonwineroutes.com/en/quiz</loc>
+    <lastmod>2026-02-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://tours.lisbonwineroutes.com/quiz" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://tours.lisbonwineroutes.com/en/quiz" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://tours.lisbonwineroutes.com/es/quiz" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tours.lisbonwineroutes.com/en/quiz" />
+  </url>
+
+  <url>
+    <loc>https://tours.lisbonwineroutes.com/es/quiz</loc>
+    <lastmod>2026-02-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://tours.lisbonwineroutes.com/quiz" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://tours.lisbonwineroutes.com/en/quiz" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://tours.lisbonwineroutes.com/es/quiz" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tours.lisbonwineroutes.com/en/quiz" />
+  </url>
+
+  <!-- Pro Page -->
+  <url>
+    <loc>https://tours.lisbonwineroutes.com/pro</loc>
+    <lastmod>2026-02-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://tours.lisbonwineroutes.com/pro" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://tours.lisbonwineroutes.com/en/pro" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://tours.lisbonwineroutes.com/es/pro" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tours.lisbonwineroutes.com/en/pro" />
+  </url>
+
+  <url>
+    <loc>https://tours.lisbonwineroutes.com/en/pro</loc>
+    <lastmod>2026-02-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://tours.lisbonwineroutes.com/pro" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://tours.lisbonwineroutes.com/en/pro" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://tours.lisbonwineroutes.com/es/pro" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tours.lisbonwineroutes.com/en/pro" />
+  </url>
+
+  <url>
+    <loc>https://tours.lisbonwineroutes.com/es/pro</loc>
+    <lastmod>2026-02-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://tours.lisbonwineroutes.com/pro" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://tours.lisbonwineroutes.com/en/pro" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://tours.lisbonwineroutes.com/es/pro" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tours.lisbonwineroutes.com/en/pro" />
+  </url>
+
+</urlset>

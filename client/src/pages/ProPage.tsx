@@ -4,6 +4,8 @@ import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Seo from "@/components/Seo";
+import { getSeoData } from "@/lib/seoData";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,7 +40,7 @@ const features = [
 ];
 
 export default function ProPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -104,8 +106,11 @@ export default function ProPage() {
     return <span className="text-sm">{value}</span>;
   };
 
+  const seo = getSeoData('pro', language);
+
   return (
     <div className="min-h-screen bg-background">
+      <Seo {...seo} />
       <Header />
       
       <main className="container mx-auto px-4 py-12">

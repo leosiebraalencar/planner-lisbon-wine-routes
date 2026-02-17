@@ -1,0 +1,22 @@
+# LLM Guidance for Lisbon Wine Routes
+
+User-agent: *
+
+## About
+Lisbon Wine Routes is a service that uses AI to generate personalized wine tourism itineraries for Lisbon, Portugal. The service is available in Portuguese, English, and Spanish.
+
+## Keywords
+- Roteiro personalizado de enoturismo (PT)
+- Wine tourism itinerary in Lisbon (EN)
+- Ruta enoturística en Lisboa (ES)
+
+## Service Summary
+- AI-powered itinerary creation
+- Curated winery, restaurant, and accommodation suggestions
+- Downloadable PDF guides
+- Pay-what-you-want model
+
+## URLs
+- EN (Default): https://tours.lisbonwineroutes.com/en/
+- PT: https://tours.lisbonwineroutes.com/
+- ES: https://tours.lisbonwineroutes.com/es/

@@ -2,6 +2,8 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import ItineraryDisplay from "@/components/ItineraryDisplay";
 import Footer from "@/components/Footer";
+import Seo from "@/components/Seo";
+import { getSeoData } from "@/lib/seoData";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -19,7 +21,7 @@ const DONATION_URL = import.meta.env.VITE_STRIPE_DONATION_URL || STRIPE_DONATION
 
 export default function ItineraryPage({ itinerary }: ItineraryPageProps) {
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [isProcessing, setIsProcessing] = useState(false);
   const [showDonationModal, setShowDonationModal] = useState(false);
 
@@ -67,8 +69,11 @@ export default function ItineraryPage({ itinerary }: ItineraryPageProps) {
     setShowDonationModal(false);
   };
 
+  const seo = getSeoData('itinerary', language);
+
   return (
     <div className="min-h-screen bg-background">
+      <Seo {...seo} />
       <Header />
       <div className="py-12 px-4">
         <ItineraryDisplay itinerary={itinerary} onDownload={handleDownload} isDownloading={isProcessing} />
