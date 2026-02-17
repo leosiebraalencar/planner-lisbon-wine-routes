@@ -21,7 +21,8 @@ export default function ProUpsellBanner({ variant = 'minimal', className = '' }:
             </p>
             <Link 
               href="/pro"
-              className="text-sm text-accent hover:underline mt-2 inline-block"
+              className="text-sm hover:underline mt-2 inline-block"
+              style={{ color: '#84270B' }}
               data-testid="link-compare-pro"
             >
               {t('proUpsell.compare')}
@@ -40,7 +41,8 @@ export default function ProUpsellBanner({ variant = 'minimal', className = '' }:
         {' '}
         <Link 
           href="/pro"
-          className="text-accent hover:underline"
+          className="hover:underline"
+          style={{ color: '#84270B' }}
           data-testid="link-compare-pro"
         >
           {t('proUpsell.compare')}

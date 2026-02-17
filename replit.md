@@ -51,12 +51,23 @@ Preferred communication style: Simple, everyday language.
 - **Implementation**: Custom i18n system in client/src/lib/i18n.ts
 - **Context**: LanguageContext provides t() translation function
 
+### Restaurant Data (shared/restaurantData.ts)
+- 31 restaurants with TheFork integration and promo code "30B64ED"
+- Each restaurant has: name, address, description, region, budgetCategory (economico/moderado/premium), averagePrice, openingHours, isTheFork, theForkPromoCode, link
+- Helper functions: getRestaurantsByRegionAndBudget(), getRestaurantsForLunch(), getRestaurantsForDinner()
+
+### Hotel Data (shared/hotelData.ts)
+- 33 hotels categorized by budget (low/medium/high) and region
+- Budget mapping: economico→[low,medium], moderado→[medium,high], premium→[high]
+- Each hotel has: name, budgetCategory, affiliateUrl, description, region, isGenericListing
+- Helper functions: getHotelsByBudget(), getHotelsByRegion(), getHotelsByBudgetAndRegion()
+
 ### Key User Flows
 1. Landing page with hero, value proposition, and how-it-works sections
-2. 11-step quiz collecting travel preferences
-3. AI-generated itinerary display with booking affiliate links
+2. 12-step quiz collecting travel preferences (duration, dates, budget, travelers, language, preferences, arrival, car rental, guide, accommodation, location, special requests)
+3. Itinerary display with winery visits, restaurant recommendations (TheFork promo codes), and hotel suggestions with affiliate links
 4. Stripe payment for PDF download
-5. Pro upsell banner throughout the flow linking to /pro comparison page
+5. Pro upsell banner throughout the flow (link color #84270B)
 
 ### SEO & Multilingual Optimization
 - **react-helmet-async**: Dynamic meta tags (title, description, OG, Twitter Card, JSON-LD, hreflang)

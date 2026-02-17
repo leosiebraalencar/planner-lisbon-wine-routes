@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, Calendar, Download, DollarSign, ExternalLink, Car, Building2, Sparkles } from "lucide-react";
+import { MapPin, Clock, Calendar, Download, DollarSign, ExternalLink, Car, Building2, Sparkles, UtensilsCrossed, Hotel } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { Itinerary, Activity } from "@shared/schema";
 
@@ -18,6 +18,13 @@ function ActivityCard({ activity, periodLabel, t }: { activity: Activity; period
       )}
       <div className="text-sm text-muted-foreground mb-2">{activity.activity}</div>
       <p className="text-sm">{activity.description}</p>
+      {activity.isTheFork && activity.theForkPromoCode && (
+        <div className="mt-2 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-md p-2">
+          <p className="text-xs font-medium text-green-800 dark:text-green-200">
+            Use o código <span className="font-bold">{activity.theForkPromoCode}</span> e receba 1000 Yums!
+          </p>
+        </div>
+      )}
       <div className="flex items-center justify-between mt-2 flex-wrap gap-2">
         <div className="flex items-center gap-3">
           <span className="text-sm text-muted-foreground">{t('itinerary.durationLabel')}: {activity.duration}</span>
@@ -35,7 +42,7 @@ function ActivityCard({ activity, periodLabel, t }: { activity: Activity; period
             className="text-primary text-sm font-medium hover:underline flex items-center gap-1"
             data-testid={`link-book-${periodLabel.toLowerCase()}`}
           >
-            {t('itinerary.book')} <ExternalLink className="w-3 h-3" />
+            {activity.isTheFork ? 'Reservar no TheFork' : t('itinerary.book')} <ExternalLink className="w-3 h-3" />
           </a>
         )}
       </div>
@@ -181,64 +188,161 @@ export default function ItineraryDisplay({ itinerary, onDownload, isDownloading 
         </CardContent>
       </Card>
 
-      {(itinerary.recommendations.accommodation || itinerary.recommendations.carRental) && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          {itinerary.recommendations.accommodation && (
+      {itinerary.recommendations.restaurants && itinerary.recommendations.restaurants.length > 0 && (
+        <Card className="border-border mb-8">
+          <CardHeader className="pb-3">
+            <CardTitle className="font-serif flex items-center gap-2">
+              <UtensilsCrossed className="w-5 h-5 text-primary" />
+              Restaurantes Recomendados
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {itinerary.recommendations.restaurants.map((rest, idx) => (
+                <div key={idx} className="bg-card p-4 rounded-lg border border-border">
+                  <div className="flex items-start justify-between gap-2 flex-wrap">
+                    <div className="flex-1">
+                      <div className="font-medium">{rest.name}</div>
+                      {rest.address && (
+                        <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                          <MapPin className="w-3 h-3" />
+                          {rest.address}
+                        </div>
+                      )}
+                      {rest.description && (
+                        <p className="text-sm text-muted-foreground mt-1">{rest.description}</p>
+                      )}
+                      {rest.price != null && rest.price > 0 && (
+                        <div className="text-sm font-medium mt-1">
+                          Preço médio: €{rest.price.toFixed(2)}
+                        </div>
+                      )}
+                    </div>
+                    {rest.affiliateUrl && (
+                      <a
+                        href={rest.affiliateUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary text-sm font-medium hover:underline flex items-center gap-1 flex-shrink-0"
+                        data-testid={`link-restaurant-${idx}`}
+                      >
+                        {rest.isTheFork ? 'Reservar no TheFork' : 'Ver'} <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
+                  </div>
+                  {rest.isTheFork && rest.theForkPromoCode && (
+                    <div className="mt-2 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-md p-2">
+                      <p className="text-xs font-medium text-green-800 dark:text-green-200">
+                        Use o código <span className="font-bold">{rest.theForkPromoCode}</span> e receba 1000 Yums!
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {(itinerary.recommendations.accommodation || itinerary.recommendations.carRental || (itinerary.recommendations.hotels && itinerary.recommendations.hotels.length > 0)) && (
+        <div className="space-y-4 mb-8">
+          {itinerary.recommendations.hotels && itinerary.recommendations.hotels.length > 0 && (
             <Card className="border-border">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Building2 className="w-5 h-5 text-primary" />
-                  {t('itinerary.accommodation')}
+                <CardTitle className="font-serif flex items-center gap-2">
+                  <Hotel className="w-5 h-5 text-primary" />
+                  Hotéis Sugeridos
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="font-medium">{itinerary.recommendations.accommodation.name}</div>
-                {itinerary.recommendations.accommodation.address && (
-                  <div className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                    <MapPin className="w-3 h-3" />
-                    {itinerary.recommendations.accommodation.address}
-                  </div>
-                )}
-                {itinerary.recommendations.accommodation.affiliateUrl && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {itinerary.recommendations.hotels.map((hotel, idx) => (
+                    <div key={idx} className="bg-card p-4 rounded-lg border border-border">
+                      <div className="font-medium">{hotel.name}</div>
+                      {hotel.description && (
+                        <p className="text-sm text-muted-foreground mt-1">{hotel.description}</p>
+                      )}
+                      {hotel.budgetCategory && (
+                        <Badge variant="secondary" className="mt-2">
+                          {hotel.budgetCategory === 'low' ? 'Econômico' : hotel.budgetCategory === 'medium' ? 'Moderado' : 'Premium'}
+                        </Badge>
+                      )}
+                      {hotel.affiliateUrl && (
+                        <a
+                          href={hotel.affiliateUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-primary text-sm font-medium hover:underline mt-2"
+                          data-testid={`link-hotel-${idx}`}
+                        >
+                          {t('itinerary.bookNow')} <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {itinerary.recommendations.accommodation && (
+              <Card className="border-border">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Building2 className="w-5 h-5 text-primary" />
+                    {t('itinerary.accommodation')}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="font-medium">{itinerary.recommendations.accommodation.name}</div>
+                  {itinerary.recommendations.accommodation.address && (
+                    <div className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                      <MapPin className="w-3 h-3" />
+                      {itinerary.recommendations.accommodation.address}
+                    </div>
+                  )}
+                  {itinerary.recommendations.accommodation.affiliateUrl && (
+                    <a
+                      href={itinerary.recommendations.accommodation.affiliateUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-primary text-sm font-medium hover:underline mt-3"
+                      data-testid="link-book-accommodation"
+                    >
+                      {t('itinerary.bookNow')} <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+            
+            {itinerary.recommendations.carRental && (
+              <Card className="border-border">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Car className="w-5 h-5 text-primary" />
+                    {t('itinerary.carRental')}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="font-medium">{itinerary.recommendations.carRental.provider}</div>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {t('itinerary.carRentalInfo')}
+                  </p>
                   <a
-                    href={itinerary.recommendations.accommodation.affiliateUrl}
+                    href={itinerary.recommendations.carRental.affiliateUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 text-primary text-sm font-medium hover:underline mt-3"
-                    data-testid="link-book-accommodation"
+                    data-testid="link-book-car"
                   >
-                    {t('itinerary.bookNow')} <ExternalLink className="w-3 h-3" />
+                    {t('itinerary.bookCar')} <ExternalLink className="w-3 h-3" />
                   </a>
-                )}
-              </CardContent>
-            </Card>
-          )}
-          
-          {itinerary.recommendations.carRental && (
-            <Card className="border-border">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Car className="w-5 h-5 text-primary" />
-                  {t('itinerary.carRental')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="font-medium">{itinerary.recommendations.carRental.provider}</div>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {t('itinerary.carRentalInfo')}
-                </p>
-                <a
-                  href={itinerary.recommendations.carRental.affiliateUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-primary text-sm font-medium hover:underline mt-3"
-                  data-testid="link-book-car"
-                >
-                  {t('itinerary.bookCar')} <ExternalLink className="w-3 h-3" />
-                </a>
-              </CardContent>
-            </Card>
-          )}
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
       )}
       

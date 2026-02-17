@@ -22,6 +22,8 @@ import {
   getExperienceByBudget,
   type WineryData 
 } from "@shared/wineryData";
+import { ALL_RESTAURANTS, type RestaurantData } from "@shared/restaurantData";
+import { getHotelsByBudgetAndRegion } from "@shared/hotelData";
 
 function ItineraryPageWrapper({ itinerary }: { itinerary: Itinerary | null }) {
   const [, setLocation] = useLocation();
@@ -39,15 +41,42 @@ function ItineraryPageWrapper({ itinerary }: { itinerary: Itinerary | null }) {
   return <ItineraryPage itinerary={itinerary} />;
 }
 
+const LANGUAGE_MAP: Record<string, string[]> = {
+  'portugues': ['Português', 'Portuguese'],
+  'ingles': ['Inglês', 'English'],
+  'espanhol': ['Espanhol', 'Spanish'],
+  'frances': ['Francês', 'French'],
+  'alemao': ['Alemão', 'German'],
+};
+
+const filterWineriesByLanguage = (wineries: WineryData[], langPref?: string): WineryData[] => {
+  if (!langPref) return wineries;
+  const langTerms = LANGUAGE_MAP[langPref] || [];
+  const matching = wineries.filter(w =>
+    langTerms.some(term => w.languages.toLowerCase().includes(term.toLowerCase()))
+  );
+  return matching.length > 0 ? matching : wineries;
+};
+
+const getBudgetForRestaurant = (budget: string): 'economico' | 'moderado' | 'premium' => {
+  if (budget === 'economico') return 'economico';
+  if (budget === 'moderado') return 'moderado';
+  return 'premium';
+};
+
 const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
   const days = [];
+  const usedWineries = new Set<string>();
+  const usedRestaurants = new Set<string>();
+
+  const filteredWineries = filterWineriesByLanguage(ALL_WINERIES, quizData.languagePreference);
 
   const regionWineries: Record<string, WineryData[]> = {};
   REGIONS.forEach(r => {
-    regionWineries[r] = ALL_WINERIES.filter(w => w.region === r);
+    regionWineries[r] = filteredWineries.filter(w => w.region === r);
   });
 
-  const usedWineries = new Set<string>();
+  const budgetCat = getBudgetForRestaurant(quizData.budget);
 
   const daysPerRegion = quizData.duration >= 4 ? 2 : 1;
   let currentRegionIndex = 0;
@@ -64,6 +93,26 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
       if (w) return w;
     }
     return undefined;
+  };
+
+  const getUnusedRestaurant = (region: string, forDinner: boolean): RestaurantData | undefined => {
+    const candidates = ALL_RESTAURANTS.filter(r => {
+      if (usedRestaurants.has(r.name)) return false;
+      const regionMatch = r.region === region || r.region === 'Lisboa';
+      if (!regionMatch) return false;
+      if (forDinner) {
+        return Object.values(r.openingHours).some(h => h !== 'Encerrado' && /19:|20:|21:|18:/.test(h));
+      }
+      return Object.values(r.openingHours).some(h => h !== 'Encerrado' && /1[0-2]:|09:|10:|11:/.test(h));
+    });
+
+    const budgetMatched = candidates.filter(r => r.budgetCategory === budgetCat);
+    if (budgetMatched.length > 0) return budgetMatched[0];
+    if (budgetCat === 'moderado') {
+      const fallback = candidates.filter(r => r.budgetCategory === 'economico' || r.budgetCategory === 'moderado');
+      if (fallback.length > 0) return fallback[0];
+    }
+    return candidates[0];
   };
 
   for (let i = 1; i <= quizData.duration; i++) {
@@ -83,13 +132,38 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
       if (afternoonWinery) usedWineries.add(afternoonWinery.name);
     }
 
-    if (!morningWinery) morningWinery = regionWineries[regionName][0] || ALL_WINERIES[0];
-    if (!afternoonWinery) afternoonWinery = regionWineries[regionName][1] || ALL_WINERIES[1];
+    if (!morningWinery) morningWinery = regionWineries[regionName]?.[0] || ALL_WINERIES[0];
+    if (!afternoonWinery) afternoonWinery = regionWineries[regionName]?.[1] || ALL_WINERIES[1];
 
     const morningExp = getExperienceByBudget(morningWinery, quizData.budget);
     const afternoonExp = getExperienceByBudget(afternoonWinery, quizData.budget);
-
     const actualRegion = morningWinery.region;
+
+    const dinnerRestaurant = getUnusedRestaurant(actualRegion, true);
+    if (dinnerRestaurant) usedRestaurants.add(dinnerRestaurant.name);
+
+    const eveningActivity = dinnerRestaurant ? {
+      time: '19:30+',
+      activity: 'Jantar',
+      location: dinnerRestaurant.name,
+      description: dinnerRestaurant.description,
+      duration: '2h',
+      address: dinnerRestaurant.address,
+      price: dinnerRestaurant.averagePrice,
+      affiliateUrl: dinnerRestaurant.link,
+      affiliateProvider: dinnerRestaurant.isTheFork ? 'thefork' as const : 'direct' as const,
+      isTheFork: dinnerRestaurant.isTheFork,
+      theForkPromoCode: dinnerRestaurant.theForkPromoCode || undefined,
+    } : {
+      time: '19:30+',
+      activity: 'Jantar',
+      location: 'Restaurante local recomendado',
+      description: 'Jantar tradicional português com harmonização de vinhos locais',
+      duration: '2h',
+      address: '',
+      affiliateUrl: '',
+      affiliateProvider: 'googlemaps' as const,
+    };
 
     days.push({
       day: i,
@@ -116,16 +190,7 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
         affiliateUrl: afternoonExp?.url || afternoonWinery.hostUrl || buildGoogleMapsUrl(afternoonWinery.name, afternoonWinery.address),
         affiliateProvider: (afternoonExp?.url || afternoonWinery.hostUrl) ? 'winalist' as const : 'googlemaps' as const
       },
-      evening: {
-        time: '19:30+',
-        activity: 'Jantar',
-        location: 'Restaurante local recomendado',
-        description: 'Jantar tradicional português com harmonização de vinhos locais',
-        duration: '2h',
-        address: '',
-        affiliateUrl: '',
-        affiliateProvider: 'googlemaps' as const
-      }
+      evening: eveningActivity
     });
 
     daysInCurrentRegion++;
@@ -135,8 +200,24 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
     }
   }
 
+  const usedRegions = [...new Set(days.map(d => d.region))];
+  const recommendedRestaurants = ALL_RESTAURANTS
+    .filter(r => !usedRestaurants.has(r.name))
+    .filter(r => usedRegions.includes(r.region) || r.region === 'Lisboa')
+    .filter(r => r.budgetCategory === budgetCat || budgetCat === 'moderado')
+    .slice(0, 3)
+    .map(r => ({
+      name: r.name,
+      address: r.address,
+      description: r.description,
+      price: r.averagePrice,
+      affiliateUrl: r.link,
+      isTheFork: r.isTheFork,
+      theForkPromoCode: r.theForkPromoCode || undefined,
+    }));
+
   const recommendations: Itinerary['recommendations'] = {
-    restaurants: [
+    restaurants: recommendedRestaurants.length > 0 ? recommendedRestaurants : [
       { name: 'Restaurante local na região', address: '', description: 'Cozinha tradicional com excelente carta de vinhos regionais' },
     ],
     tips: [
@@ -155,20 +236,24 @@ const generateMockItinerary = (quizData: QuizResponse): Itinerary => {
   }
 
   if (!quizData.hasAccommodation) {
-    const isNearWineries = quizData.accommodationPreference === 'vinicolas_proximas';
-    const bookingUrl = isNearWineries 
-      ? 'https://www.booking.com/hotel/pt/areias-do-seixo.pt-pt.html'
-      : 'https://www.booking.com/hotel/pt/memmo-alfama.pt-pt.html';
-    
-    recommendations.accommodation = isNearWineries ? {
-      name: 'Areias do Seixo - Charm Hotel & Residences',
-      address: 'Praia de Santa Cruz, A dos Cunhados',
-      affiliateUrl: buildBookingAwinUrl(bookingUrl)
-    } : {
-      name: 'Hotel Memmo Alfama',
-      address: 'Travessa das Merceeiras, 27, Lisboa',
-      affiliateUrl: buildBookingAwinUrl(bookingUrl)
-    };
+    const primaryRegion = days[0]?.region || 'Lisboa';
+    const matchedHotels = getHotelsByBudgetAndRegion(quizData.budget, primaryRegion);
+
+    if (matchedHotels.length > 0) {
+      const topHotel = matchedHotels.find(h => !h.isGenericListing) || matchedHotels[0];
+      recommendations.accommodation = {
+        name: topHotel.name,
+        address: topHotel.region,
+        affiliateUrl: topHotel.affiliateUrl,
+      };
+    }
+
+    recommendations.hotels = matchedHotels.slice(0, 4).map(h => ({
+      name: h.name,
+      description: h.description,
+      budgetCategory: h.budgetCategory,
+      affiliateUrl: h.affiliateUrl,
+    }));
   }
 
   return {

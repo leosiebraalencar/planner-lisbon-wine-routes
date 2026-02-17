@@ -61,7 +61,12 @@ export const quizResponseSchema = z.object({
   endDate: z.string().optional(),
   budget: z.enum(['economico', 'moderado', 'premium']),
   travelers: z.enum(['sozinho', 'casal', 'familia', 'grupo']),
+  groupSize: z.number().min(3).max(100).optional(),
+  languagePreference: z.enum(['portugues', 'ingles', 'espanhol', 'frances', 'alemao']).optional(),
   preferences: z.array(z.string()),
+  gastronomyStyle: z.array(z.string()).optional(),
+  hotelStyle: z.enum(['moderno', 'rustico', 'historico']).optional(),
+  accommodationMobility: z.enum(['single_location', 'multiple_locations']).optional(),
   specialRequests: z.string().optional(),
   arrival: z.enum(['aviao', 'trem', 'carro', 'outros', 'ja_em_lisboa']).optional(),
   needsCarRental: z.boolean().optional(),
@@ -81,7 +86,9 @@ export const activitySchema = z.object({
   address: z.string().optional(),
   price: z.number().optional(),
   affiliateUrl: z.string().optional(),
-  affiliateProvider: z.enum(['winalist', 'getyourguide', 'booking', 'discovercars', 'googlemaps']).optional(),
+  affiliateProvider: z.enum(['winalist', 'getyourguide', 'booking', 'discovercars', 'googlemaps', 'thefork', 'direct']).optional(),
+  isTheFork: z.boolean().optional(),
+  theForkPromoCode: z.string().optional(),
 });
 
 export const itinerarySchema = z.object({
@@ -100,7 +107,17 @@ export const itinerarySchema = z.object({
       name: z.string(),
       address: z.string().optional(),
       description: z.string().optional(),
+      price: z.number().optional(),
+      affiliateUrl: z.string().optional(),
+      isTheFork: z.boolean().optional(),
+      theForkPromoCode: z.string().optional(),
     })),
+    hotels: z.array(z.object({
+      name: z.string(),
+      description: z.string().optional(),
+      budgetCategory: z.string().optional(),
+      affiliateUrl: z.string().optional(),
+    })).optional(),
     tips: z.array(z.string()),
     accommodation: z.object({
       name: z.string(),

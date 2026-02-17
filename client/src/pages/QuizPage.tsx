@@ -13,7 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, User, UsersRound, Home, Plane, Train, Car, CircleDot, MapPin, Building2 } from "lucide-react";
+import { Users, User, UsersRound, Home, Plane, Train, Car, CircleDot, MapPin, Building2, Globe } from "lucide-react";
 import type { QuizResponse } from "@shared/schema";
 import { Switch } from "@/components/ui/switch";
 
@@ -21,17 +21,22 @@ interface QuizPageProps {
   onComplete: (data: QuizResponse) => void;
 }
 
-const TOTAL_STEPS = 11;
+const TOTAL_STEPS = 12;
 
 const preferences = [
-  "Vinícolas históricas",
-  "Degustações exclusivas",
-  "Gastronomia local",
-  "Paisagens e fotografia",
-  "Experiências em família",
-  "Tours guiados",
-  "Produção sustentável",
-  "Vinhos biodinâmicos"
+  "Degustações e vinhos exclusivos",
+  "Gastronomia portuguesa tradicional",
+  "Gastronomia internacional e fusion",
+  "Experiências em vinícolas históricas",
+  "Paisagens, natureza e fotografia",
+  "Experiências em família com crianças",
+  "Vinhos biodinâmicos e sustentáveis",
+  "Tours guiados com sommelier",
+  "Hotéis modernos e contemporâneos",
+  "Hotéis rústicos e rurais",
+  "Hotéis históricos e palacetes",
+  "Ficar num único local durante toda a viagem",
+  "Explorar diferentes locais e mudar de hotel",
 ];
 
 const arrivalOptions = [
@@ -42,14 +47,29 @@ const arrivalOptions = [
   { value: 'outros', label: 'Outros', icon: CircleDot },
 ];
 
+const languageOptions = [
+  { value: 'portugues', label: 'Português' },
+  { value: 'ingles', label: 'Inglês' },
+  { value: 'espanhol', label: 'Espanhol' },
+  { value: 'frances', label: 'Francês' },
+  { value: 'alemao', label: 'Alemão' },
+];
+
 export default function QuizPage({ onComplete }: QuizPageProps) {
   const [, setLocation] = useLocation();
   const [currentStep, setCurrentStep] = useState(1);
+  const today = new Date().toISOString().split('T')[0];
   const [formData, setFormData] = useState<Partial<QuizResponse>>({
     duration: 3,
+    startDate: today,
     budget: 'moderado',
     travelers: 'casal',
+    groupSize: undefined,
+    languagePreference: undefined,
     preferences: [],
+    gastronomyStyle: [],
+    hotelStyle: undefined,
+    accommodationMobility: undefined,
     specialRequests: '',
     arrival: undefined,
     needsCarRental: undefined,
@@ -59,17 +79,25 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
   });
 
   const handleNext = () => {
-    if (currentStep < TOTAL_STEPS) {
-      setCurrentStep(currentStep + 1);
-    } else {
+    let nextStep = currentStep + 1;
+    if (currentStep === 10 && formData.hasAccommodation) {
+      nextStep = 12;
+    }
+    if (nextStep > TOTAL_STEPS) {
       onComplete(formData as QuizResponse);
       setLocation('/itinerary');
+    } else {
+      setCurrentStep(nextStep);
     }
   };
 
   const handleBack = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+    let prevStep = currentStep - 1;
+    if (currentStep === 12 && formData.hasAccommodation) {
+      prevStep = 10;
+    }
+    if (prevStep >= 1) {
+      setCurrentStep(prevStep);
     }
   };
 
@@ -78,24 +106,26 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
       case 1:
         return formData.duration !== undefined;
       case 2:
-        return true;
+        return !!formData.startDate && !!formData.endDate;
       case 3:
         return formData.budget !== undefined;
       case 4:
-        return formData.travelers !== undefined;
+        return formData.travelers !== undefined && (formData.travelers !== 'grupo' || (formData.groupSize !== undefined && formData.groupSize >= 3 && formData.groupSize <= 100));
       case 5:
-        return (formData.preferences?.length ?? 0) > 0;
+        return formData.languagePreference !== undefined;
       case 6:
-        return formData.arrival !== undefined;
+        return (formData.preferences?.length ?? 0) > 0;
       case 7:
-        return formData.needsCarRental !== undefined;
+        return formData.arrival !== undefined;
       case 8:
-        return formData.wantsPrivateGuide !== undefined;
+        return formData.needsCarRental !== undefined;
       case 9:
-        return formData.hasAccommodation !== undefined;
+        return formData.wantsPrivateGuide !== undefined;
       case 10:
-        return formData.hasAccommodation || formData.accommodationPreference !== undefined;
+        return formData.hasAccommodation !== undefined;
       case 11:
+        return formData.hasAccommodation || formData.accommodationPreference !== undefined;
+      case 12:
         return true;
       default:
         return false;
@@ -162,7 +192,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           >
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Esta informação é opcional e nos ajuda a sugerir experiências sazonais
+                Selecione as datas da sua viagem
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -172,7 +202,15 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                     type="date"
                     className="w-full px-4 py-3 rounded-lg border border-input bg-background"
                     value={formData.startDate || ''}
-                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                    min={today}
+                    onChange={(e) => {
+                      const newStart = e.target.value;
+                      const updatedData: Partial<QuizResponse> = { ...formData, startDate: newStart };
+                      if (formData.endDate && newStart > formData.endDate) {
+                        updatedData.endDate = undefined;
+                      }
+                      setFormData(updatedData);
+                    }}
                     data-testid="input-start-date"
                   />
                 </div>
@@ -183,6 +221,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                     type="date"
                     className="w-full px-4 py-3 rounded-lg border border-input bg-background"
                     value={formData.endDate || ''}
+                    min={formData.startDate || today}
                     onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
                     data-testid="input-end-date"
                   />
@@ -287,6 +326,31 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                 );
               })}
             </div>
+            {formData.travelers === 'grupo' && (
+              <div className="mt-6 space-y-3">
+                <Label>Quantas pessoas no grupo?</Label>
+                <input
+                  type="number"
+                  min={3}
+                  max={100}
+                  className="w-full px-4 py-3 rounded-lg border border-input bg-background"
+                  value={formData.groupSize || ''}
+                  onChange={(e) => {
+                    const val = e.target.value === '' ? undefined : parseInt(e.target.value);
+                    setFormData({ ...formData, groupSize: val });
+                  }}
+                  data-testid="input-group-size"
+                />
+                {formData.groupSize !== undefined && formData.groupSize > 100 && (
+                  <Card className="border-amber-500 bg-amber-50 dark:bg-amber-950 mt-4">
+                    <CardContent className="p-4">
+                      <p className="text-sm">Para grupos superiores a 100 pessoas, aconselhamos entrar em contacto com:</p>
+                      <a href="mailto:contacto@lisbonwineroutes.com" className="text-primary font-semibold" data-testid="link-large-group-email">contacto@lisbonwineroutes.com</a>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
           </QuizQuestion>
         )}
 
@@ -294,7 +358,38 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           <QuizQuestion
             questionNumber={5}
             totalQuestions={TOTAL_STEPS}
-            question="O que você mais gosta em enoturismo?"
+            question="Qual idioma de preferência para as experiências?"
+            onNext={handleNext}
+            onBack={handleBack}
+            canGoNext={canGoNext()}
+            canGoBack={currentStep > 1}
+          >
+            <RadioGroup 
+              value={formData.languagePreference} 
+              onValueChange={(value: any) => setFormData({ ...formData, languagePreference: value })}
+            >
+              {languageOptions.map((option) => (
+                <div 
+                  key={option.value}
+                  className="flex items-center space-x-3 p-4 rounded-lg border border-border hover-elevate active-elevate-2 cursor-pointer"
+                  onClick={() => setFormData({ ...formData, languagePreference: option.value as any })}
+                >
+                  <RadioGroupItem value={option.value} id={`lang-${option.value}`} data-testid={`radio-language-${option.value}`} />
+                  <Label htmlFor={`lang-${option.value}`} className="cursor-pointer flex-1 flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-muted-foreground" />
+                    {option.label}
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </QuizQuestion>
+        )}
+
+        {currentStep === 6 && (
+          <QuizQuestion
+            questionNumber={6}
+            totalQuestions={TOTAL_STEPS}
+            question="O que você mais procura na sua viagem?"
             onNext={handleNext}
             onBack={handleBack}
             canGoNext={canGoNext()}
@@ -342,9 +437,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 6 && (
+        {currentStep === 7 && (
           <QuizQuestion
-            questionNumber={6}
+            questionNumber={7}
             totalQuestions={TOTAL_STEPS}
             question="Como você vai chegar a Lisboa?"
             onNext={handleNext}
@@ -378,9 +473,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 7 && (
+        {currentStep === 8 && (
           <QuizQuestion
-            questionNumber={7}
+            questionNumber={8}
             totalQuestions={TOTAL_STEPS}
             question="Precisa de aluguel de carro?"
             onNext={handleNext}
@@ -426,9 +521,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 8 && (
+        {currentStep === 9 && (
           <QuizQuestion
-            questionNumber={8}
+            questionNumber={9}
             totalQuestions={TOTAL_STEPS}
             question="Gostaria de um guia privado?"
             onNext={handleNext}
@@ -474,9 +569,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 9 && (
+        {currentStep === 10 && (
           <QuizQuestion
-            questionNumber={9}
+            questionNumber={10}
             totalQuestions={TOTAL_STEPS}
             question="Já tem alojamento reservado?"
             onNext={handleNext}
@@ -517,9 +612,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 10 && !formData.hasAccommodation && (
+        {currentStep === 11 && !formData.hasAccommodation && (
           <QuizQuestion
-            questionNumber={10}
+            questionNumber={11}
             totalQuestions={TOTAL_STEPS}
             question="Onde prefere se hospedar?"
             onNext={handleNext}
@@ -566,28 +661,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {(currentStep === 10 && formData.hasAccommodation) && (
+        {currentStep === 12 && (
           <QuizQuestion
-            questionNumber={10}
-            totalQuestions={TOTAL_STEPS}
-            question="Ótimo! Você já tem alojamento."
-            onNext={handleNext}
-            onBack={handleBack}
-            canGoNext={true}
-            canGoBack={currentStep > 1}
-          >
-            <div className="text-center py-8">
-              <Building2 className="w-16 h-16 mx-auto mb-4 text-primary" />
-              <p className="text-muted-foreground">
-                Perfeito! Vamos criar seu roteiro considerando que você já tem onde ficar.
-              </p>
-            </div>
-          </QuizQuestion>
-        )}
-
-        {currentStep === 11 && (
-          <QuizQuestion
-            questionNumber={11}
+            questionNumber={12}
             totalQuestions={TOTAL_STEPS}
             question="Alguma preferência especial?"
             onNext={handleNext}
