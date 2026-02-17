@@ -32,7 +32,8 @@ export default function Header() {
               className="text-sm font-medium text-foreground hover:text-primary transition-colors inline-block"
               data-testid="link-main-blog"
             >
-              {t('header.visitBlog')}
+              <span className="md:hidden">Blog</span>
+              <span className="hidden md:inline">{t('header.visitBlog')}</span>
             </a>
           </div>
           
