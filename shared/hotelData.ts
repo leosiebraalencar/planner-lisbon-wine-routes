@@ -9,7 +9,7 @@ export interface HotelData {
 
 export const ALL_HOTELS: HotelData[] = [
   {
-    name: 'Low Budget Options on Center',
+    name: 'Outras opções no Centro',
     budgetCategory: 'low',
     affiliateUrl: 'https://tidd.ly/3OjfvoB',
     description: 'Opções no centro',
@@ -17,7 +17,7 @@ export const ALL_HOTELS: HotelData[] = [
     isGenericListing: true,
   },
   {
-    name: 'Medium Budget Options on Center',
+    name: 'Outras opções no Centro',
     budgetCategory: 'medium',
     affiliateUrl: 'https://tidd.ly/4kBQUHE',
     description: 'Opções no centro',
@@ -25,7 +25,7 @@ export const ALL_HOTELS: HotelData[] = [
     isGenericListing: true,
   },
   {
-    name: 'High Budget Options on Center',
+    name: 'Outras opções no Centro',
     budgetCategory: 'high',
     affiliateUrl: 'https://tidd.ly/4bZb4t0',
     description: 'Opções no centro',
