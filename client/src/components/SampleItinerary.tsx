@@ -27,8 +27,8 @@ export default function SampleItinerary() {
                   <div className="flex items-start gap-2">
                     <MapPin className="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0" />
                     <div>
-                      <h4 className="font-semibold">Quinta do Gradil</h4>
-                      <p className="text-sm text-muted-foreground">Visita guiada às vinhas e caves históricas com degustação de 3 vinhos premiados</p>
+                      <h4 className="font-semibold">{t('sampleItinerary.morningName')}</h4>
+                      <p className="text-sm text-muted-foreground">{t('sampleItinerary.morningDesc')}</p>
                     </div>
                   </div>
                 </div>
@@ -47,8 +47,8 @@ export default function SampleItinerary() {
                   <div className="flex items-start gap-2">
                     <MapPin className="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0" />
                     <div>
-                      <h4 className="font-semibold">Adega Regional de Colares</h4>
-                      <p className="text-sm text-muted-foreground">Degustação exclusiva do raro vinho de Ramisco em adega centenária</p>
+                      <h4 className="font-semibold">{t('sampleItinerary.afternoonName')}</h4>
+                      <p className="text-sm text-muted-foreground">{t('sampleItinerary.afternoonDesc')}</p>
                     </div>
                   </div>
                 </div>
@@ -67,8 +67,8 @@ export default function SampleItinerary() {
                   <div className="flex items-start gap-2">
                     <MapPin className="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0" />
                     <div>
-                      <h4 className="font-semibold">Restaurante Adega das Gravatas</h4>
-                      <p className="text-sm text-muted-foreground">Jantar com pratos típicos portugueses harmonizados com vinhos da região de Bucelas</p>
+                      <h4 className="font-semibold">{t('sampleItinerary.eveningName')}</h4>
+                      <p className="text-sm text-muted-foreground">{t('sampleItinerary.eveningDesc')}</p>
                     </div>
                   </div>
                 </div>
