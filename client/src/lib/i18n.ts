@@ -82,9 +82,11 @@ export const translations = {
         placeholder: 'O seu nome',
       },
       q1: {
-        question: 'Quantos dias durará sua viagem?',
+        question: 'Quantos dias durará a sua viagem?',
         day: 'dia',
         days: 'dias',
+        moreThan5: 'Mais de 5 dias',
+        customDaysLabel: 'Quantos dias?',
       },
       q2: {
         question: 'Quando você pretende viajar?',
@@ -96,19 +98,19 @@ export const translations = {
         question: 'Qual é o seu orçamento?',
         economic: {
           title: 'Econômico',
-          description: 'Adegas familiares, degustações simples, restaurantes locais',
+          description: 'Experiências, degustações e restaurantes de bom custo benefício',
         },
         moderate: {
           title: 'Moderado',
-          description: 'Quintas renomadas, tours guiados, harmonizações gastronômicas',
+          description: 'Experiências mais elaboradas',
         },
         premium: {
           title: 'Premium',
-          description: 'Experiências exclusivas, vinhos raros, restaurantes com estrela Michelin',
+          description: 'Experiências mais sofisticadas, restaurantes renomados',
         },
       },
       q4: {
-        question: 'Como você vai viajar?',
+        question: 'Com quem você vai viajar?',
         alone: 'Sozinho(a)',
         couple: 'Em Casal',
         family: 'Em Família',
@@ -127,7 +129,7 @@ export const translations = {
         },
       },
       q5: {
-        question: 'O que você mais procura na sua viagem?',
+        question: 'O que pretende experimentar na sua viagem?',
         info: 'Selecione todas as opções que lhe interessam',
         preferences: {
           historic: 'Vinícolas históricas',
@@ -194,8 +196,9 @@ export const translations = {
       },
     },
     itinerary: {
-      title: 'Seu Roteiro Personalizado de Enoturismo',
-      subtitle: 'Um guia completo criado especialmente para você',
+      title: 'Aqui está seu roteiro personalizado de Enoturismo em Lisboa',
+      subtitle: '',
+      greeting: 'Olá {{name}}',
       duration: 'Duração',
       budget: 'Orçamento',
       travelType: 'Tipo de Viagem',
@@ -486,6 +489,8 @@ export const translations = {
         question: 'How many days will your trip last?',
         day: 'day',
         days: 'days',
+        moreThan5: 'More than 5 days',
+        customDaysLabel: 'How many days?',
       },
       q2: {
         question: 'When do you plan to travel?',
@@ -497,19 +502,19 @@ export const translations = {
         question: 'What is your budget?',
         economic: {
           title: 'Economic',
-          description: 'Family wineries, simple tastings, local restaurants',
+          description: 'Good value experiences, tastings and restaurants',
         },
         moderate: {
           title: 'Moderate',
-          description: 'Renowned estates, guided tours, gastronomic pairings',
+          description: 'More refined experiences',
         },
         premium: {
           title: 'Premium',
-          description: 'Exclusive experiences, rare wines, Michelin-starred restaurants',
+          description: 'More sophisticated experiences, renowned restaurants',
         },
       },
       q4: {
-        question: 'How will you be traveling?',
+        question: 'Who will you be traveling with?',
         alone: 'Solo',
         couple: 'As a Couple',
         family: 'With Family',
@@ -528,7 +533,7 @@ export const translations = {
         },
       },
       q5: {
-        question: 'What are you looking for most in your trip?',
+        question: 'What do you want to experience on your trip?',
         info: 'Select all options that interest you',
         preferences: {
           historic: 'Historic wineries',
@@ -595,8 +600,9 @@ export const translations = {
       },
     },
     itinerary: {
-      title: 'Your Personalized Wine Tourism Itinerary',
-      subtitle: 'A complete guide created especially for you',
+      title: 'Here is your personalized Wine Tourism itinerary in Lisbon',
+      subtitle: '',
+      greeting: 'Hello {{name}}',
       duration: 'Duration',
       budget: 'Budget',
       travelType: 'Travel Type',
@@ -887,6 +893,8 @@ export const translations = {
         question: '¿Cuántos días durará tu viaje?',
         day: 'día',
         days: 'días',
+        moreThan5: 'Más de 5 días',
+        customDaysLabel: '¿Cuántos días?',
       },
       q2: {
         question: '¿Cuándo planeas viajar?',
@@ -898,19 +906,19 @@ export const translations = {
         question: '¿Cuál es tu presupuesto?',
         economic: {
           title: 'Económico',
-          description: 'Bodegas familiares, degustaciones sencillas, restaurantes locales',
+          description: 'Experiencias, degustaciones y restaurantes de buena relación calidad-precio',
         },
         moderate: {
           title: 'Moderado',
-          description: 'Quintas reconocidas, tours guiados, armonizaciones gastronómicas',
+          description: 'Experiencias más elaboradas',
         },
         premium: {
           title: 'Premium',
-          description: 'Experiencias exclusivas, vinos raros, restaurantes con estrellas Michelin',
+          description: 'Experiencias más sofisticadas, restaurantes de renombre',
         },
       },
       q4: {
-        question: '¿Cómo vas a viajar?',
+        question: '¿Con quién vas a viajar?',
         alone: 'Solo(a)',
         couple: 'En Pareja',
         family: 'En Familia',
@@ -929,7 +937,7 @@ export const translations = {
         },
       },
       q5: {
-        question: '¿Qué es lo que más buscas en tu viaje?',
+        question: '¿Qué quieres experimentar en tu viaje?',
         info: 'Selecciona todas las opciones que te interesen',
         preferences: {
           historic: 'Bodegas históricas',
@@ -996,8 +1004,9 @@ export const translations = {
       },
     },
     itinerary: {
-      title: 'Tu Itinerario Personalizado de Enoturismo',
-      subtitle: 'Una guía completa creada especialmente para ti',
+      title: 'Aquí está tu itinerario personalizado de Enoturismo en Lisboa',
+      subtitle: '',
+      greeting: 'Hola {{name}}',
       duration: 'Duración',
       budget: 'Presupuesto',
       travelType: 'Tipo de Viaje',
@@ -1288,6 +1297,8 @@ export const translations = {
         question: 'Wie viele Tage wird Ihre Reise dauern?',
         day: 'Tag',
         days: 'Tage',
+        moreThan5: 'Mehr als 5 Tage',
+        customDaysLabel: 'Wie viele Tage?',
       },
       q2: {
         question: 'Wann planen Sie zu reisen?',
@@ -1299,19 +1310,19 @@ export const translations = {
         question: 'Was ist Ihr Budget?',
         economic: {
           title: 'Wirtschaftlich',
-          description: 'Familienweingüter, einfache Verkostungen, lokale Restaurants',
+          description: 'Erlebnisse, Verkostungen und Restaurants mit gutem Preis-Leistungs-Verhältnis',
         },
         moderate: {
           title: 'Moderat',
-          description: 'Renommierte Weingüter, geführte Touren, gastronomische Paarungen',
+          description: 'Anspruchsvollere Erlebnisse',
         },
         premium: {
           title: 'Premium',
-          description: 'Exklusive Erlebnisse, seltene Weine, Michelin-Sterne-Restaurants',
+          description: 'Anspruchsvollste Erlebnisse, renommierte Restaurants',
         },
       },
       q4: {
-        question: 'Wie werden Sie reisen?',
+        question: 'Mit wem werden Sie reisen?',
         alone: 'Allein',
         couple: 'Als Paar',
         family: 'Mit Familie',
@@ -1330,7 +1341,7 @@ export const translations = {
         },
       },
       q5: {
-        question: 'Was suchen Sie am meisten auf Ihrer Reise?',
+        question: 'Was möchten Sie auf Ihrer Reise erleben?',
         info: 'Wählen Sie alle Optionen aus, die Sie interessieren',
         preferences: {
           historic: 'Historische Weingüter',
@@ -1397,8 +1408,9 @@ export const translations = {
       },
     },
     itinerary: {
-      title: 'Ihre Personalisierte Weintourismus-Route',
-      subtitle: 'Ein vollständiger Führer, speziell für Sie erstellt',
+      title: 'Hier ist Ihre personalisierte Weintourismus-Route in Lissabon',
+      subtitle: '',
+      greeting: 'Hallo {{name}}',
       duration: 'Dauer',
       budget: 'Budget',
       travelType: 'Reiseart',

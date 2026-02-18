@@ -60,19 +60,19 @@ interface ItineraryDisplayProps {
 export default function ItineraryDisplay({ itinerary, onDownload, isDownloading = false, customerName }: ItineraryDisplayProps) {
   const { t } = useLanguage();
   
-  const personalizedTitle = customerName
-    ? `${customerName}, ${t('itinerary.personalizedReady')}`
-    : t('itinerary.title');
+  const greeting = customerName ? t('itinerary.greeting', { name: customerName }) : '';
   
   return (
     <div className="w-full max-w-5xl mx-auto">
       <div className="mb-8 text-center">
+        {greeting && (
+          <p className="font-serif text-2xl md:text-3xl mb-2 text-foreground" data-testid="text-itinerary-greeting">
+            {greeting}
+          </p>
+        )}
         <h1 className="font-serif font-bold text-3xl md:text-4xl mb-4" data-testid="text-itinerary-title">
-          {personalizedTitle}
+          {t('itinerary.title')}
         </h1>
-        <p className="text-muted-foreground">
-          {t('itinerary.subtitle')}
-        </p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">

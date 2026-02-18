@@ -77,7 +77,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
       case 1:
         return !!formData.customerName && formData.customerName.trim().length > 0;
       case 2:
-        return formData.duration !== undefined;
+        return formData.duration !== undefined && formData.duration >= 1;
       case 3:
         return !!formData.startDate && !!formData.endDate;
       case 4:
@@ -176,8 +176,14 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
             canGoBack={currentStep > 1}
           >
             <RadioGroup 
-              value={String(formData.duration)} 
-              onValueChange={(value) => setFormData({ ...formData, duration: parseInt(value) })}
+              value={formData.duration && formData.duration > 5 ? 'custom' : String(formData.duration)} 
+              onValueChange={(value) => {
+                if (value === 'custom') {
+                  setFormData({ ...formData, duration: 6 });
+                } else {
+                  setFormData({ ...formData, duration: parseInt(value) });
+                }
+              }}
             >
               {[1, 2, 3, 4, 5].map((day) => (
                 <div 
@@ -191,6 +197,49 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                   </Label>
                 </div>
               ))}
+              <div 
+                className={`flex items-center space-x-3 p-4 rounded-lg border border-border hover-elevate active-elevate-2 cursor-pointer ${
+                  formData.duration && formData.duration > 5 ? 'bg-primary/5 border-primary/20' : ''
+                }`}
+                onClick={() => setFormData({ ...formData, duration: formData.duration && formData.duration > 5 ? formData.duration : 6 })}
+              >
+                <RadioGroupItem value="custom" id="day-custom" data-testid="radio-duration-custom" />
+                <Label htmlFor="day-custom" className="cursor-pointer flex-1">
+                  {t('quiz.q1.moreThan5')}
+                </Label>
+              </div>
+              {formData.duration && formData.duration > 5 && (
+                <div className="mt-3 pl-4">
+                  <Label htmlFor="custom-days" className="mb-2 block text-sm text-muted-foreground">
+                    {t('quiz.q1.customDaysLabel')}
+                  </Label>
+                  <input
+                    id="custom-days"
+                    type="number"
+                    min="6"
+                    max="30"
+                    className="w-32 rounded-lg border border-input bg-background min-h-9 text-sm px-3"
+                    value={formData.duration}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      if (raw === '') {
+                        setFormData({ ...formData, duration: undefined as any });
+                        return;
+                      }
+                      const val = parseInt(raw);
+                      if (!isNaN(val) && val >= 1) {
+                        setFormData({ ...formData, duration: Math.min(Math.max(val, 6), 30) });
+                      }
+                    }}
+                    onBlur={() => {
+                      if (!formData.duration || formData.duration < 6) {
+                        setFormData({ ...formData, duration: 6 });
+                      }
+                    }}
+                    data-testid="input-custom-days"
+                  />
+                </div>
+              )}
             </RadioGroup>
           </QuizQuestion>
         )}
