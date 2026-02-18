@@ -61,6 +61,8 @@ const pdfTranslations: Record<PdfLang, Record<string, string>> = {
     morning: 'Manhã',
     afternoon: 'Tarde',
     evening: 'Noite',
+    carPickup: 'Levantamento do Carro',
+    overnightStay: 'Estadia Noturna',
   },
   EN: {
     title: 'Your Personalized Wine Tourism Itinerary',
@@ -85,6 +87,8 @@ const pdfTranslations: Record<PdfLang, Record<string, string>> = {
     morning: 'Morning',
     afternoon: 'Afternoon',
     evening: 'Evening',
+    carPickup: 'Car Pickup',
+    overnightStay: 'Overnight Stay',
   },
   ES: {
     title: 'Tu Itinerario Personalizado de Enoturismo',
@@ -109,6 +113,8 @@ const pdfTranslations: Record<PdfLang, Record<string, string>> = {
     morning: 'Mañana',
     afternoon: 'Tarde',
     evening: 'Noche',
+    carPickup: 'Recogida del Coche',
+    overnightStay: 'Estancia Nocturna',
   },
   DE: {
     title: 'Ihre Personalisierte Weintourismus-Route',
@@ -133,6 +139,8 @@ const pdfTranslations: Record<PdfLang, Record<string, string>> = {
     morning: 'Morgen',
     afternoon: 'Nachmittag',
     evening: 'Abend',
+    carPickup: 'Autoabholung',
+    overnightStay: 'Übernachtung',
   },
 };
 
@@ -333,9 +341,41 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
       
       doc.moveDown(1.5);
 
+      if (day.carRentalPickup) {
+        doc.fillColor(WINE_RED)
+          .fontSize(11)
+          .font(BOLD_FONT)
+          .text(`${pt.carPickup} - 08:00`);
+        doc.moveDown(0.3);
+        doc.fillColor(DARK_TEXT)
+          .fontSize(10)
+          .font(BODY_FONT)
+          .text(day.carRentalPickup.provider);
+        doc.moveDown(0.8);
+      }
+
       renderActivityBlock(doc, day.morning, pt.morning, pt);
       renderActivityBlock(doc, day.afternoon, pt.afternoon, pt);
       renderActivityBlock(doc, day.evening, pt.evening, pt);
+
+      if (day.hotel) {
+        doc.moveDown(0.5);
+        doc.fillColor(WINE_RED)
+          .fontSize(11)
+          .font(BOLD_FONT)
+          .text(pt.overnightStay);
+        doc.moveDown(0.3);
+        doc.fillColor(DARK_TEXT)
+          .fontSize(10)
+          .font(BOLD_FONT)
+          .text(day.hotel.name);
+        if (day.hotel.description) {
+          doc.font(BODY_FONT)
+            .fillColor(GRAY_TEXT)
+            .text(day.hotel.description);
+        }
+        doc.moveDown(0.5);
+      }
     });
 
     if (itinerary.recommendations.accommodation || itinerary.recommendations.carRental) {

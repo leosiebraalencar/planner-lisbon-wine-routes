@@ -25,7 +25,8 @@ import {
   type WineryData 
 } from "@shared/wineryData";
 import { ALL_RESTAURANTS, type RestaurantData } from "@shared/restaurantData";
-import { getHotelsByBudgetAndRegion } from "@shared/hotelData";
+import { getHotelsByBudgetAndRegion, type HotelData } from "@shared/hotelData";
+import { haversineDistance, extractCoordsFromGoogleMapsUrl } from "@shared/geoUtils";
 
 function ItineraryPageWrapper({ itinerary, submissionId }: { itinerary: Itinerary | null; submissionId: string | null }) {
   const [, setLocation] = useLocation();
@@ -147,7 +148,7 @@ const generateHighlights = (quizData: QuizResponse, days: Array<{ region: string
 
 const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerary => {
   const tt = (key: string, replacements?: Record<string, string>) => translate(key, lang, replacements);
-  const days = [];
+  const days: Itinerary['days'] = [];
   const usedWineries = new Set<string>();
   const usedRestaurants = new Set<string>();
 
@@ -178,18 +179,33 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
   };
 
   const preferredCuisines: string[] = [];
-  if (quizData.preferences.includes('Gastronomia internacional e fusion')) {
+  if (quizData.preferences.includes('internationalGastronomy')) {
     preferredCuisines.push('internacional');
   }
-  if (quizData.preferences.includes('Gastronomia portuguesa tradicional')) {
+  if (quizData.preferences.includes('traditionalGastronomy')) {
     preferredCuisines.push('tradicional');
   }
 
-  const getUnusedRestaurant = (region: string, forDinner: boolean): RestaurantData | undefined => {
+  const getWineryCoords = (w: WineryData): { lat: number; lng: number } | null => {
+    return extractCoordsFromGoogleMapsUrl(w.googleMapsUrl);
+  };
+
+  const getUnusedRestaurant = (region: string, forDinner: boolean, nearLat?: number | null, nearLng?: number | null, hotelLat?: number | null, hotelLng?: number | null): RestaurantData | undefined => {
+    const regionAliases: Record<string, string[]> = {
+      'Região Oeste': ['Região Oeste', 'Alenquer', 'Bucelas'],
+      'Alenquer': ['Região Oeste', 'Alenquer'],
+      'Bucelas': ['Região Oeste', 'Bucelas'],
+      'Sintra': ['Sintra', 'Colares Sintra'],
+      'Setúbal': ['Setúbal', 'Palmela', 'Grandola'],
+      'Palmela': ['Setúbal', 'Palmela'],
+      'Oeiras': ['Oeiras', 'Lisboa'],
+      'Lisboa': ['Lisboa'],
+    };
+    const allowedRegions = regionAliases[region] || [region, 'Lisboa'];
+
     const candidates = ALL_RESTAURANTS.filter(r => {
       if (usedRestaurants.has(r.name)) return false;
-      const regionMatch = r.region === region || r.region === 'Lisboa';
-      if (!regionMatch) return false;
+      if (!allowedRegions.includes(r.region) && r.region !== 'Lisboa') return false;
       if (r.cuisineType === 'brunch' && forDinner) return false;
       if (forDinner) {
         return Object.values(r.openingHours).some(h => h !== 'Encerrado' && /19:|20:|21:|18:/.test(h));
@@ -197,20 +213,49 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
       return Object.values(r.openingHours).some(h => h !== 'Encerrado' && /1[0-2]:|09:|10:|11:/.test(h));
     });
 
-    if (preferredCuisines.length > 0) {
-      const cuisineMatched = candidates.filter(r => preferredCuisines.includes(r.cuisineType));
-      const cuisineBudget = cuisineMatched.filter(r => r.budgetCategory === budgetCat);
-      if (cuisineBudget.length > 0) return cuisineBudget[0];
-      if (cuisineMatched.length > 0) return cuisineMatched[0];
-    }
+    let scored = candidates.map(r => {
+      let score = 0;
+      if (preferredCuisines.length > 0 && preferredCuisines.includes(r.cuisineType)) score += 50;
+      if (r.budgetCategory === budgetCat) score += 30;
+      if (r.budgetCategory === 'moderado' && budgetCat === 'premium') score += 15;
+      if (r.region === region) score += 20;
+      score += (r.rating || 0) * 2;
 
-    const budgetMatched = candidates.filter(r => r.budgetCategory === budgetCat);
-    if (budgetMatched.length > 0) return budgetMatched[0];
-    if (budgetCat === 'moderado') {
-      const fallback = candidates.filter(r => r.budgetCategory === 'economico' || r.budgetCategory === 'moderado');
-      if (fallback.length > 0) return fallback[0];
+      if (forDinner && hotelLat != null && hotelLng != null && r.lat != null && r.lng != null) {
+        const distToHotel = haversineDistance(r.lat, r.lng, hotelLat, hotelLng);
+        if (distToHotel <= 30) score += 25;
+        else score -= 20;
+      } else if (nearLat != null && nearLng != null && r.lat != null && r.lng != null) {
+        const dist = haversineDistance(r.lat, r.lng, nearLat, nearLng);
+        if (dist <= 30) score += 15;
+        else score -= 10;
+      }
+
+      return { restaurant: r, score };
+    });
+
+    scored.sort((a, b) => b.score - a.score);
+    return scored[0]?.restaurant;
+  };
+
+  const getHotelForRegion = (region: string, usedHotels: Set<string>): HotelData | undefined => {
+    const regionAliases: Record<string, string[]> = {
+      'Região Oeste': ['Região Oeste'],
+      'Sintra': ['Sintra'],
+      'Setúbal': ['Setúbal'],
+      'Oeiras': ['Lisboa', 'Sintra'],
+      'Lisboa': ['Lisboa'],
+    };
+    const hotelRegions = regionAliases[region] || [region, 'Lisboa'];
+    
+    for (const hr of hotelRegions) {
+      const hotels = getHotelsByBudgetAndRegion(quizData.budget, hr)
+        .filter(h => !h.isGenericListing && !usedHotels.has(h.name));
+      if (hotels.length > 0) return hotels[0];
     }
-    return candidates[0];
+    const fallback = getHotelsByBudgetAndRegion(quizData.budget, 'Lisboa')
+      .filter(h => !h.isGenericListing && !usedHotels.has(h.name));
+    return fallback[0];
   };
 
   for (let i = 1; i <= quizData.duration; i++) {
@@ -223,12 +268,24 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
       if (morningWinery) usedWineries.add(morningWinery.name);
     }
 
+    const morningCoords = morningWinery ? getWineryCoords(morningWinery) : null;
+
     let afternoonWinery = getUnusedWinery(regionName);
-    if (afternoonWinery) usedWineries.add(afternoonWinery.name);
-    else {
+    if (!afternoonWinery) {
       afternoonWinery = findWineryAnyRegion();
-      if (afternoonWinery) usedWineries.add(afternoonWinery.name);
     }
+    if (afternoonWinery && morningCoords) {
+      const aftCoords = getWineryCoords(afternoonWinery);
+      if (aftCoords && haversineDistance(morningCoords.lat, morningCoords.lng, aftCoords.lat, aftCoords.lng) > 30) {
+        const closer = (regionWineries[regionName] || []).find(w => {
+          if (usedWineries.has(w.name) || w.name === morningWinery!.name) return false;
+          const c = getWineryCoords(w);
+          return c ? haversineDistance(morningCoords.lat, morningCoords.lng, c.lat, c.lng) <= 30 : false;
+        });
+        if (closer) afternoonWinery = closer;
+      }
+    }
+    if (afternoonWinery) usedWineries.add(afternoonWinery.name);
 
     if (!morningWinery) morningWinery = regionWineries[regionName]?.[0] || ALL_WINERIES[0];
     if (!afternoonWinery) afternoonWinery = regionWineries[regionName]?.[1] || ALL_WINERIES[1];
@@ -241,7 +298,9 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
     }
     const actualRegion = morningWinery.region;
 
-    const dinnerRestaurant = getUnusedRestaurant(actualRegion, true);
+    const afternoonCoords = getWineryCoords(afternoonWinery);
+
+    const dinnerRestaurant = getUnusedRestaurant(actualRegion, true, afternoonCoords?.lat, afternoonCoords?.lng, null, null);
     if (dinnerRestaurant) usedRestaurants.add(dinnerRestaurant.name);
 
     const eveningActivity = dinnerRestaurant ? {
@@ -302,6 +361,44 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
     }
   }
 
+  if (!quizData.hasAccommodation) {
+    const usedHotels = new Set<string>();
+    const wantsCenter = quizData.accommodationPreference === 'central_lisboa';
+
+    for (const day of days) {
+      if (wantsCenter) {
+        const hotel = getHotelForRegion('Lisboa', usedHotels);
+        if (hotel) {
+          usedHotels.add(hotel.name);
+          day.hotel = {
+            name: hotel.name,
+            description: hotel.description,
+            affiliateUrl: hotel.affiliateUrl,
+            budgetCategory: hotel.budgetCategory,
+          };
+        }
+      } else {
+        const hotel = getHotelForRegion(day.region, usedHotels);
+        if (hotel) {
+          usedHotels.add(hotel.name);
+          day.hotel = {
+            name: hotel.name,
+            description: hotel.description,
+            affiliateUrl: hotel.affiliateUrl,
+            budgetCategory: hotel.budgetCategory,
+          };
+        }
+      }
+    }
+  }
+
+  if (quizData.needsCarRental && days.length > 0) {
+    days[0].carRentalPickup = {
+      provider: 'DiscoverCars',
+      affiliateUrl: DISCOVERCARS_AFFILIATE_URL,
+    };
+  }
+
   const usedRegions = Array.from(new Set(days.map(d => d.region)));
   const filteredForRec = ALL_RESTAURANTS
     .filter(r => !usedRestaurants.has(r.name))
@@ -347,44 +444,18 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
   }
 
   if (!quizData.hasAccommodation) {
-    const wantsCenter = quizData.accommodationPreference === 'central_lisboa';
-    const hotelRegion = wantsCenter ? 'Lisboa' : (days[0]?.region || 'Lisboa');
-    const matchedHotels = getHotelsByBudgetAndRegion(quizData.budget, hotelRegion);
-
-    const nonGenericHotels = matchedHotels.filter(h => !h.isGenericListing);
-    const genericHotels = matchedHotels.filter(h => h.isGenericListing);
-
-    const diverseHotels: typeof matchedHotels = [];
-    const seenRegions = new Set<string>();
-    for (const h of nonGenericHotels) {
-      if (!seenRegions.has(h.region) || diverseHotels.length < 3) {
-        diverseHotels.push(h);
-        seenRegions.add(h.region);
-      }
-    }
-    for (const h of genericHotels) {
-      if (diverseHotels.length < 4) {
-        diverseHotels.push(h);
-      }
-    }
-
-    if (!wantsCenter && diverseHotels.length < 4) {
-      const extraLisboa = getHotelsByBudgetAndRegion(quizData.budget, 'Lisboa')
-        .filter(h => !diverseHotels.some(d => d.name === h.name))
-        .slice(0, 4 - diverseHotels.length);
-      diverseHotels.push(...extraLisboa);
-    }
-
-    if (diverseHotels.length > 0) {
-      const topHotel = diverseHotels.find(h => !h.isGenericListing) || diverseHotels[0];
+    const allHotelsUsed = days.filter(d => d.hotel).map(d => d.hotel!);
+    const uniqueHotels = allHotelsUsed.filter((h, i, arr) => arr.findIndex(x => x.name === h.name) === i);
+    
+    if (uniqueHotels.length > 0) {
       recommendations.accommodation = {
-        name: topHotel.name,
-        address: topHotel.region,
-        affiliateUrl: topHotel.affiliateUrl,
+        name: uniqueHotels[0].name,
+        address: uniqueHotels[0].description || '',
+        affiliateUrl: uniqueHotels[0].affiliateUrl,
       };
     }
 
-    recommendations.hotels = diverseHotels.slice(0, 4).map(h => ({
+    recommendations.hotels = uniqueHotels.slice(0, 4).map(h => ({
       name: h.name,
       description: h.description,
       budgetCategory: h.budgetCategory,

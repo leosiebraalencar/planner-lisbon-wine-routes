@@ -9,7 +9,7 @@ export const translations = {
       title: 'Descubra o Seu Roteiro Perfeito de Enoturismo em Lisboa',
       subtitle: 'Responda algumas perguntas e receba um guia personalizado com as melhores vinícolas, degustações e experiências da região de Lisboa',
       cta: 'Criar Meu Roteiro Personalizado',
-      created: 'Mais de 500 roteiros criados',
+      created: 'Mais de {count} roteiros criados',
     },
     valueProposition: {
       personalized: {
@@ -216,6 +216,8 @@ export const translations = {
       accommodation: 'Alojamento',
       carRental: 'Aluguel de Carro',
       carRentalInfo: 'Recomendamos alugar um carro para máxima flexibilidade durante seu tour de vinhos.',
+      carPickup: 'Levantamento do Carro',
+      overnightStay: 'Estadia Noturna',
       liked: 'Gostou do Seu Roteiro?',
       downloadInfo: 'Faça o download do guia completo em PDF com todas as informações, mapas e contatos.',
       downloadButton: 'Baixar Roteiro Completo (PDF)',
@@ -413,7 +415,7 @@ export const translations = {
       title: 'Discover Your Perfect Wine Tourism Itinerary in Lisbon',
       subtitle: 'Answer a few questions and receive a personalized guide with the best wineries, tastings, and experiences in the Lisbon region',
       cta: 'Create My Personalized Itinerary',
-      created: 'Over 500 itineraries created',
+      created: 'Over {count} itineraries created',
     },
     valueProposition: {
       personalized: {
@@ -620,6 +622,8 @@ export const translations = {
       accommodation: 'Accommodation',
       carRental: 'Car Rental',
       carRentalInfo: 'We recommend renting a car for maximum flexibility during your wine tour.',
+      carPickup: 'Car Pickup',
+      overnightStay: 'Overnight Stay',
       liked: 'Did You Like Your Itinerary?',
       downloadInfo: 'Download the complete PDF guide with all information, maps, and contacts.',
       downloadButton: 'Download Complete Itinerary (PDF)',
@@ -817,7 +821,7 @@ export const translations = {
       title: 'Descubre Tu Itinerario Perfecto de Enoturismo en Lisboa',
       subtitle: 'Responde algunas preguntas y recibe una guía personalizada con las mejores bodegas, degustaciones y experiencias de la región de Lisboa',
       cta: 'Crear Mi Itinerario Personalizado',
-      created: 'Más de 500 itinerarios creados',
+      created: 'Más de {count} itinerarios creados',
     },
     valueProposition: {
       personalized: {
@@ -1024,6 +1028,8 @@ export const translations = {
       accommodation: 'Alojamiento',
       carRental: 'Alquiler de Coche',
       carRentalInfo: 'Recomendamos alquilar un coche para máxima flexibilidad durante tu tour de vinos.',
+      carPickup: 'Recogida del Coche',
+      overnightStay: 'Estancia Nocturna',
       liked: '¿Te Gustó Tu Itinerario?',
       downloadInfo: 'Descarga la guía completa en PDF con toda la información, mapas y contactos.',
       downloadButton: 'Descargar Itinerario Completo (PDF)',
@@ -1221,7 +1227,7 @@ export const translations = {
       title: 'Entdecken Sie Ihre Perfekte Weintourismus-Route in Lissabon',
       subtitle: 'Beantworten Sie einige Fragen und erhalten Sie einen personalisierten Führer mit den besten Weingütern, Verkostungen und Erlebnissen der Region Lissabon',
       cta: 'Meine Personalisierte Route Erstellen',
-      created: 'Über 500 erstellte Routen',
+      created: 'Über {count} erstellte Routen',
     },
     valueProposition: {
       personalized: {
@@ -1428,6 +1434,8 @@ export const translations = {
       accommodation: 'Unterkunft',
       carRental: 'Autovermietung',
       carRentalInfo: 'Wir empfehlen ein Mietauto für maximale Flexibilität während Ihrer Weintour.',
+      carPickup: 'Autoabholung',
+      overnightStay: 'Übernachtung',
       liked: 'Hat Ihnen Ihre Route Gefallen?',
       downloadInfo: 'Laden Sie den vollständigen PDF-Führer mit allen Informationen, Karten und Kontakten herunter.',
       downloadButton: 'Vollständige Route Herunterladen (PDF)',

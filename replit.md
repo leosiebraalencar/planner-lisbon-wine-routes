@@ -52,8 +52,9 @@ Preferred communication style: Simple, everyday language.
 - **Context**: LanguageContext provides t() translation function
 
 ### Restaurant Data (shared/restaurantData.ts)
-- 31 restaurants with TheFork integration and promo code "30B64ED"
-- Each restaurant has: name, address, description, region, budgetCategory (economico/moderado/premium), averagePrice, openingHours, isTheFork, theForkPromoCode, link
+- 39 restaurants with TheFork integration and promo code "30B64ED"
+- Each restaurant has: name, address, description, region, budgetCategory, averagePrice, openingHours, isTheFork, theForkPromoCode, link, lat, lng, rating, cuisineType
+- Lat/lng coordinates for distance-based proximity matching
 - Helper functions: getRestaurantsByRegionAndBudget(), getRestaurantsForLunch(), getRestaurantsForDinner()
 
 ### Hotel Data (shared/hotelData.ts)
@@ -62,10 +63,27 @@ Preferred communication style: Simple, everyday language.
 - Each hotel has: name, budgetCategory, affiliateUrl, description, region, isGenericListing
 - Helper functions: getHotelsByBudget(), getHotelsByRegion(), getHotelsByBudgetAndRegion()
 
+### Geo Utilities (shared/geoUtils.ts)
+- `haversineDistance()`: Calculates distance in km between two lat/lng coordinates
+- `extractCoordsFromGoogleMapsUrl()`: Extracts lat/lng from Google Maps URLs (winery coordinates)
+
+### Itinerary Generation (client/src/App.tsx)
+- Distance-based winery pairing: Afternoon winery within 30km of morning winery
+- Scored restaurant selection: Cuisine preference (+50), budget match (+30), region (+20), rating, proximity
+- Hotel per day: Different hotel assigned per region/day (or same for central_lisboa preference)
+- Car rental pickup embedded on Day 1 schedule
+- Itinerary schema includes per-day hotel and carRentalPickup fields
+- Display order: Hotels/Car Rental → Day-by-Day → Restaurants
+
+### Dynamic Counter
+- Hero counter starts at 50 + quiz_submissions DB count
+- API endpoint: GET /api/itinerary-count
+- Updates in real-time as new itineraries are generated
+
 ### Key User Flows
-1. Landing page with hero, value proposition, and how-it-works sections
-2. 12-step quiz collecting travel preferences (duration, dates, budget, travelers, language, preferences, arrival, car rental, guide, accommodation, location, special requests)
-3. Itinerary display with winery visits, restaurant recommendations (TheFork promo codes), and hotel suggestions with affiliate links
+1. Landing page with hero, dynamic counter, value proposition, and how-it-works sections
+2. 13-step quiz collecting travel preferences (name → duration → dates → budget → travelers → language → preferences → arrival → car rental → guide → accommodation → location → special requests)
+3. Itinerary display with Hotels/Car Rental first, then Day-by-Day (with per-day hotel & car rental), then Restaurants last
 4. Stripe payment for PDF download
 5. Pro upsell banner throughout the flow (link color #84270B)
 

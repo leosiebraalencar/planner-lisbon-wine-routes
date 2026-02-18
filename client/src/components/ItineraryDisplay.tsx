@@ -131,123 +131,6 @@ export default function ItineraryDisplay({ itinerary, onDownload, isDownloading 
           </div>
         </CardContent>
       </Card>
-      
-      <Card className="border-border mb-8">
-        <CardHeader>
-          <CardTitle className="font-serif">{t('itinerary.dayByDay')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Accordion type="single" collapsible className="w-full">
-            {itinerary.days.map((day) => (
-              <AccordionItem key={day.day} value={`day-${day.day}`}>
-                <AccordionTrigger className="hover:no-underline" data-testid={`accordion-day-${day.day}`}>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
-                      {day.day}
-                    </div>
-                    <div className="text-left">
-                      <div className="font-serif font-semibold">{t('itinerary.day')} {day.day}</div>
-                      <div className="text-sm text-muted-foreground">{day.region}</div>
-                    </div>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-6 pt-4">
-                    <div className="flex gap-4">
-                      <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold">{t('itinerary.morning')}</h4>
-                          <span className="text-sm text-muted-foreground">{day.morning.time}</span>
-                        </div>
-                        <ActivityCard activity={day.morning} periodLabel={`morning-day-${day.day}`} t={t} />
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-4">
-                      <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold">{t('itinerary.afternoon')}</h4>
-                          <span className="text-sm text-muted-foreground">{day.afternoon.time}</span>
-                        </div>
-                        <ActivityCard activity={day.afternoon} periodLabel={`afternoon-day-${day.day}`} t={t} />
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-4">
-                      <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold">{t('itinerary.evening')}</h4>
-                          <span className="text-sm text-muted-foreground">{day.evening.time}</span>
-                        </div>
-                        <ActivityCard activity={day.evening} periodLabel={`evening-day-${day.day}`} t={t} />
-                      </div>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </CardContent>
-      </Card>
-
-      {itinerary.recommendations.restaurants && itinerary.recommendations.restaurants.length > 0 && (
-        <Card className="border-border mb-8">
-          <CardHeader className="pb-3">
-            <CardTitle className="font-serif flex items-center gap-2">
-              <UtensilsCrossed className="w-5 h-5 text-primary" />
-              {t('itinerary.recommendedRestaurants')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {itinerary.recommendations.restaurants.map((rest, idx) => (
-                <div key={idx} className="bg-card p-4 rounded-lg border border-border">
-                  <div className="flex items-start justify-between gap-2 flex-wrap">
-                    <div className="flex-1">
-                      <div className="font-medium">{rest.name}</div>
-                      {rest.address && (
-                        <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                          <MapPin className="w-3 h-3" />
-                          {rest.address}
-                        </div>
-                      )}
-                      {rest.description && (
-                        <p className="text-sm text-muted-foreground mt-1">{rest.description}</p>
-                      )}
-                      {rest.price != null && rest.price > 0 && (
-                        <div className="text-sm font-medium mt-1">
-                          {t('itinerary.averagePrice')}: €{rest.price.toFixed(2)}
-                        </div>
-                      )}
-                    </div>
-                    {rest.affiliateUrl && (
-                      <a
-                        href={rest.affiliateUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary text-sm font-medium hover:underline flex items-center gap-1 flex-shrink-0"
-                        data-testid={`link-restaurant-${idx}`}
-                      >
-                        {rest.isTheFork ? t('itinerary.bookOnTheFork') : t('itinerary.viewLink')} <ExternalLink className="w-3 h-3" />
-                      </a>
-                    )}
-                  </div>
-                  {rest.isTheFork && rest.theForkPromoCode && (
-                    <div className="mt-2 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-md p-2">
-                      <p className="text-xs font-medium text-green-800 dark:text-green-200">
-                        {t('itinerary.theForkPromoPrefix')}<span className="font-bold">{rest.theForkPromoCode}</span>{t('itinerary.theForkPromoSuffix')}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {(itinerary.recommendations.accommodation || itinerary.recommendations.carRental || (itinerary.recommendations.hotels && itinerary.recommendations.hotels.length > 0)) && (
         <div className="space-y-4 mb-8">
@@ -349,6 +232,176 @@ export default function ItineraryDisplay({ itinerary, onDownload, isDownloading 
             )}
           </div>
         </div>
+      )}
+      
+      <Card className="border-border mb-8">
+        <CardHeader>
+          <CardTitle className="font-serif">{t('itinerary.dayByDay')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Accordion type="single" collapsible className="w-full">
+            {itinerary.days.map((day) => (
+              <AccordionItem key={day.day} value={`day-${day.day}`}>
+                <AccordionTrigger className="hover:no-underline" data-testid={`accordion-day-${day.day}`}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
+                      {day.day}
+                    </div>
+                    <div className="text-left">
+                      <div className="font-serif font-semibold">{t('itinerary.day')} {day.day}</div>
+                      <div className="text-sm text-muted-foreground">{day.region}</div>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-6 pt-4">
+                    {day.carRentalPickup && (
+                      <div className="flex gap-4">
+                        <Car className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h4 className="font-semibold">{t('itinerary.carPickup')}</h4>
+                            <span className="text-sm text-muted-foreground">08:00</span>
+                          </div>
+                          <div className="bg-card p-4 rounded-lg">
+                            <div className="font-medium mb-1">{day.carRentalPickup.provider}</div>
+                            <p className="text-sm text-muted-foreground">{t('itinerary.carRentalInfo')}</p>
+                            <a
+                              href={day.carRentalPickup.affiliateUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary text-sm font-medium hover:underline flex items-center gap-1 mt-2"
+                              data-testid={`link-car-day-${day.day}`}
+                            >
+                              {t('itinerary.bookCar')} <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex gap-4">
+                      <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-semibold">{t('itinerary.morning')}</h4>
+                          <span className="text-sm text-muted-foreground">{day.morning.time}</span>
+                        </div>
+                        <ActivityCard activity={day.morning} periodLabel={`morning-day-${day.day}`} t={t} />
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-4">
+                      <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-semibold">{t('itinerary.afternoon')}</h4>
+                          <span className="text-sm text-muted-foreground">{day.afternoon.time}</span>
+                        </div>
+                        <ActivityCard activity={day.afternoon} periodLabel={`afternoon-day-${day.day}`} t={t} />
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-4">
+                      <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-semibold">{t('itinerary.evening')}</h4>
+                          <span className="text-sm text-muted-foreground">{day.evening.time}</span>
+                        </div>
+                        <ActivityCard activity={day.evening} periodLabel={`evening-day-${day.day}`} t={t} />
+                      </div>
+                    </div>
+
+                    {day.hotel && (
+                      <div className="flex gap-4">
+                        <Hotel className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h4 className="font-semibold">{t('itinerary.overnightStay')}</h4>
+                          </div>
+                          <div className="bg-card p-4 rounded-lg">
+                            <div className="font-medium mb-1">{day.hotel.name}</div>
+                            {day.hotel.description && (
+                              <p className="text-sm text-muted-foreground">{day.hotel.description}</p>
+                            )}
+                            {day.hotel.affiliateUrl && (
+                              <a
+                                href={day.hotel.affiliateUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary text-sm font-medium hover:underline flex items-center gap-1 mt-2"
+                                data-testid={`link-hotel-day-${day.day}`}
+                              >
+                                {t('itinerary.bookNow')} <ExternalLink className="w-3 h-3" />
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </CardContent>
+      </Card>
+
+      {itinerary.recommendations.restaurants && itinerary.recommendations.restaurants.length > 0 && (
+        <Card className="border-border mb-8">
+          <CardHeader className="pb-3">
+            <CardTitle className="font-serif flex items-center gap-2">
+              <UtensilsCrossed className="w-5 h-5 text-primary" />
+              {t('itinerary.recommendedRestaurants')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {itinerary.recommendations.restaurants.map((rest, idx) => (
+                <div key={idx} className="bg-card p-4 rounded-lg border border-border">
+                  <div className="flex items-start justify-between gap-2 flex-wrap">
+                    <div className="flex-1">
+                      <div className="font-medium">{rest.name}</div>
+                      {rest.address && (
+                        <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                          <MapPin className="w-3 h-3" />
+                          {rest.address}
+                        </div>
+                      )}
+                      {rest.description && (
+                        <p className="text-sm text-muted-foreground mt-1">{rest.description}</p>
+                      )}
+                      {rest.price != null && rest.price > 0 && (
+                        <div className="text-sm font-medium mt-1">
+                          {t('itinerary.averagePrice')}: €{rest.price.toFixed(2)}
+                        </div>
+                      )}
+                    </div>
+                    {rest.affiliateUrl && (
+                      <a
+                        href={rest.affiliateUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary text-sm font-medium hover:underline flex items-center gap-1 flex-shrink-0"
+                        data-testid={`link-restaurant-${idx}`}
+                      >
+                        {rest.isTheFork ? t('itinerary.bookOnTheFork') : t('itinerary.viewLink')} <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
+                  </div>
+                  {rest.isTheFork && rest.theForkPromoCode && (
+                    <div className="mt-2 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-md p-2">
+                      <p className="text-xs font-medium text-green-800 dark:text-green-200">
+                        {t('itinerary.theForkPromoPrefix')}<span className="font-bold">{rest.theForkPromoCode}</span>{t('itinerary.theForkPromoSuffix')}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
       
       {itinerary.quizData.wantsPrivateGuide && (

@@ -336,6 +336,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/itinerary-count", async (_req, res) => {
+    try {
+      const dbCount = await storage.getQuizSubmissionCount();
+      const BASE_COUNT = 50;
+      res.json({ count: BASE_COUNT + dbCount });
+    } catch (error) {
+      console.error('Error getting itinerary count:', error);
+      res.json({ count: 50 });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

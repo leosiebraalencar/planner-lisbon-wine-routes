@@ -119,6 +119,16 @@ export const itinerarySchema = z.object({
     morning: activitySchema,
     afternoon: activitySchema,
     evening: activitySchema,
+    hotel: z.object({
+      name: z.string(),
+      description: z.string().optional(),
+      affiliateUrl: z.string().optional(),
+      budgetCategory: z.string().optional(),
+    }).optional(),
+    carRentalPickup: z.object({
+      provider: z.string(),
+      affiliateUrl: z.string(),
+    }).optional(),
   })),
   highlights: z.array(z.string()),
   recommendations: z.object({

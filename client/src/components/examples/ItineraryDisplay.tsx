@@ -69,7 +69,7 @@ const mockItinerary: Itinerary = {
     'Paisagens deslumbrantes'
   ],
   recommendations: {
-    restaurants: ['Adega das Gravatas', 'Tasca do Celso'],
+    restaurants: [{ name: 'Adega das Gravatas' }, { name: 'Tasca do Celso' }],
     tips: ['Reserve com antecedência', 'Leve protetor solar', 'Câmera obrigatória']
   }
 };

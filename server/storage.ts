@@ -1,6 +1,6 @@
 import { users, paymentSessions, proRequests, quizSubmissions, type User, type InsertUser, type PaymentSession, type InsertPaymentSession, type ProRequest, type InsertProRequest, type QuizSubmission, type InsertQuizSubmission } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, count } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -14,6 +14,7 @@ export interface IStorage {
   createQuizSubmission(submission: InsertQuizSubmission): Promise<QuizSubmission>;
   getQuizSubmissions(): Promise<QuizSubmission[]>;
   updateQuizSubmissionEmail(id: string, email: string, consent: string): Promise<QuizSubmission | undefined>;
+  getQuizSubmissionCount(): Promise<number>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -91,6 +92,11 @@ export class DatabaseStorage implements IStorage {
       .where(eq(quizSubmissions.id, id))
       .returning();
     return updated || undefined;
+  }
+
+  async getQuizSubmissionCount(): Promise<number> {
+    const [result] = await db.select({ count: count() }).from(quizSubmissions);
+    return result?.count || 0;
   }
 }
 
