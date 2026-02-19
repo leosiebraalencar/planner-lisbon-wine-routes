@@ -82,7 +82,7 @@ export const translations = {
         placeholder: 'O seu nome',
       },
       q1: {
-        question: 'Quantos dias durará a sua viagem?',
+        question: 'Quantos dias da sua viagem serão dedicados ao enoturismo?',
         day: 'dia',
         days: 'dias',
         moreThan5: 'Mais de 5 dias',
@@ -488,7 +488,7 @@ export const translations = {
         placeholder: 'Your name',
       },
       q1: {
-        question: 'How many days will your trip last?',
+        question: 'How many days of your trip will be dedicated to wine tourism?',
         day: 'day',
         days: 'days',
         moreThan5: 'More than 5 days',
@@ -894,7 +894,7 @@ export const translations = {
         placeholder: 'Tu nombre',
       },
       q1: {
-        question: '¿Cuántos días durará tu viaje?',
+        question: '¿Cuántos días de tu viaje estarán dedicados al enoturismo?',
         day: 'día',
         days: 'días',
         moreThan5: 'Más de 5 días',
@@ -1300,7 +1300,7 @@ export const translations = {
         placeholder: 'Ihr Name',
       },
       q1: {
-        question: 'Wie viele Tage wird Ihre Reise dauern?',
+        question: 'Wie viele Tage Ihrer Reise werden dem Weintourismus gewidmet?',
         day: 'Tag',
         days: 'Tage',
         moreThan5: 'Mehr als 5 Tage',
