@@ -843,6 +843,120 @@ export const ALL_WINERIES: WineryData[] = [
   },
 ];
 
+export const PRIORITY_WINERIES = new Set([
+  'Quinta De San Michel',
+  'AdegaMãe',
+  'Palácio Da Bacalhôa',
+  'Quinta Do Gradil',
+  'Adega Regional De Colares',
+  'Casa Santos Lima',
+  "Cas'amaro",
+  'Quinta Da Folgorosa',
+  'Quinta de S. Sebastião',
+  'José Maria Da Fonseca',
+  'Casa Ermelinda Freitas',
+  'Manzwine',
+]);
+
+export type ExperienceTag =
+  | 'romantic'
+  | 'technical'
+  | 'informal'
+  | 'gastronomic'
+  | 'outdoor'
+  | 'historical'
+  | 'family'
+  | 'exclusive';
+
+const TAG_KEYWORDS: Record<ExperienceTag, RegExp[]> = {
+  romantic: [/privad/i, /sunset/i, /piquenique|picnic/i, /exclusiv/i],
+  technical: [/enólog/i, /terroir/i, /monocasta/i, /premium/i, /4x4/i],
+  informal: [/tapas/i, /brunch/i, /open day/i, /standard/i, /bronze/i],
+  gastronomic: [/almoço|lunch|jantar|dinner|refeição|gastronomic/i, /harmonização|pairing/i, /petiscos/i, /queijos|cheese/i],
+  outdoor: [/vinha|vinhas|vineyard/i, /trilho/i, /piquenique|picnic/i, /vindima/i, /4x4/i],
+  historical: [/história|histor/i, /museu|museum/i, /palácio|palacio/i, /património/i, /romano|romana/i],
+  family: [/standard/i, /visita guiada/i, /bronze/i, /clássic/i],
+  exclusive: [/exclusiv|privad/i, /premium/i, /special/i, /gold|platinum|royal/i],
+};
+
+export function getExperienceTags(winery: WineryData): ExperienceTag[] {
+  const tags = new Set<ExperienceTag>();
+  const allNames = winery.experiences.map(e => e.name).join(' ');
+  for (const [tag, patterns] of Object.entries(TAG_KEYWORDS) as [ExperienceTag, RegExp[]][]) {
+    if (patterns.some(p => p.test(allNames))) {
+      tags.add(tag);
+    }
+  }
+  return Array.from(tags);
+}
+
+export type BudgetTier = 'low' | 'mid' | 'high';
+
+export function getWineryBudgetTier(winery: WineryData): BudgetTier {
+  if (winery.experiences.length === 0) return 'mid';
+  const avg = winery.experiences.reduce((s, e) => s + e.price, 0) / winery.experiences.length;
+  if (avg <= 30) return 'low';
+  if (avg <= 55) return 'mid';
+  return 'high';
+}
+
+export function budgetMatchScore(winery: WineryData, quizBudget: string): number {
+  const tier = getWineryBudgetTier(winery);
+  const tierMap: Record<string, BudgetTier> = {
+    economico: 'low',
+    moderado: 'mid',
+    premium: 'high',
+    budget: 'low',
+    moderate: 'mid',
+    luxury: 'high',
+  };
+  const desired = tierMap[quizBudget] || 'mid';
+  if (tier === desired) return 30;
+  const order: BudgetTier[] = ['low', 'mid', 'high'];
+  if (Math.abs(order.indexOf(tier) - order.indexOf(desired)) === 1) return 10;
+  return 0;
+}
+
+const QUIZ_PREF_TO_TAGS: Record<string, ExperienceTag[]> = {
+  traditionalGastronomy: ['gastronomic', 'historical'],
+  internationalGastronomy: ['gastronomic'],
+  historic: ['historical'],
+  modernWineries: ['technical'],
+  tours: ['outdoor', 'family'],
+  tastings: ['technical', 'informal'],
+  biodynamic: ['outdoor', 'technical'],
+};
+
+export function preferenceMatchScore(winery: WineryData, quizPreferences: string[]): number {
+  const wineryTags = getExperienceTags(winery);
+  if (wineryTags.length === 0 || quizPreferences.length === 0) return 0;
+  let score = 0;
+  for (const pref of quizPreferences) {
+    const desiredTags = QUIZ_PREF_TO_TAGS[pref];
+    if (!desiredTags) continue;
+    for (const dt of desiredTags) {
+      if (wineryTags.includes(dt)) {
+        score += 10;
+        break;
+      }
+    }
+  }
+  return Math.min(score, 20);
+}
+
+export function scoreWinery(
+  winery: WineryData,
+  quizBudget: string,
+  quizPreferences: string[],
+): number {
+  let score = 0;
+  if (PRIORITY_WINERIES.has(winery.name)) score += 40;
+  score += budgetMatchScore(winery, quizBudget);
+  score += preferenceMatchScore(winery, quizPreferences);
+  score += (winery.rating || 0) * 2;
+  return score;
+}
+
 export function getWineriesByRegion(region: Region): WineryData[] {
   return ALL_WINERIES.filter(w => w.region === region);
 }

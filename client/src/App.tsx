@@ -22,6 +22,7 @@ import {
   ALL_WINERIES, 
   REGIONS, 
   getExperienceByBudget,
+  scoreWinery,
   type WineryData 
 } from "@shared/wineryData";
 import { ALL_RESTAURANTS, type RestaurantData } from "@shared/restaurantData";
@@ -188,14 +189,20 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
   let currentRegionIndex = 0;
   let daysInCurrentRegion = 0;
 
-  const getUnusedWinery = (region: string): WineryData | undefined => {
-    const wineries = regionWineries[region] || [];
-    return wineries.find(w => !usedWineries.has(w.name));
+  const getScoredWinery = (region: string): WineryData | undefined => {
+    const wineries = (regionWineries[region] || []).filter(w => !usedWineries.has(w.name));
+    if (wineries.length === 0) return undefined;
+    const scored = wineries.map(w => ({
+      winery: w,
+      score: scoreWinery(w, quizData.budget, quizData.preferences || []),
+    }));
+    scored.sort((a, b) => b.score - a.score);
+    return scored[0].winery;
   };
 
   const findWineryAnyRegion = (): WineryData | undefined => {
     for (const r of orderedRegions) {
-      const w = getUnusedWinery(r);
+      const w = getScoredWinery(r);
       if (w) return w;
     }
     return undefined;
@@ -325,7 +332,7 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
   for (let i = 1; i <= quizData.duration; i++) {
     const regionName = orderedRegions[currentRegionIndex];
 
-    let morningWinery = getUnusedWinery(regionName);
+    let morningWinery = getScoredWinery(regionName);
     if (morningWinery) usedWineries.add(morningWinery.name);
     else {
       morningWinery = findWineryAnyRegion();
@@ -408,20 +415,24 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
       }
       days.push(dayData);
     } else {
-      let afternoonWinery = getUnusedWinery(regionName);
+      const afternoonCandidates = (regionWineries[regionName] || [])
+        .filter(w => !usedWineries.has(w.name))
+        .map(w => {
+          let s = scoreWinery(w, quizData.budget, quizData.preferences || []);
+          if (morningCoords) {
+            const c = getWineryCoords(w);
+            if (c && haversineDistance(morningCoords.lat, morningCoords.lng, c.lat, c.lng) <= 30) {
+              s += 25;
+            } else if (c) {
+              s -= 20;
+            }
+          }
+          return { winery: w, score: s };
+        })
+        .sort((a, b) => b.score - a.score);
+      let afternoonWinery: WineryData | undefined = afternoonCandidates[0]?.winery;
       if (!afternoonWinery) {
         afternoonWinery = findWineryAnyRegion();
-      }
-      if (afternoonWinery && morningCoords) {
-        const aftCoords = getWineryCoords(afternoonWinery);
-        if (aftCoords && haversineDistance(morningCoords.lat, morningCoords.lng, aftCoords.lat, aftCoords.lng) > 30) {
-          const closer = (regionWineries[regionName] || []).find(w => {
-            if (usedWineries.has(w.name) || w.name === morningWinery!.name) return false;
-            const c = getWineryCoords(w);
-            return c ? haversineDistance(morningCoords.lat, morningCoords.lng, c.lat, c.lng) <= 30 : false;
-          });
-          if (closer) afternoonWinery = closer;
-        }
       }
       if (afternoonWinery) usedWineries.add(afternoonWinery.name);
       if (!afternoonWinery) afternoonWinery = regionWineries[regionName]?.[1] || ALL_WINERIES[1];

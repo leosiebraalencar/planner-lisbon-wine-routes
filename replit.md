@@ -70,6 +70,10 @@ Preferred communication style: Simple, everyday language.
 ### Itinerary Generation (client/src/App.tsx)
 - **Pace modes**: `oneWineryPerDay` = 1 winery + lunch + dinner; default/`maxWineries` = 2 wineries + dinner
 - Distance-based winery pairing: Afternoon winery within 30km of morning winery (fast-pace mode)
+- **Scored winery selection**: Priority winery bonus (+40), budget tier match (+30), experience tag matching to quiz preferences (+20), rating bonus (+2/star), proximity bonus (+25 for ≤30km in fast mode)
+- **Priority wineries**: 12 preferred wineries (Quinta De San Michel, AdegaMãe, Palácio Da Bacalhôa, Quinta Do Gradil, Adega Regional De Colares, Casa Santos Lima, Cas'amaro, Quinta Da Folgorosa, Quinta de S. Sebastião, JMF, Casa Ermelinda Freitas, Manzwine)
+- **Experience tags**: Auto-detected from experience names via regex (romantic, technical, informal, gastronomic, outdoor, historical, family, exclusive) → matched to quiz preferences
+- **Budget tiers**: avg price ≤30€=low, ≤55€=mid, >55€=high; mapped from quiz values (economico→low, moderado→mid, premium→high)
 - Scored restaurant selection: Cuisine preference (+50), budget match (+30), region (+20), rating, proximity
 - **Dinner region**: Uses hotel region when `central_lisboa` preference, otherwise winery region
 - Hotel per day: Assigned in-loop per region/day (or Lisboa for central_lisboa preference)
