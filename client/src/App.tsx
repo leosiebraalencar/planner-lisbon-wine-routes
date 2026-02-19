@@ -269,20 +269,9 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
   };
 
   const getHotelForRegion = (region: string, usedHotels: Set<string>): HotelData | undefined => {
-    const regionAliases: Record<string, string[]> = {
-      'Região Oeste': ['Região Oeste'],
-      'Sintra': ['Sintra'],
-      'Setúbal': ['Setúbal'],
-      'Oeiras': ['Lisboa', 'Cascais'],
-      'Lisboa': ['Lisboa'],
-    };
-    const hotelRegions = regionAliases[region] || [region, 'Lisboa'];
-    
-    for (const hr of hotelRegions) {
-      const hotels = getHotelsByBudgetAndRegion(quizData.budget, hr)
-        .filter(h => !h.isGenericListing && !usedHotels.has(h.name));
-      if (hotels.length > 0) return hotels[0];
-    }
+    const hotels = getHotelsByBudgetAndRegion(quizData.budget, region)
+      .filter(h => !h.isGenericListing && !usedHotels.has(h.name));
+    if (hotels.length > 0) return hotels[0];
     const fallback = getHotelsByBudgetAndRegion(quizData.budget, 'Lisboa')
       .filter(h => !h.isGenericListing && !usedHotels.has(h.name));
     return fallback[0];

@@ -4,6 +4,7 @@ export interface HotelData {
   affiliateUrl: string;
   description: string;
   region: string;
+  address: string;
   isGenericListing: boolean;
 }
 
@@ -12,40 +13,45 @@ export const ALL_HOTELS: HotelData[] = [
     name: 'Outras opções no Centro',
     budgetCategory: 'low',
     affiliateUrl: 'https://tidd.ly/3OjfvoB',
-    description: 'Opções no centro',
+    description: 'Opções no centro de Lisboa',
     region: 'Lisboa',
+    address: '',
     isGenericListing: true,
   },
   {
     name: 'Outras opções no Centro',
     budgetCategory: 'medium',
     affiliateUrl: 'https://tidd.ly/4kBQUHE',
-    description: 'Opções no centro',
+    description: 'Opções no centro de Lisboa',
     region: 'Lisboa',
+    address: '',
     isGenericListing: true,
   },
   {
     name: 'Outras opções no Centro',
     budgetCategory: 'high',
     affiliateUrl: 'https://tidd.ly/4bZb4t0',
-    description: 'Opções no centro',
+    description: 'Opções no centro de Lisboa',
     region: 'Lisboa',
+    address: '',
     isGenericListing: true,
   },
   {
     name: 'Palácio Ludovice Wine Experience Hotel',
     budgetCategory: 'high',
     affiliateUrl: 'https://tidd.ly/4aofiJm',
-    description: 'Centro de Lisboa, Experiência 5 estrelas, Michelin Guide',
+    description: 'Opção Premium Lisboa',
     region: 'Lisboa',
+    address: 'Rua de São Pedro de Alcântara 39-49, Misericordia, 1250-237 Lisboa, Portugal',
     isGenericListing: false,
   },
   {
     name: 'Bagos do Vilar',
-    budgetCategory: 'medium',
+    budgetCategory: 'low',
     affiliateUrl: 'https://tidd.ly/45qqHXd',
-    description: 'Mais próximo das vinícolas',
-    region: 'Região Oeste',
+    description: 'Região de Cadaval, mais próximo das vinícolas',
+    region: 'Cadaval',
+    address: 'Rua da Alcântara Vilar, 2550-069 Cadaval, Portugal',
     isGenericListing: false,
   },
   {
@@ -53,15 +59,17 @@ export const ALL_HOTELS: HotelData[] = [
     budgetCategory: 'high',
     affiliateUrl: 'https://www.quintadesantana.com/pt-pt/alojamento-rural/',
     description: 'Região de Mafra, experiência de dormir em propriedade vinícola',
-    region: 'Região Oeste',
+    region: 'Mafra',
+    address: 'R. Direita 3, 2665-113 Gradil',
     isGenericListing: false,
   },
   {
     name: 'Terra Luso',
     budgetCategory: 'medium',
     affiliateUrl: 'https://tidd.ly/3OxA00R',
-    description: '',
-    region: 'Região Oeste',
+    description: 'Região de Cadaval',
+    region: 'Cadaval',
+    address: 'Rua das Flores, Sitio do Paúl, 50 - Rocha Forte, 2550-377 Cadaval, Portugal',
     isGenericListing: false,
   },
   {
@@ -69,15 +77,17 @@ export const ALL_HOTELS: HotelData[] = [
     budgetCategory: 'medium',
     affiliateUrl: 'https://tidd.ly/4aZ0LDd',
     description: 'Região de Torres Vedras',
-    region: 'Região Oeste',
+    region: 'Torres Vedras',
+    address: 'Praça 25 De Abril, 17, 2560-285 Torres Vedras, Portugal',
     isGenericListing: false,
   },
   {
     name: 'Quinta da Carlota',
     budgetCategory: 'high',
     affiliateUrl: 'https://tidd.ly/4tGQYKl',
-    description: 'Região de Torres Vedras, Alojamento muito confortável',
-    region: 'Região Oeste',
+    description: 'Região de Torres Vedras, alojamento muito confortável',
+    region: 'Torres Vedras',
+    address: 'Rua do Vale da Azenha, 2560-235 Torres Vedras, Portugal',
     isGenericListing: false,
   },
   {
@@ -86,6 +96,7 @@ export const ALL_HOTELS: HotelData[] = [
     affiliateUrl: 'https://tidd.ly/4kCEIX4',
     description: 'Região de Sobral de Monte Agraço, excepcional',
     region: 'Região Oeste',
+    address: '15 Rua Principal, 2590-287 Sobral de Monte Agraço, Portugal',
     isGenericListing: false,
   },
   {
@@ -93,7 +104,8 @@ export const ALL_HOTELS: HotelData[] = [
     budgetCategory: 'high',
     affiliateUrl: 'https://tidd.ly/3OMXCyw',
     description: 'Região de Alenquer, confortável e de época com história',
-    region: 'Região Oeste',
+    region: 'Alenquer',
+    address: 'Estrada da Várzea, Quinta do Covanco, 2580-376 Alenquer, Portugal',
     isGenericListing: false,
   },
   {
@@ -102,6 +114,7 @@ export const ALL_HOTELS: HotelData[] = [
     affiliateUrl: 'https://tidd.ly/40cVzpY',
     description: 'Região de Grândola',
     region: 'Setúbal',
+    address: 'Rua da Eira, Santa Margarida da Serra, 7570-777 Grândola, Portugal',
     isGenericListing: false,
   },
   {
@@ -110,6 +123,7 @@ export const ALL_HOTELS: HotelData[] = [
     affiliateUrl: 'https://tidd.ly/4rmypcI',
     description: 'Região de Grândola',
     region: 'Setúbal',
+    address: 'Outeiro André - Sobreiras Altas, 7570-345 Grândola, Portugal',
     isGenericListing: false,
   },
   {
@@ -118,6 +132,7 @@ export const ALL_HOTELS: HotelData[] = [
     affiliateUrl: 'https://tidd.ly/4qGYhir',
     description: 'Região de Sintra',
     region: 'Sintra',
+    address: 'Estrada da Lagoa Azul - Linho, 2714-511 Sintra, Portugal',
     isGenericListing: false,
   },
   {
@@ -126,6 +141,7 @@ export const ALL_HOTELS: HotelData[] = [
     affiliateUrl: 'https://tidd.ly/4twmcDQ',
     description: 'Região de Sintra, Private Historic Estate',
     region: 'Sintra',
+    address: '60 Rua Barbosa du Bocage, 2710-517 Sintra, Portugal',
     isGenericListing: false,
   },
   {
@@ -134,6 +150,7 @@ export const ALL_HOTELS: HotelData[] = [
     affiliateUrl: 'https://tidd.ly/4kCIFel',
     description: 'Região de Sintra',
     region: 'Sintra',
+    address: 'Estrada da Pena 30, 2710-609 Sintra, Portugal',
     isGenericListing: false,
   },
   {
@@ -142,14 +159,16 @@ export const ALL_HOTELS: HotelData[] = [
     affiliateUrl: 'https://tidd.ly/4rlEOoB',
     description: 'Região de Sintra',
     region: 'Sintra',
+    address: 'Av. Dom Francisco de Almeida 40, 2710-562 Sintra, Portugal',
     isGenericListing: false,
   },
   {
     name: 'Sintra Marmoris Palace',
     budgetCategory: 'high',
     affiliateUrl: 'https://tidd.ly/40aJ2U6',
-    description: 'Região de Sintra, Impressionante e histórico',
+    description: 'Região de Sintra, impressionante e histórico',
     region: 'Sintra',
+    address: 'Avª Barão de Almeida Santos, 7 Quinta dos Cedros, 2710-525 Sintra, Portugal',
     isGenericListing: false,
   },
   {
@@ -158,6 +177,7 @@ export const ALL_HOTELS: HotelData[] = [
     affiliateUrl: 'https://tidd.ly/46dVDtf',
     description: 'Região de Setúbal',
     region: 'Setúbal',
+    address: 'Quinta do Esteval - E.N. 10, km 33,5, 2900-722 Setúbal, Portugal',
     isGenericListing: false,
   },
   {
@@ -166,6 +186,7 @@ export const ALL_HOTELS: HotelData[] = [
     affiliateUrl: 'https://tidd.ly/4aQvaVb',
     description: 'Região de Setúbal',
     region: 'Setúbal',
+    address: 'Avenida Luísa Todi, 117, 2900-461 Setúbal, Portugal',
     isGenericListing: false,
   },
   {
@@ -174,6 +195,7 @@ export const ALL_HOTELS: HotelData[] = [
     affiliateUrl: 'https://tidd.ly/3OiCJLC',
     description: 'Região de Setúbal',
     region: 'Setúbal',
+    address: 'Av. Luísa Todi, Rua Padre Silvestre Serrão nº8, 2900-424 Setúbal, Portugal',
     isGenericListing: false,
   },
   {
@@ -181,7 +203,8 @@ export const ALL_HOTELS: HotelData[] = [
     budgetCategory: 'high',
     affiliateUrl: 'https://tidd.ly/3Ftregd',
     description: 'Região de Bucelas, dentro de propriedade vinícola',
-    region: 'Região Oeste',
+    region: 'Bucelas',
+    address: 'Rua do Lagar, Bucelas, Portugal',
     isGenericListing: false,
   },
   {
@@ -189,31 +212,35 @@ export const ALL_HOTELS: HotelData[] = [
     budgetCategory: 'high',
     affiliateUrl: 'https://tidd.ly/4kPAQlJ',
     description: 'Região de Bucelas, dentro de propriedade vinícola',
-    region: 'Região Oeste',
+    region: 'Bucelas',
+    address: 'Quinta do Boição, Rua Comandante Sacadura Cabral 22, 2670-632 Lisboa, Portugal',
     isGenericListing: false,
   },
   {
     name: 'Lisbon Wine Hotel',
     budgetCategory: 'high',
     affiliateUrl: 'https://tidd.ly/4aDB36W',
-    description: 'Arroios',
+    description: 'Arroios, Lisboa',
     region: 'Lisboa',
+    address: 'Rua Portas de Santo Antão 88, Arroios, 1150-266 Lisboa, Portugal',
     isGenericListing: false,
   },
   {
     name: '1904 Benfica Hotel FLH Hotels',
     budgetCategory: 'high',
     affiliateUrl: 'https://tidd.ly/4cwHnPZ',
-    description: 'Próximo a Avenida da Liberdade',
+    description: 'Próximo a Avenida da Liberdade, excelente localização',
     region: 'Lisboa',
+    address: 'Rua do Jardim do Regedor 9, 1150-193 Lisboa, Portugal',
     isGenericListing: false,
   },
   {
     name: 'Lisbon Cheese & Wine Suites',
     budgetCategory: 'high',
     affiliateUrl: 'https://tidd.ly/4bY8SSz',
-    description: 'Estrela Lisboa',
+    description: 'Estrela, Lisboa',
     region: 'Lisboa',
+    address: 'Calçada do Marquês de Abrantes, N40, RC, Estrela, 1200-719 Lisboa, Portugal',
     isGenericListing: false,
   },
   {
@@ -222,6 +249,7 @@ export const ALL_HOTELS: HotelData[] = [
     affiliateUrl: 'https://tidd.ly/3OLpHGt',
     description: 'Região de Sintra',
     region: 'Sintra',
+    address: 'Rua/Travessa São Sebastião, 3, 2710-592 Sintra, Portugal',
     isGenericListing: false,
   },
   {
@@ -230,6 +258,7 @@ export const ALL_HOTELS: HotelData[] = [
     affiliateUrl: 'https://tidd.ly/40j2JJi',
     description: 'Região de Chiado, Lisboa',
     region: 'Lisboa',
+    address: 'Rua Áurea 175-181, Santa Maria Maior, 1149-021 Lisboa, Portugal',
     isGenericListing: false,
   },
   {
@@ -238,14 +267,16 @@ export const ALL_HOTELS: HotelData[] = [
     affiliateUrl: 'https://tidd.ly/4tBhkxr',
     description: 'Região de Ajuda, Lisboa',
     region: 'Lisboa',
+    address: '56 Travessa da Memória, Ajuda, 1300-403 Lisboa, Portugal',
     isGenericListing: false,
   },
   {
     name: 'Valverde Sintra Palácio de Seteais',
     budgetCategory: 'high',
     affiliateUrl: 'https://tidd.ly/4alJzsf',
-    description: 'Região de Sintra, Sinta-se em Palácio',
+    description: 'Região de Sintra, sinta-se em Palácio',
     region: 'Sintra',
+    address: 'Rua Barbosa do Bocage, 8, 2710-517 Sintra, Portugal',
     isGenericListing: false,
   },
   {
@@ -253,7 +284,8 @@ export const ALL_HOTELS: HotelData[] = [
     budgetCategory: 'high',
     affiliateUrl: 'https://tidd.ly/3MrAg0T',
     description: 'Região de Ericeira',
-    region: 'Região Oeste',
+    region: 'Ericeira',
+    address: 'Rua Bica da Figueira, Marvão, 2640-064 Ericeira, Portugal',
     isGenericListing: false,
   },
   {
@@ -261,28 +293,226 @@ export const ALL_HOTELS: HotelData[] = [
     budgetCategory: 'high',
     affiliateUrl: 'https://tidd.ly/3OkmL3K',
     description: 'Região de Cascais, Quinta da Marinha',
+    region: 'Cascais',
+    address: 'Rua das Palmeiras Lote 5 - Quinta da Marinha, 2750-004 Cascais, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'Villa Ana Margarida by Nature',
+    budgetCategory: 'medium',
+    affiliateUrl: 'https://tidd.ly/3Mh8FiY',
+    description: 'Região de Ericeira',
+    region: 'Ericeira',
+    address: 'Estrada do Rego 4, 2655-345 Ericeira, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'You and the Sea',
+    budgetCategory: 'high',
+    affiliateUrl: 'https://tidd.ly/4kLh1fr',
+    description: 'Região de Ericeira',
+    region: 'Ericeira',
+    address: 'Rua das Silvas, 2655-431 Ericeira, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'HF Fénix Urban',
+    budgetCategory: 'low',
+    affiliateUrl: 'https://tidd.ly/4qMhE9R',
+    description: 'Lisboa',
+    region: 'Lisboa',
+    address: 'Rua Joaquim António de Aguiar 5, Santo António, 1050-010 Lisboa, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'Luzeiros Suites',
+    budgetCategory: 'low',
+    affiliateUrl: 'https://tidd.ly/4cCLOca',
+    description: 'Lisboa',
+    region: 'Lisboa',
+    address: 'Av. da República Nº77, Avenidas Novas, 1050-243 Lisboa, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'SANA Malhoa Hotel',
+    budgetCategory: 'medium',
+    affiliateUrl: 'https://tidd.ly/4c4hqHy',
+    description: 'Lisboa',
+    region: 'Lisboa',
+    address: 'Av. José Malhoa, 8, Campolide, 1099-089 Lisboa, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'Metropolitan Living Lisbon - Laranjeiras',
+    budgetCategory: 'low',
+    affiliateUrl: 'https://tidd.ly/4kHixPs',
+    description: 'Lisboa',
+    region: 'Lisboa',
+    address: '237 Estrada das Laranjeiras, Sao Domingos de Benfica, 1600-134 Lisboa, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'Jardim da Lapa by Shiadu',
+    budgetCategory: 'medium',
+    affiliateUrl: 'https://tidd.ly/4rqOyhn',
+    description: 'Lisboa',
+    region: 'Lisboa',
+    address: '52A Rua Sacramento à Lapa, Estrela, 1200-757 Lisboa, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'My Story Hotel Tejo',
+    budgetCategory: 'medium',
+    affiliateUrl: 'https://tidd.ly/3Oopzg5',
+    description: 'Lisboa',
+    region: 'Lisboa',
+    address: 'Rua Condes de Monsanto Nº2, Santa Maria Maior, 1100-159 Lisboa, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'Palácio de Sintra Boutique House',
+    budgetCategory: 'low',
+    affiliateUrl: 'https://tidd.ly/3Opjbp2',
+    description: 'Região de Sintra',
     region: 'Sintra',
+    address: 'A Rua Consiglieri Pedroso, 23, 2710-550 Sintra, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'Pestana Sintra Golf Resort & SPA Hotel',
+    budgetCategory: 'low',
+    affiliateUrl: 'https://tidd.ly/4aIBrRE',
+    description: 'Região de Sintra',
+    region: 'Sintra',
+    address: 'Rua do Mato da Mina, 19, 2710-692 Sintra, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'Paço do Bispo Boutique House',
+    budgetCategory: 'medium',
+    affiliateUrl: 'https://tidd.ly/4qOF4LM',
+    description: 'Região de Sintra',
+    region: 'Sintra',
+    address: 'Ribeira da Penha Longa, Largo S. Brás, Paço do Bispo Nº 88, 2710-005 Sintra, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'B&B Hotel Setúbal Bonfim',
+    budgetCategory: 'low',
+    affiliateUrl: 'https://tidd.ly/4c9W8Zb',
+    description: 'Região de Setúbal',
+    region: 'Setúbal',
+    address: 'Estrada Machadas 4, 2900-465 Setúbal, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'Hotel Campanile Setubal',
+    budgetCategory: 'low',
+    affiliateUrl: 'https://tidd.ly/4aFAPMF',
+    description: 'Região de Setúbal',
+    region: 'Setúbal',
+    address: 'Rua das Caravelas, 2910-706 Setúbal, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'Pátio da Figueira',
+    budgetCategory: 'low',
+    affiliateUrl: 'https://tidd.ly/4atVyUU',
+    description: 'Região de Torres Vedras',
+    region: 'Torres Vedras',
+    address: 'Estrada Nacional 9 nº35 - Gibraltar, 2560-122 Torres Vedras, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'Vila Louro',
+    budgetCategory: 'low',
+    affiliateUrl: 'https://tidd.ly/4s6eKhr',
+    description: 'Região de Torres Vedras',
+    region: 'Torres Vedras',
+    address: 'Rua dos Silvas, Silveira Nº 1, 2560-417 Santa Cruz, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'Vale Pisco',
+    budgetCategory: 'high',
+    affiliateUrl: 'https://tidd.ly/4aFBHkp',
+    description: 'Região de Cadaval',
+    region: 'Cadaval',
+    address: 'Estrada Covil do Fialho nº 6, Carvalhal, 2540-372 Bombarral, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'Sóis Montejunto Eco Lodge',
+    budgetCategory: 'medium',
+    affiliateUrl: 'https://tidd.ly/3OraWZp',
+    description: 'Região de Alenquer',
+    region: 'Alenquer',
+    address: 'Caminho do Fole, Portela do Sol, Vila Verde dos Francos, 2580-438 Alenquer, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: "Cas'Amaro",
+    budgetCategory: 'high',
+    affiliateUrl: 'https://tidd.ly/4c5oN1u',
+    description: 'Região de Alenquer',
+    region: 'Alenquer',
+    address: 'Rua Joaquim Casimiro 20, 2580-081 Alenquer, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'High Villa',
+    budgetCategory: 'medium',
+    affiliateUrl: 'https://tidd.ly/4rtbAV5',
+    description: 'Região de Alenquer, grandes grupos até 18 pessoas',
+    region: 'Alenquer',
+    address: '178 Avenida António Maria Jalles, 2580-285 Alenquer, Portugal',
+    isGenericListing: false,
+  },
+  {
+    name: 'Quinta do Monte das Abelhas - La Vénus de Lisbonne',
+    budgetCategory: 'medium',
+    affiliateUrl: 'https://tidd.ly/4as6TEW',
+    description: 'Região de Calhandriz',
+    region: 'Bucelas',
+    address: 'Rua do Mato Forte, 2615-631 Calhandriz, Portugal',
     isGenericListing: false,
   },
 ];
 
-export function getHotelsByBudget(budget: 'economico' | 'moderado' | 'premium'): HotelData[] {
+export const HOTEL_REGION_ALIASES: Record<string, string[]> = {
+  'Região Oeste': ['Região Oeste', 'Cadaval', 'Torres Vedras', 'Alenquer', 'Mafra', 'Ericeira', 'Bucelas'],
+  'Sintra': ['Sintra', 'Cascais', 'Ericeira'],
+  'Setúbal': ['Setúbal'],
+  'Oeiras': ['Lisboa', 'Cascais'],
+  'Lisboa': ['Lisboa'],
+  'Cadaval': ['Cadaval', 'Região Oeste', 'Alenquer'],
+  'Torres Vedras': ['Torres Vedras', 'Região Oeste', 'Cadaval'],
+  'Alenquer': ['Alenquer', 'Região Oeste', 'Cadaval', 'Bucelas'],
+  'Mafra': ['Mafra', 'Região Oeste', 'Ericeira'],
+  'Ericeira': ['Ericeira', 'Sintra', 'Mafra', 'Região Oeste'],
+  'Cascais': ['Cascais', 'Sintra', 'Lisboa'],
+  'Bucelas': ['Bucelas', 'Região Oeste', 'Alenquer', 'Lisboa'],
+};
+
+export function getHotelsByBudget(budget: string): HotelData[] {
   const budgetMap: Record<string, string[]> = {
-    'economico': ['low'],
-    'moderado': ['low', 'medium'],
-    'premium': ['medium', 'high'],
+    'economico': ['low', 'medium'],
+    'moderado': ['medium', 'high'],
+    'premium': ['high'],
   };
-  const allowed = budgetMap[budget] || ['medium'];
+  const allowed = budgetMap[budget] || ['low', 'medium'];
   return ALL_HOTELS.filter(h => allowed.includes(h.budgetCategory));
 }
 
 export function getHotelsByRegion(region: string): HotelData[] {
-  return ALL_HOTELS.filter(h => h.region === region || h.region === 'Lisboa');
+  const aliases = HOTEL_REGION_ALIASES[region] || [region, 'Lisboa'];
+  return ALL_HOTELS.filter(h => aliases.includes(h.region));
 }
 
-export function getHotelsByBudgetAndRegion(budget: 'economico' | 'moderado' | 'premium', region: string): HotelData[] {
+export function getHotelsByBudgetAndRegion(budget: string, region: string): HotelData[] {
   const byBudget = getHotelsByBudget(budget);
-  const regional = byBudget.filter(h => h.region === region);
+  const aliases = HOTEL_REGION_ALIASES[region] || [region, 'Lisboa'];
+  const regional = byBudget.filter(h => aliases.includes(h.region));
   if (regional.length > 0) return regional;
   return byBudget.filter(h => h.region === 'Lisboa');
 }

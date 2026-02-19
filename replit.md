@@ -58,9 +58,11 @@ Preferred communication style: Simple, everyday language.
 - Helper functions: getRestaurantsByRegionAndBudget(), getRestaurantsForLunch(), getRestaurantsForDinner()
 
 ### Hotel Data (shared/hotelData.ts)
-- 33 hotels categorized by budget (low/medium/high) and region
+- 52 hotels categorized by budget (low/medium/high) and region with addresses
 - Budget mapping: economico→[low,medium], moderado→[medium,high], premium→[high]
-- Each hotel has: name, budgetCategory, affiliateUrl, description, region, isGenericListing
+- Each hotel has: name, budgetCategory, affiliateUrl, description, region, address, isGenericListing
+- Regions: Lisboa, Sintra, Setúbal, Cascais, Ericeira, Cadaval, Torres Vedras, Alenquer, Mafra, Bucelas, Região Oeste
+- HOTEL_REGION_ALIASES: Maps winery regions to nearby hotel regions for optimal pairing
 - Helper functions: getHotelsByBudget(), getHotelsByRegion(), getHotelsByBudgetAndRegion()
 
 ### Geo Utilities (shared/geoUtils.ts)
