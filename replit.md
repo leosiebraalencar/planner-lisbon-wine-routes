@@ -68,9 +68,13 @@ Preferred communication style: Simple, everyday language.
 - `extractCoordsFromGoogleMapsUrl()`: Extracts lat/lng from Google Maps URLs (winery coordinates)
 
 ### Itinerary Generation (client/src/App.tsx)
-- Distance-based winery pairing: Afternoon winery within 30km of morning winery
+- **Pace modes**: `oneWineryPerDay` = 1 winery + lunch + dinner; default/`maxWineries` = 2 wineries + dinner
+- Distance-based winery pairing: Afternoon winery within 30km of morning winery (fast-pace mode)
 - Scored restaurant selection: Cuisine preference (+50), budget match (+30), region (+20), rating, proximity
-- Hotel per day: Different hotel assigned per region/day (or same for central_lisboa preference)
+- **Dinner region**: Uses hotel region when `central_lisboa` preference, otherwise winery region
+- Hotel per day: Assigned in-loop per region/day (or Lisboa for central_lisboa preference)
+- **Hotel region aliases**: Oeiras → Lisboa/Cascais, others → own region
+- **JMF rule**: José Maria Da Fonseca morning → JMF Winecorner for lunch (not dinner); Winecorner excluded from dinner when any JMF winery present
 - Car rental pickup embedded on Day 1 schedule
 - Itinerary schema includes per-day hotel and carRentalPickup fields
 - Display order: Hotels/Car Rental → Day-by-Day → Restaurants

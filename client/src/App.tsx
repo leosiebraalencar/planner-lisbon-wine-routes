@@ -266,7 +266,7 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
       'Região Oeste': ['Região Oeste'],
       'Sintra': ['Sintra'],
       'Setúbal': ['Setúbal'],
-      'Oeiras': ['Lisboa', 'Sintra'],
+      'Oeiras': ['Lisboa', 'Cascais'],
       'Lisboa': ['Lisboa'],
     };
     const hotelRegions = regionAliases[region] || [region, 'Lisboa'];
@@ -281,6 +281,47 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
     return fallback[0];
   };
 
+  const isSlowPace = quizData.preferences.includes('oneWineryPerDay');
+
+  const JMF_WINERY_NAME = 'José Maria Da Fonseca';
+  const JMF_WINECORNER_NAME = 'José Maria Da Fonseca - Winecorner';
+
+  const findJmfWinecornerRestaurant = (): RestaurantData | undefined => {
+    return ALL_RESTAURANTS.find(r => r.name === JMF_WINECORNER_NAME && !usedRestaurants.has(r.name));
+  };
+
+  const needsHotel = !quizData.hasAccommodation;
+  const usedHotels = new Set<string>();
+  const wantsCenter = quizData.accommodationPreference === 'central_lisboa';
+
+  const buildDinnerActivity = (restaurant: RestaurantData | undefined) => {
+    if (restaurant) {
+      return {
+        time: '19:30+',
+        activity: tt('itinerary.gen.dinner'),
+        location: restaurant.name,
+        description: restaurant.description,
+        duration: '2h',
+        address: restaurant.address,
+        price: restaurant.averagePrice,
+        affiliateUrl: restaurant.link,
+        affiliateProvider: restaurant.isTheFork ? 'thefork' as const : 'direct' as const,
+        isTheFork: restaurant.isTheFork,
+        theForkPromoCode: restaurant.theForkPromoCode || undefined,
+      };
+    }
+    return {
+      time: '19:30+',
+      activity: tt('itinerary.gen.dinner'),
+      location: tt('itinerary.gen.localRestaurant'),
+      description: tt('itinerary.gen.traditionalDinner'),
+      duration: '2h',
+      address: '',
+      affiliateUrl: '',
+      affiliateProvider: 'googlemaps' as const,
+    };
+  };
+
   for (let i = 1; i <= quizData.duration; i++) {
     const regionName = orderedRegions[currentRegionIndex];
 
@@ -291,127 +332,153 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
       if (morningWinery) usedWineries.add(morningWinery.name);
     }
 
-    const morningCoords = morningWinery ? getWineryCoords(morningWinery) : null;
-
-    let afternoonWinery = getUnusedWinery(regionName);
-    if (!afternoonWinery) {
-      afternoonWinery = findWineryAnyRegion();
-    }
-    if (afternoonWinery && morningCoords) {
-      const aftCoords = getWineryCoords(afternoonWinery);
-      if (aftCoords && haversineDistance(morningCoords.lat, morningCoords.lng, aftCoords.lat, aftCoords.lng) > 30) {
-        const closer = (regionWineries[regionName] || []).find(w => {
-          if (usedWineries.has(w.name) || w.name === morningWinery!.name) return false;
-          const c = getWineryCoords(w);
-          return c ? haversineDistance(morningCoords.lat, morningCoords.lng, c.lat, c.lng) <= 30 : false;
-        });
-        if (closer) afternoonWinery = closer;
-      }
-    }
-    if (afternoonWinery) usedWineries.add(afternoonWinery.name);
-
     if (!morningWinery) morningWinery = regionWineries[regionName]?.[0] || ALL_WINERIES[0];
-    if (!afternoonWinery) afternoonWinery = regionWineries[regionName]?.[1] || ALL_WINERIES[1];
 
+    const morningCoords = morningWinery ? getWineryCoords(morningWinery) : null;
     const morningExp = getExperienceByBudget(morningWinery, quizData.budget);
-    let afternoonExp = getExperienceByBudget(afternoonWinery, quizData.budget);
-    if (afternoonExp && /brunch/i.test(afternoonExp.name)) {
-      const alt = afternoonWinery.experiences.find(e => !/brunch/i.test(e.name));
-      afternoonExp = alt || afternoonExp;
-    }
     const actualRegion = morningWinery.region;
 
-    const afternoonCoords = getWineryCoords(afternoonWinery);
+    const isJmfMorning = morningWinery.name === JMF_WINERY_NAME;
 
-    const dinnerRestaurant = getUnusedRestaurant(actualRegion, true, afternoonCoords?.lat, afternoonCoords?.lng, null, null);
-    if (dinnerRestaurant) usedRestaurants.add(dinnerRestaurant.name);
+    let dayHotel: HotelData | undefined;
+    if (needsHotel) {
+      dayHotel = wantsCenter
+        ? getHotelForRegion('Lisboa', usedHotels)
+        : getHotelForRegion(actualRegion, usedHotels);
+      if (dayHotel) usedHotels.add(dayHotel.name);
+    }
 
-    const eveningActivity = dinnerRestaurant ? {
-      time: '19:30+',
-      activity: tt('itinerary.gen.dinner'),
-      location: dinnerRestaurant.name,
-      description: dinnerRestaurant.description,
-      duration: '2h',
-      address: dinnerRestaurant.address,
-      price: dinnerRestaurant.averagePrice,
-      affiliateUrl: dinnerRestaurant.link,
-      affiliateProvider: dinnerRestaurant.isTheFork ? 'thefork' as const : 'direct' as const,
-      isTheFork: dinnerRestaurant.isTheFork,
-      theForkPromoCode: dinnerRestaurant.theForkPromoCode || undefined,
-    } : {
-      time: '19:30+',
-      activity: tt('itinerary.gen.dinner'),
-      location: tt('itinerary.gen.localRestaurant'),
-      description: tt('itinerary.gen.traditionalDinner'),
-      duration: '2h',
-      address: '',
-      affiliateUrl: '',
-      affiliateProvider: 'googlemaps' as const,
-    };
+    const dinnerRegion = wantsCenter ? 'Lisboa' : actualRegion;
 
-    days.push({
-      day: i,
-      region: actualRegion,
-      morning: {
-        time: '09:00-12:00',
-        activity: morningExp?.name || tt('itinerary.gen.visitAndTasting'),
-        location: morningWinery.name,
-        description: tt('itinerary.gen.guidedVisitWithTasting'),
-        duration: morningExp?.duration || '2h',
-        address: morningWinery.address,
-        price: morningExp?.price || 0,
-        affiliateUrl: morningExp?.url || morningWinery.hostUrl || buildGoogleMapsUrl(morningWinery.name, morningWinery.address),
-        affiliateProvider: (morningExp?.url || morningWinery.hostUrl) ? 'winalist' as const : 'googlemaps' as const
-      },
-      afternoon: {
-        time: '14:00-18:00',
-        activity: afternoonExp?.name || tt('itinerary.gen.cellarTour'),
-        location: afternoonWinery.name,
-        description: tt('itinerary.gen.exploreAndTaste'),
-        duration: afternoonExp?.duration || '2h',
-        address: afternoonWinery.address,
-        price: afternoonExp?.price || 0,
-        affiliateUrl: afternoonExp?.url || afternoonWinery.hostUrl || buildGoogleMapsUrl(afternoonWinery.name, afternoonWinery.address),
-        affiliateProvider: (afternoonExp?.url || afternoonWinery.hostUrl) ? 'winalist' as const : 'googlemaps' as const
-      },
-      evening: eveningActivity
-    });
+    if (isSlowPace) {
+      let lunchRestaurant: RestaurantData | undefined;
+      if (isJmfMorning) {
+        lunchRestaurant = findJmfWinecornerRestaurant();
+      }
+      if (!lunchRestaurant) {
+        lunchRestaurant = getUnusedRestaurant(actualRegion, false, morningCoords?.lat, morningCoords?.lng, null, null);
+      }
+      if (lunchRestaurant) usedRestaurants.add(lunchRestaurant.name);
+
+      const dinnerRestaurant = getUnusedRestaurant(dinnerRegion, true, morningCoords?.lat, morningCoords?.lng, null, null);
+      if (dinnerRestaurant) usedRestaurants.add(dinnerRestaurant.name);
+
+      const afternoonActivity = lunchRestaurant ? {
+        time: '12:30-14:30',
+        activity: tt('itinerary.gen.lunch'),
+        location: lunchRestaurant.name,
+        description: lunchRestaurant.description || tt('itinerary.gen.lunchDescription'),
+        duration: '1h30',
+        address: lunchRestaurant.address,
+        price: lunchRestaurant.averagePrice,
+        affiliateUrl: lunchRestaurant.link,
+        affiliateProvider: lunchRestaurant.isTheFork ? 'thefork' as const : 'direct' as const,
+        isTheFork: lunchRestaurant.isTheFork,
+        theForkPromoCode: lunchRestaurant.theForkPromoCode || undefined,
+      } : {
+        time: '12:30-14:30',
+        activity: tt('itinerary.gen.lunch'),
+        location: tt('itinerary.gen.localRestaurant'),
+        description: tt('itinerary.gen.lunchDescription'),
+        duration: '1h30',
+        address: '',
+        affiliateUrl: '',
+        affiliateProvider: 'googlemaps' as const,
+      };
+
+      const dayData: typeof days[number] = {
+        day: i,
+        region: actualRegion,
+        morning: {
+          time: '09:00-12:00',
+          activity: morningExp?.name || tt('itinerary.gen.visitAndTasting'),
+          location: morningWinery.name,
+          description: tt('itinerary.gen.guidedVisitWithTasting'),
+          duration: morningExp?.duration || '2h',
+          address: morningWinery.address,
+          price: morningExp?.price || 0,
+          affiliateUrl: morningExp?.url || morningWinery.hostUrl || buildGoogleMapsUrl(morningWinery.name, morningWinery.address),
+          affiliateProvider: (morningExp?.url || morningWinery.hostUrl) ? 'winalist' as const : 'googlemaps' as const
+        },
+        afternoon: afternoonActivity,
+        evening: buildDinnerActivity(dinnerRestaurant)
+      };
+      if (dayHotel) {
+        dayData.hotel = { name: dayHotel.name, description: dayHotel.description, affiliateUrl: dayHotel.affiliateUrl, budgetCategory: dayHotel.budgetCategory };
+      }
+      days.push(dayData);
+    } else {
+      let afternoonWinery = getUnusedWinery(regionName);
+      if (!afternoonWinery) {
+        afternoonWinery = findWineryAnyRegion();
+      }
+      if (afternoonWinery && morningCoords) {
+        const aftCoords = getWineryCoords(afternoonWinery);
+        if (aftCoords && haversineDistance(morningCoords.lat, morningCoords.lng, aftCoords.lat, aftCoords.lng) > 30) {
+          const closer = (regionWineries[regionName] || []).find(w => {
+            if (usedWineries.has(w.name) || w.name === morningWinery!.name) return false;
+            const c = getWineryCoords(w);
+            return c ? haversineDistance(morningCoords.lat, morningCoords.lng, c.lat, c.lng) <= 30 : false;
+          });
+          if (closer) afternoonWinery = closer;
+        }
+      }
+      if (afternoonWinery) usedWineries.add(afternoonWinery.name);
+      if (!afternoonWinery) afternoonWinery = regionWineries[regionName]?.[1] || ALL_WINERIES[1];
+
+      let afternoonExp = getExperienceByBudget(afternoonWinery, quizData.budget);
+      if (afternoonExp && /brunch/i.test(afternoonExp.name)) {
+        const alt = afternoonWinery.experiences.find(e => !/brunch/i.test(e.name));
+        afternoonExp = alt || afternoonExp;
+      }
+
+      const afternoonCoords = getWineryCoords(afternoonWinery);
+      const lastWineryCoords = afternoonCoords || morningCoords;
+
+      if (isJmfMorning || afternoonWinery.name === JMF_WINERY_NAME) {
+        usedRestaurants.add(JMF_WINECORNER_NAME);
+      }
+
+      const dinnerRestaurant = getUnusedRestaurant(dinnerRegion, true, lastWineryCoords?.lat, lastWineryCoords?.lng, null, null);
+      if (dinnerRestaurant) usedRestaurants.add(dinnerRestaurant.name);
+
+      const dayData: typeof days[number] = {
+        day: i,
+        region: actualRegion,
+        morning: {
+          time: '09:00-12:00',
+          activity: morningExp?.name || tt('itinerary.gen.visitAndTasting'),
+          location: morningWinery.name,
+          description: tt('itinerary.gen.guidedVisitWithTasting'),
+          duration: morningExp?.duration || '2h',
+          address: morningWinery.address,
+          price: morningExp?.price || 0,
+          affiliateUrl: morningExp?.url || morningWinery.hostUrl || buildGoogleMapsUrl(morningWinery.name, morningWinery.address),
+          affiliateProvider: (morningExp?.url || morningWinery.hostUrl) ? 'winalist' as const : 'googlemaps' as const
+        },
+        afternoon: {
+          time: '14:00-18:00',
+          activity: afternoonExp?.name || tt('itinerary.gen.cellarTour'),
+          location: afternoonWinery.name,
+          description: tt('itinerary.gen.exploreAndTaste'),
+          duration: afternoonExp?.duration || '2h',
+          address: afternoonWinery.address,
+          price: afternoonExp?.price || 0,
+          affiliateUrl: afternoonExp?.url || afternoonWinery.hostUrl || buildGoogleMapsUrl(afternoonWinery.name, afternoonWinery.address),
+          affiliateProvider: (afternoonExp?.url || afternoonWinery.hostUrl) ? 'winalist' as const : 'googlemaps' as const
+        },
+        evening: buildDinnerActivity(dinnerRestaurant)
+      };
+      if (dayHotel) {
+        dayData.hotel = { name: dayHotel.name, description: dayHotel.description, affiliateUrl: dayHotel.affiliateUrl, budgetCategory: dayHotel.budgetCategory };
+      }
+      days.push(dayData);
+    }
 
     daysInCurrentRegion++;
     if (daysInCurrentRegion >= daysPerRegion) {
       currentRegionIndex = (currentRegionIndex + 1) % orderedRegions.length;
       daysInCurrentRegion = 0;
-    }
-  }
-
-  if (!quizData.hasAccommodation) {
-    const usedHotels = new Set<string>();
-    const wantsCenter = quizData.accommodationPreference === 'central_lisboa';
-
-    for (const day of days) {
-      if (wantsCenter) {
-        const hotel = getHotelForRegion('Lisboa', usedHotels);
-        if (hotel) {
-          usedHotels.add(hotel.name);
-          day.hotel = {
-            name: hotel.name,
-            description: hotel.description,
-            affiliateUrl: hotel.affiliateUrl,
-            budgetCategory: hotel.budgetCategory,
-          };
-        }
-      } else {
-        const hotel = getHotelForRegion(day.region, usedHotels);
-        if (hotel) {
-          usedHotels.add(hotel.name);
-          day.hotel = {
-            name: hotel.name,
-            description: hotel.description,
-            affiliateUrl: hotel.affiliateUrl,
-            budgetCategory: hotel.budgetCategory,
-          };
-        }
-      }
     }
   }
 
