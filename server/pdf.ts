@@ -39,8 +39,8 @@ type PdfLang = 'PT' | 'EN' | 'ES' | 'DE';
 
 const pdfTranslations: Record<PdfLang, Record<string, string>> = {
   PT: {
-    title: 'Seu Roteiro Personalizado de Enoturismo',
-    titlePersonalized: ', Seu Roteiro Personalizado de Enoturismo está pronto!',
+    title: 'O Seu Roteiro Personalizado de Enoturismo',
+    titlePersonalized: ', O Seu Roteiro Personalizado de Enoturismo está pronto!',
     duration: 'Duração:',
     days: 'dias',
     day: 'dia',
@@ -53,7 +53,7 @@ const pdfTranslations: Record<PdfLang, Record<string, string>> = {
     travelTips: 'Dicas de Viagem',
     recommendations: 'RECOMENDAÇÕES',
     accommodation: 'Alojamento',
-    carRental: 'Aluguel de Carro',
+    carRental: 'Aluguer de Carro',
     averagePrice: 'Preço médio',
     support: 'Para apoio ou assistência personalizada:',
     moreInfo: 'Para mais informações sobre enoturismo visite:',

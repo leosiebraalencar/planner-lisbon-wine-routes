@@ -56,10 +56,7 @@ export default function ProPage() {
 
   const proRequestMutation = useMutation({
     mutationFn: async (data: InsertProRequest) => {
-      const response = await apiRequest('/api/pro-request', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
+      const response = await apiRequest('POST', '/api/pro-request', data);
       return response;
     },
     onSuccess: () => {
@@ -181,7 +178,7 @@ export default function ProPage() {
                         <FormItem>
                           <FormLabel>{t('pro.formName')}</FormLabel>
                           <FormControl>
-                            <Input {...field} data-testid="input-name" />
+                            <Input {...field} value={field.value ?? ''} data-testid="input-name" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -194,7 +191,7 @@ export default function ProPage() {
                         <FormItem>
                           <FormLabel>{t('pro.formEmail')}</FormLabel>
                           <FormControl>
-                            <Input type="email" {...field} data-testid="input-email" />
+                            <Input type="email" {...field} value={field.value ?? ''} data-testid="input-email" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -210,7 +207,7 @@ export default function ProPage() {
                         <FormItem>
                           <FormLabel>{t('pro.formPhone')}</FormLabel>
                           <FormControl>
-                            <Input {...field} data-testid="input-phone" />
+                            <Input {...field} value={field.value ?? ''} data-testid="input-phone" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -223,7 +220,7 @@ export default function ProPage() {
                         <FormItem>
                           <FormLabel>{t('pro.formDuration')}</FormLabel>
                           <FormControl>
-                            <Input {...field} data-testid="input-duration" />
+                            <Input {...field} value={field.value ?? ''} data-testid="input-duration" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
