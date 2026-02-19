@@ -127,9 +127,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
   ];
 
   const preferenceKeys = [
-    'tastings', 'traditionalGastronomy', 'internationalGastronomy', 'historic',
-    'landscapes', 'family', 'biodynamic', 'tours',
-    'modernHotels', 'rusticHotels', 'historicHotels',
+    'traditionalGastronomy', 'internationalGastronomy',
+    'historic', 'modernWineries',
+    'tours', 'tastings', 'biodynamic',
     'singleLocation', 'multipleLocations'
   ];
   const preferences = preferenceKeys.map(key => ({
