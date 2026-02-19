@@ -21,7 +21,7 @@ interface QuizPageProps {
   onComplete: (data: QuizResponse) => void;
 }
 
-const TOTAL_STEPS = 13;
+const TOTAL_STEPS = 14;
 
 const languageOptionKeys = ['portugues', 'ingles', 'espanhol', 'frances', 'alemao'] as const;
 
@@ -45,14 +45,15 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
     arrival: undefined,
     needsCarRental: undefined,
     wantsPrivateGuide: undefined,
+    regionPreferences: [],
     hasAccommodation: undefined,
     accommodationPreference: undefined
   });
 
   const handleNext = () => {
     let nextStep = currentStep + 1;
-    if (currentStep === 11 && formData.hasAccommodation) {
-      nextStep = 13;
+    if (currentStep === 12 && formData.hasAccommodation) {
+      nextStep = 14;
     }
     if (nextStep > TOTAL_STEPS) {
       onComplete(formData as QuizResponse);
@@ -64,8 +65,8 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
 
   const handleBack = () => {
     let prevStep = currentStep - 1;
-    if (currentStep === 13 && formData.hasAccommodation) {
-      prevStep = 11;
+    if (currentStep === 14 && formData.hasAccommodation) {
+      prevStep = 12;
     }
     if (prevStep >= 1) {
       setCurrentStep(prevStep);
@@ -89,16 +90,18 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
       case 7:
         return (formData.preferences?.length ?? 0) > 0;
       case 8:
-        return formData.arrival !== undefined;
+        return (formData.regionPreferences?.length ?? 0) > 0;
       case 9:
-        return formData.needsCarRental !== undefined;
+        return formData.arrival !== undefined;
       case 10:
-        return formData.wantsPrivateGuide !== undefined;
+        return formData.needsCarRental !== undefined;
       case 11:
-        return formData.hasAccommodation !== undefined;
+        return formData.wantsPrivateGuide !== undefined;
       case 12:
-        return formData.hasAccommodation || formData.accommodationPreference !== undefined;
+        return formData.hasAccommodation !== undefined;
       case 13:
+        return formData.hasAccommodation || formData.accommodationPreference !== undefined;
+      case 14:
         return true;
       default:
         return false;
@@ -505,6 +508,68 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           <QuizQuestion
             questionNumber={8}
             totalQuestions={TOTAL_STEPS}
+            question={t('quiz.qRegion.question')}
+            onNext={handleNext}
+            onBack={handleBack}
+            canGoNext={canGoNext()}
+            canGoBack={currentStep > 1}
+          >
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground mb-2">
+                {t('quiz.qRegion.info')}
+              </p>
+              {(['oeste', 'setubal', 'oeiras', 'sintra', 'surprise'] as const).map((regionKey) => {
+                const isSelected = formData.regionPreferences?.includes(regionKey) ?? false;
+                const isSurprise = regionKey === 'surprise';
+                const surpriseSelected = formData.regionPreferences?.includes('surprise') ?? false;
+                return (
+                  <div
+                    key={regionKey}
+                    className={`flex items-start space-x-3 p-5 rounded-lg border-2 cursor-pointer transition-colors hover-elevate active-elevate-2 ${
+                      isSelected ? 'border-primary bg-primary/5' : 'border-border'
+                    }`}
+                    onClick={() => {
+                      const current = formData.regionPreferences || [];
+                      let updated: string[];
+                      if (isSurprise) {
+                        updated = isSelected ? [] : ['surprise'];
+                      } else {
+                        if (isSelected) {
+                          updated = current.filter(r => r !== regionKey);
+                        } else {
+                          updated = [...current.filter(r => r !== 'surprise'), regionKey];
+                        }
+                      }
+                      setFormData({ ...formData, regionPreferences: updated as any });
+                    }}
+                    data-testid={`card-region-${regionKey}`}
+                  >
+                    <Checkbox
+                      id={`region-${regionKey}`}
+                      checked={isSelected}
+                      disabled={!isSurprise && surpriseSelected}
+                      onCheckedChange={() => {}}
+                      data-testid={`checkbox-region-${regionKey}`}
+                    />
+                    <div className="flex-1">
+                      <Label htmlFor={`region-${regionKey}`} className="cursor-pointer font-semibold text-base">
+                        {t(`quiz.qRegion.regions.${regionKey}.title`)}
+                      </Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {t(`quiz.qRegion.regions.${regionKey}.description`)}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </QuizQuestion>
+        )}
+
+        {currentStep === 9 && (
+          <QuizQuestion
+            questionNumber={9}
+            totalQuestions={TOTAL_STEPS}
             question={t('quiz.q6.question')}
             onNext={handleNext}
             onBack={handleBack}
@@ -537,9 +602,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 9 && (
+        {currentStep === 10 && (
           <QuizQuestion
-            questionNumber={9}
+            questionNumber={10}
             totalQuestions={TOTAL_STEPS}
             question={t('quiz.q7.question')}
             onNext={handleNext}
@@ -585,9 +650,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 10 && (
+        {currentStep === 11 && (
           <QuizQuestion
-            questionNumber={10}
+            questionNumber={11}
             totalQuestions={TOTAL_STEPS}
             question={t('quiz.q8.question')}
             onNext={handleNext}
@@ -633,9 +698,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 11 && (
+        {currentStep === 12 && (
           <QuizQuestion
-            questionNumber={11}
+            questionNumber={12}
             totalQuestions={TOTAL_STEPS}
             question={t('quiz.q9.question')}
             onNext={handleNext}
@@ -676,9 +741,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 12 && !formData.hasAccommodation && (
+        {currentStep === 13 && !formData.hasAccommodation && (
           <QuizQuestion
-            questionNumber={12}
+            questionNumber={13}
             totalQuestions={TOTAL_STEPS}
             question={t('quiz.q10.question')}
             onNext={handleNext}
@@ -740,9 +805,9 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
           </QuizQuestion>
         )}
 
-        {currentStep === 13 && (
+        {currentStep === 14 && (
           <QuizQuestion
-            questionNumber={13}
+            questionNumber={14}
             totalQuestions={TOTAL_STEPS}
             question={t('quiz.q11.question')}
             onNext={handleNext}

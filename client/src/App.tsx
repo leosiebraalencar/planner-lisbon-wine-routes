@@ -156,6 +156,27 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
 
   const filteredWineries = filterWineriesByLanguage(ALL_WINERIES, quizData.languagePreference);
 
+  const regionKeyToName: Record<string, string> = {
+    oeste: 'Região Oeste',
+    sintra: 'Sintra',
+    setubal: 'Setúbal',
+    oeiras: 'Oeiras',
+  };
+
+  const userRegionPrefs = quizData.regionPreferences || [];
+  const hasSurprise = userRegionPrefs.includes('surprise') || userRegionPrefs.length === 0;
+  let orderedRegions: string[];
+  if (hasSurprise) {
+    orderedRegions = [...REGIONS];
+  } else {
+    const preferred = userRegionPrefs
+      .filter(k => k !== 'surprise')
+      .map(k => regionKeyToName[k])
+      .filter(Boolean);
+    const rest = REGIONS.filter(r => !preferred.includes(r));
+    orderedRegions = [...preferred, ...rest];
+  }
+
   const regionWineries: Record<string, WineryData[]> = {};
   REGIONS.forEach(r => {
     regionWineries[r] = filteredWineries.filter(w => w.region === r);
@@ -173,7 +194,7 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
   };
 
   const findWineryAnyRegion = (): WineryData | undefined => {
-    for (const r of REGIONS) {
+    for (const r of orderedRegions) {
       const w = getUnusedWinery(r);
       if (w) return w;
     }
@@ -261,7 +282,7 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
   };
 
   for (let i = 1; i <= quizData.duration; i++) {
-    const regionName = REGIONS[currentRegionIndex];
+    const regionName = orderedRegions[currentRegionIndex];
 
     let morningWinery = getUnusedWinery(regionName);
     if (morningWinery) usedWineries.add(morningWinery.name);
@@ -358,7 +379,7 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
 
     daysInCurrentRegion++;
     if (daysInCurrentRegion >= daysPerRegion) {
-      currentRegionIndex = (currentRegionIndex + 1) % REGIONS.length;
+      currentRegionIndex = (currentRegionIndex + 1) % orderedRegions.length;
       daysInCurrentRegion = 0;
     }
   }

@@ -149,6 +149,32 @@ export const translations = {
           multipleLocations: 'Explorar diferentes locais e mudar de hotel',
         },
       },
+      qRegion: {
+        question: 'Que regiões vitivinícolas gostaria de conhecer no distrito de Lisboa?',
+        info: 'Selecione as regiões que mais lhe interessam',
+        regions: {
+          oeste: {
+            title: 'Região Oeste',
+            description: 'Entre o Atlântico e vinhas a perder de vista, o Oeste é frescura, elegância e diversidade. Aqui, o clima marítimo molda vinhos vibrantes e gastronómicos. É uma das zonas mais dinâmicas perto de Lisboa, com produtores modernos e experiências de enoturismo completas.',
+          },
+          setubal: {
+            title: 'Setúbal',
+            description: 'Sol, mar e vinhos com identidade forte. Terra do emblemático Moscatel de Setúbal, combina a imponência da Serra da Arrábida com a brisa atlântica. Os vinhos tendem a ser intensos, aromáticos e cheios de carácter.',
+          },
+          oeiras: {
+            title: 'Oeiras e Carcavelos',
+            description: 'Tradição à beira-mar. Pequena, histórica e exclusiva, esta região é conhecida pelo raro vinho generoso de Carcavelos. A experiência aqui é mais intimista e profundamente ligada à herança cultural.',
+          },
+          sintra: {
+            title: 'Sintra e Colares',
+            description: 'Vinhos verdadeiramente únicos. Em Colares, as vinhas crescem em solos arenosos junto ao oceano, dando origem a vinhos raros e autênticos. Sintra acrescenta o cenário romântico e histórico que torna a visita ainda mais memorável.',
+          },
+          surprise: {
+            title: 'Prefiro ser surpreendido',
+            description: 'Não tenho uma região específica em mente. Quero que me recomendem a melhor opção de acordo com o meu perfil, orçamento e estilo de viagem.',
+          },
+        },
+      },
       q6: {
         question: 'Como você vai chegar a Lisboa?',
         options: {
@@ -558,6 +584,32 @@ export const translations = {
           historicHotels: 'Historic hotels and palaces',
           singleLocation: 'Stay in one location throughout the trip',
           multipleLocations: 'Explore different locations and change hotels',
+        },
+      },
+      qRegion: {
+        question: 'Which wine regions would you like to explore in the Lisbon district?',
+        info: 'Select the regions that interest you the most',
+        regions: {
+          oeste: {
+            title: 'Oeste Region',
+            description: 'Between the Atlantic and endless vineyards, Oeste offers freshness, elegance and diversity. Here, the maritime climate shapes vibrant, gastronomic wines. It is one of the most dynamic areas near Lisbon, with modern producers and complete wine tourism experiences.',
+          },
+          setubal: {
+            title: 'Setúbal',
+            description: 'Sun, sea and wines with strong identity. Home of the emblematic Moscatel de Setúbal, it combines the grandeur of Serra da Arrábida with the Atlantic breeze. The wines tend to be intense, aromatic and full of character.',
+          },
+          oeiras: {
+            title: 'Oeiras & Carcavelos',
+            description: 'Tradition by the sea. Small, historic and exclusive, this region is known for the rare fortified wine of Carcavelos. The experience here is more intimate and deeply connected to cultural heritage.',
+          },
+          sintra: {
+            title: 'Sintra & Colares',
+            description: 'Truly unique wines. In Colares, vines grow in sandy soils by the ocean, giving rise to rare and authentic wines. Sintra adds the romantic and historic scenery that makes the visit even more memorable.',
+          },
+          surprise: {
+            title: 'I prefer to be surprised',
+            description: 'I don\'t have a specific region in mind. I want you to recommend the best option based on my profile, budget and travel style.',
+          },
         },
       },
       q6: {
@@ -971,6 +1023,32 @@ export const translations = {
           multipleLocations: 'Explorar diferentes lugares y cambiar de hotel',
         },
       },
+      qRegion: {
+        question: '¿Qué regiones vinícolas te gustaría conocer en el distrito de Lisboa?',
+        info: 'Selecciona las regiones que más te interesen',
+        regions: {
+          oeste: {
+            title: 'Región Oeste',
+            description: 'Entre el Atlántico y viñedos interminables, el Oeste ofrece frescura, elegancia y diversidad. Aquí, el clima marítimo moldea vinos vibrantes y gastronómicos. Es una de las zonas más dinámicas cerca de Lisboa, con productores modernos y experiencias de enoturismo completas.',
+          },
+          setubal: {
+            title: 'Setúbal',
+            description: 'Sol, mar y vinos con identidad fuerte. Tierra del emblemático Moscatel de Setúbal, combina la imponencia de la Serra da Arrábida con la brisa atlántica. Los vinos tienden a ser intensos, aromáticos y llenos de carácter.',
+          },
+          oeiras: {
+            title: 'Oeiras y Carcavelos',
+            description: 'Tradición junto al mar. Pequeña, histórica y exclusiva, esta región es conocida por el raro vino generoso de Carcavelos. La experiencia aquí es más íntima y profundamente ligada a la herencia cultural.',
+          },
+          sintra: {
+            title: 'Sintra y Colares',
+            description: 'Vinos verdaderamente únicos. En Colares, las viñas crecen en suelos arenosos junto al océano, dando origen a vinos raros y auténticos. Sintra añade el escenario romántico e histórico que hace la visita aún más memorable.',
+          },
+          surprise: {
+            title: 'Prefiero ser sorprendido',
+            description: 'No tengo una región específica en mente. Quiero que me recomienden la mejor opción de acuerdo con mi perfil, presupuesto y estilo de viaje.',
+          },
+        },
+      },
       q6: {
         question: '¿Cómo llegarás a Lisboa?',
         options: {
@@ -1380,6 +1458,32 @@ export const translations = {
           historicHotels: 'Historische Hotels und Paläste',
           singleLocation: 'Während der gesamten Reise an einem Ort bleiben',
           multipleLocations: 'Verschiedene Orte erkunden und Hotels wechseln',
+        },
+      },
+      qRegion: {
+        question: 'Welche Weinregionen möchten Sie im Bezirk Lissabon kennenlernen?',
+        info: 'Wählen Sie die Regionen aus, die Sie am meisten interessieren',
+        regions: {
+          oeste: {
+            title: 'Region Oeste',
+            description: 'Zwischen dem Atlantik und endlosen Weinbergen bietet der Oeste Frische, Eleganz und Vielfalt. Hier formt das maritime Klima lebendige, gastronomische Weine. Es ist eine der dynamischsten Gegenden nahe Lissabon, mit modernen Produzenten und umfassenden Weintourismus-Erlebnissen.',
+          },
+          setubal: {
+            title: 'Setúbal',
+            description: 'Sonne, Meer und Weine mit starker Identität. Heimat des emblematischen Moscatel de Setúbal, verbindet die Großartigkeit der Serra da Arrábida mit der Atlantikbrise. Die Weine sind tendenziell intensiv, aromatisch und voller Charakter.',
+          },
+          oeiras: {
+            title: 'Oeiras & Carcavelos',
+            description: 'Tradition am Meer. Klein, historisch und exklusiv, ist diese Region bekannt für den seltenen Likörwein von Carcavelos. Das Erlebnis hier ist intimer und tief mit dem kulturellen Erbe verbunden.',
+          },
+          sintra: {
+            title: 'Sintra & Colares',
+            description: 'Wahrhaft einzigartige Weine. In Colares wachsen die Reben in sandigen Böden am Ozean und bringen seltene und authentische Weine hervor. Sintra fügt die romantische und historische Kulisse hinzu, die den Besuch noch unvergesslicher macht.',
+          },
+          surprise: {
+            title: 'Ich lasse mich überraschen',
+            description: 'Ich habe keine bestimmte Region im Sinn. Ich möchte, dass Sie mir die beste Option entsprechend meinem Profil, Budget und Reisestil empfehlen.',
+          },
         },
       },
       q6: {

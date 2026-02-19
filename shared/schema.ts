@@ -86,6 +86,7 @@ export const quizResponseSchema = z.object({
   gastronomyStyle: z.array(z.string()).optional(),
   hotelStyle: z.enum(['moderno', 'rustico', 'historico']).optional(),
   accommodationMobility: z.enum(['single_location', 'multiple_locations']).optional(),
+  regionPreferences: z.array(z.enum(['oeste', 'setubal', 'oeiras', 'sintra', 'surprise'])).optional(),
   specialRequests: z.string().optional(),
   arrival: z.enum(['aviao', 'trem', 'carro', 'outros', 'ja_em_lisboa']).optional(),
   needsCarRental: z.boolean().optional(),

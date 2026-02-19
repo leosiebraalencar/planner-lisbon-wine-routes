@@ -82,7 +82,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Key User Flows
 1. Landing page with hero, dynamic counter, value proposition, and how-it-works sections
-2. 13-step quiz collecting travel preferences (name → duration → dates → budget → travelers → language → preferences → arrival → car rental → guide → accommodation → location → special requests)
+2. 14-step quiz collecting travel preferences (name → duration → dates → budget → travelers → language → preferences → wine regions → arrival → car rental → guide → accommodation → location → special requests)
 3. Itinerary display with Hotels/Car Rental first, then Day-by-Day (with per-day hotel & car rental), then Restaurants last
 4. Stripe payment for PDF download
 5. Pro upsell banner throughout the flow (link color #84270B)
@@ -115,7 +115,7 @@ Preferred communication style: Simple, everyday language.
 - **STRIPE_DONATION_URL**: Fixed Stripe checkout for pay-what-you-want donations
 
 ### Quiz Submissions & Admin (quiz_submissions table)
-- **Quiz Steps**: 13 steps total (name → duration → dates → budget → travelers → language → preferences → arrival → car rental → guide → accommodation → location → special requests)
+- **Quiz Steps**: 14 steps total (name → duration → dates → budget → travelers → language → preferences → wine regions → arrival → car rental → guide → accommodation → location → special requests)
 - **Customer Name**: Collected as first quiz step, displayed in itinerary title and PDF
 - **Email Collection**: Modal before PDF download collects email + optional marketing consent
 - **Admin Panel**: /data-admin route with login (ADMIN_EMAIL/ADMIN_PASSWORD env vars), CSV export
