@@ -720,6 +720,21 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
                     </p>
                   </div>
                 </div>
+                
+                <div 
+                  className="flex items-start space-x-3 p-6 rounded-lg border border-border hover-elevate active-elevate-2 cursor-pointer"
+                  onClick={() => setFormData({ ...formData, accommodationPreference: 'sugestao_equipa' })}
+                >
+                  <RadioGroupItem value="sugestao_equipa" id="sugestao_equipa" data-testid="radio-location-suggestions" />
+                  <div className="flex-1">
+                    <Label htmlFor="sugestao_equipa" className="cursor-pointer font-semibold">
+                      {t('quiz.q10.openToSuggestions.title')}
+                    </Label>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {t('quiz.q10.openToSuggestions.description')}
+                    </p>
+                  </div>
+                </div>
               </RadioGroup>
             </div>
           </QuizQuestion>

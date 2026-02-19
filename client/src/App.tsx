@@ -137,6 +137,8 @@ const generateHighlights = (quizData: QuizResponse, days: Array<{ region: string
     highlights.push(tt('itinerary.gen.centralAccommodation'));
   } else if (quizData.accommodationPreference === 'vinicolas_proximas') {
     highlights.push(tt('itinerary.gen.wineryAccommodation'));
+  } else if (quizData.accommodationPreference === 'sugestao_equipa') {
+    highlights.push(tt('itinerary.gen.suggestedAccommodation'));
   }
 
   if (highlights.length < 3) {

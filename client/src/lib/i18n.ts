@@ -188,6 +188,10 @@ export const translations = {
           title: 'Perto das Vinícolas',
           description: 'Mergulhe na experiência enoturística com hotéis em quintas',
         },
+        openToSuggestions: {
+          title: 'Estou aberto a sugestões',
+          description: 'Se não tem preferência específica, nossa equipa irá recomendar a região que melhor combina com seu perfil, orçamento e tipo de experiência desejada.',
+        },
       },
       q11: {
         question: 'Alguma preferência especial?',
@@ -279,6 +283,7 @@ export const translations = {
         carRentalIncluded: 'Aluguer de carro incluído no planeamento',
         centralAccommodation: 'Alojamento central em Lisboa',
         wineryAccommodation: 'Alojamento junto às vinícolas',
+        suggestedAccommodation: 'Alojamento na região recomendada para si',
         awardWines: 'Vinhos premiados da região de Lisboa',
         visitAndTasting: 'Visita e Degustação',
         guidedVisitWithTasting: 'Visita guiada com degustação de vinhos',
@@ -594,6 +599,10 @@ export const translations = {
           title: 'Near Wineries',
           description: 'Immerse yourself in the wine tourism experience with hotels at estates',
         },
+        openToSuggestions: {
+          title: 'I\'m open to suggestions',
+          description: 'If you don\'t have a specific preference, our team will recommend the region that best matches your profile, budget and desired experience.',
+        },
       },
       q11: {
         question: 'Any special preferences?',
@@ -685,6 +694,7 @@ export const translations = {
         carRentalIncluded: 'Car rental included in planning',
         centralAccommodation: 'Central accommodation in Lisbon',
         wineryAccommodation: 'Accommodation near the wineries',
+        suggestedAccommodation: 'Accommodation in the recommended region for you',
         awardWines: 'Award-winning wines from the Lisbon region',
         visitAndTasting: 'Visit and Tasting',
         guidedVisitWithTasting: 'Guided visit with wine tasting',
@@ -1000,6 +1010,10 @@ export const translations = {
           title: 'Cerca de las Bodegas',
           description: 'Sumérgete en la experiencia enoturística con hoteles en quintas',
         },
+        openToSuggestions: {
+          title: 'Estoy abierto a sugerencias',
+          description: 'Si no tiene una preferencia específica, nuestro equipo le recomendará la región que mejor se adapte a su perfil, presupuesto y tipo de experiencia deseada.',
+        },
       },
       q11: {
         question: '¿Alguna preferencia especial?',
@@ -1091,6 +1105,7 @@ export const translations = {
         carRentalIncluded: 'Alquiler de coche incluido en la planificación',
         centralAccommodation: 'Alojamiento central en Lisboa',
         wineryAccommodation: 'Alojamiento cerca de las bodegas',
+        suggestedAccommodation: 'Alojamiento en la región recomendada para usted',
         awardWines: 'Vinos premiados de la región de Lisboa',
         visitAndTasting: 'Visita y Degustación',
         guidedVisitWithTasting: 'Visita guiada con degustación de vinos',
@@ -1406,6 +1421,10 @@ export const translations = {
           title: 'In der Nähe der Weingüter',
           description: 'Tauchen Sie ein in das Weintourismus-Erlebnis mit Hotels auf Weingütern',
         },
+        openToSuggestions: {
+          title: 'Ich bin offen für Vorschläge',
+          description: 'Wenn Sie keine bestimmte Präferenz haben, empfiehlt unser Team die Region, die am besten zu Ihrem Profil, Budget und gewünschtem Erlebnistyp passt.',
+        },
       },
       q11: {
         question: 'Besondere Wünsche?',
@@ -1497,6 +1516,7 @@ export const translations = {
         carRentalIncluded: 'Mietwagen in der Planung enthalten',
         centralAccommodation: 'Zentrale Unterkunft in Lissabon',
         wineryAccommodation: 'Unterkunft in der Nähe der Weingüter',
+        suggestedAccommodation: 'Unterkunft in der für Sie empfohlenen Region',
         awardWines: 'Prämierte Weine aus der Region Lissabon',
         visitAndTasting: 'Besichtigung und Verkostung',
         guidedVisitWithTasting: 'Geführte Besichtigung mit Weinverkostung',

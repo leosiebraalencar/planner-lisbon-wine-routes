@@ -91,7 +91,7 @@ export const quizResponseSchema = z.object({
   needsCarRental: z.boolean().optional(),
   wantsPrivateGuide: z.boolean().optional(),
   hasAccommodation: z.boolean().optional(),
-  accommodationPreference: z.enum(['central_lisboa', 'vinicolas_proximas']).optional(),
+  accommodationPreference: z.enum(['central_lisboa', 'vinicolas_proximas', 'sugestao_equipa']).optional(),
 });
 
 export type QuizResponse = z.infer<typeof quizResponseSchema>;
