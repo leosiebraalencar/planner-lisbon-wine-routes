@@ -922,7 +922,8 @@ const QUIZ_PREF_TO_TAGS: Record<string, ExperienceTag[]> = {
   internationalGastronomy: ['gastronomic'],
   historic: ['historical'],
   modernWineries: ['technical'],
-  tours: ['outdoor', 'family'],
+  production: ['technical', 'outdoor'],
+  wineFood: ['gastronomic'],
   tastings: ['technical', 'informal'],
   biodynamic: ['outdoor', 'technical'],
 };

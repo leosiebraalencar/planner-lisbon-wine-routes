@@ -129,7 +129,7 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
   const preferenceKeys = [
     'traditionalGastronomy', 'internationalGastronomy',
     'historic', 'modernWineries',
-    'tours', 'tastings', 'biodynamic',
+    'production', 'wineFood', 'tastings', 'biodynamic',
     'oneWineryPerDay', 'maxWineries',
     'singleLocation', 'multipleLocations'
   ];

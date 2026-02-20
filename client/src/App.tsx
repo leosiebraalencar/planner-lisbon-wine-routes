@@ -99,8 +99,11 @@ const generateHighlights = (quizData: QuizResponse, days: Array<{ region: string
   if (prefs.includes('biodynamic')) {
     highlights.push(tt('itinerary.gen.biodynamicWines'));
   }
-  if (prefs.includes('tours')) {
-    highlights.push(tt('itinerary.gen.sommelierTours'));
+  if (prefs.includes('production')) {
+    highlights.push(tt('itinerary.gen.productionTours'));
+  }
+  if (prefs.includes('wineFood')) {
+    highlights.push(tt('itinerary.gen.wineFoodPairing'));
   }
 
   const budgetKeys: Record<string, string> = {
