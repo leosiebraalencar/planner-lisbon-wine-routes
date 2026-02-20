@@ -336,14 +336,6 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
 
     const isJmfMorning = morningWinery.name === JMF_WINERY_NAME;
 
-    let dayHotel: HotelData | undefined;
-    if (needsHotel) {
-      dayHotel = wantsCenter
-        ? getHotelForRegion('Lisboa', usedHotels)
-        : getHotelForRegion(actualRegion, usedHotels);
-      if (dayHotel) usedHotels.add(dayHotel.name);
-    }
-
     const dinnerRegion = wantsCenter ? 'Lisboa' : actualRegion;
 
     if (isSlowPace) {
@@ -399,9 +391,6 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
         afternoon: afternoonActivity,
         evening: buildDinnerActivity(dinnerRestaurant)
       };
-      if (dayHotel) {
-        dayData.hotel = { name: dayHotel.name, description: dayHotel.description, affiliateUrl: dayHotel.affiliateUrl, budgetCategory: dayHotel.budgetCategory };
-      }
       days.push(dayData);
     } else {
       const afternoonCandidates = (regionWineries[regionName] || [])
@@ -469,9 +458,6 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
         },
         evening: buildDinnerActivity(dinnerRestaurant)
       };
-      if (dayHotel) {
-        dayData.hotel = { name: dayHotel.name, description: dayHotel.description, affiliateUrl: dayHotel.affiliateUrl, budgetCategory: dayHotel.budgetCategory };
-      }
       days.push(dayData);
     }
 
@@ -479,6 +465,32 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
     if (daysInCurrentRegion >= daysPerRegion) {
       currentRegionIndex = (currentRegionIndex + 1) % orderedRegions.length;
       daysInCurrentRegion = 0;
+    }
+  }
+
+  if (needsHotel) {
+    for (let di = 0; di < days.length; di++) {
+      let dayHotel: HotelData | undefined;
+      if (wantsCenter) {
+        dayHotel = getHotelForRegion('Lisboa', usedHotels);
+      } else if (di < days.length - 1) {
+        const nextDayRegion = days[di + 1].region;
+        const currentDayRegion = days[di].region;
+        if (nextDayRegion !== currentDayRegion) {
+          dayHotel = getHotelForRegion(nextDayRegion, usedHotels);
+          if (!dayHotel) {
+            dayHotel = getHotelForRegion(currentDayRegion, usedHotels);
+          }
+        } else {
+          dayHotel = getHotelForRegion(currentDayRegion, usedHotels);
+        }
+      } else {
+        dayHotel = getHotelForRegion(days[di].region, usedHotels);
+      }
+      if (dayHotel) {
+        usedHotels.add(dayHotel.name);
+        days[di].hotel = { name: dayHotel.name, description: dayHotel.description, affiliateUrl: dayHotel.affiliateUrl, budgetCategory: dayHotel.budgetCategory };
+      }
     }
   }
 

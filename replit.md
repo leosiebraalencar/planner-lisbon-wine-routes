@@ -78,7 +78,7 @@ Preferred communication style: Simple, everyday language.
 - **Budget tiers**: avg price ≤30€=low, ≤55€=mid, >55€=high; mapped from quiz values (economico→low, moderado→mid, premium→high)
 - Scored restaurant selection: Cuisine preference (+50), budget match (+30), region (+20), rating, proximity
 - **Dinner region**: Uses hotel region when `central_lisboa` preference, otherwise winery region
-- Hotel per day: Assigned in-loop per region/day (or Lisboa for central_lisboa preference)
+- Hotel per day: Assigned in second pass after all days built; uses next-day region when regions change between consecutive days for optimal routing (or Lisboa for central_lisboa preference)
 - **Hotel region aliases**: Oeiras → Lisboa/Cascais, others → own region
 - **JMF rule**: José Maria Da Fonseca morning → JMF Winecorner for lunch (not dinner); Winecorner excluded from dinner when any JMF winery present
 - Car rental pickup embedded on Day 1 schedule
