@@ -351,14 +351,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/generate-road-trip-guide", async (req, res) => {
     try {
       const itinerary = itinerarySchema.parse(req.body);
-      const lang = (req.query.lang as string || 'EN').toUpperCase();
-      const validLang = ['PT', 'EN', 'ES', 'DE'].includes(lang) ? lang : 'EN';
 
       if (!process.env.AI_INTEGRATIONS_OPENAI_BASE_URL && !process.env.OPENAI_API_KEY) {
         return res.status(503).json({ error: 'AI service not configured' });
       }
 
-      const guide = await generateRoadTripGuide(itinerary, validLang);
+      const guide = await generateRoadTripGuide(itinerary);
       res.json(guide);
     } catch (error: any) {
       console.error('Error generating road trip guide:', error);

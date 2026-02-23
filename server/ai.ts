@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import type { Itinerary, RoadTripGuide } from '@shared/schema';
+import type { Itinerary, RoadTripGuide, LocalizedString } from '@shared/schema';
 import { buildGoogleMapsRouteUrl } from '@shared/geoUtils';
 
 let _openai: OpenAI | null = null;
@@ -25,13 +25,6 @@ function getOpenAI(): OpenAI {
   }
   return _openai;
 }
-
-const LANG_LABELS: Record<string, string> = {
-  PT: 'Portuguese',
-  EN: 'English',
-  ES: 'Spanish',
-  DE: 'German',
-};
 
 function extractDayStops(itinerary: Itinerary) {
   return itinerary.days.map(day => {
@@ -131,8 +124,7 @@ function buildGoogleMapsLinks(itinerary: Itinerary) {
   return links;
 }
 
-function buildPrompt(itinerary: Itinerary, lang: string): string {
-  const langLabel = LANG_LABELS[lang] || 'English';
+function buildPrompt(itinerary: Itinerary): string {
   const dayStops = extractDayStops(itinerary);
   const quiz = itinerary.quizData;
 
@@ -158,7 +150,8 @@ Write as an experienced human narrator-guide with actionable instructions. Avoid
 Do NOT sound like a blog or an automated list. Use travel rhythm: departure, first stop, small milestones, real alerts.
 Use practical details, micro-decisions, and checklists. Be concise but thorough.
 
-LANGUAGE: Write everything in ${langLabel}.
+CRITICAL: You MUST produce ALL text content simultaneously in 4 languages: Portuguese (PT), English (EN), Spanish (ES), and German (DE).
+Every string field must be an object with keys "PT", "EN", "ES", "DE" containing the translated text.
 
 TRAVELER PROFILE:
 ${travelerProfile}
@@ -176,39 +169,49 @@ RULES:
 - Focus on wine tourism, luxury tourism, gastronomy, culture, and authentic Portuguese experiences
 - The audience avoids mass tourism, values quality, culture, sustainability, and authenticity
 
-You MUST respond with a valid JSON object (no markdown, no code blocks) with this exact structure:
+You MUST respond with a valid JSON object (no markdown, no code blocks) with this exact structure.
+EVERY string value MUST be an object with "PT", "EN", "ES", "DE" keys.
+
 {
-  "carPickupChecklist": ["item1", "item2", ...],
+  "carPickupChecklist": [
+    {"PT": "item em português", "EN": "item in english", "ES": "item en español", "DE": "item auf deutsch"},
+    ...
+  ],
   "narratedBlocks": [
     {
-      "title": "block title",
-      "content": "narrated paragraph",
-      "tip": "optional practical tip",
-      "alert": "optional safety alert",
-      "suggestion": "optional suggestion for a stop or detour"
+      "title": {"PT": "...", "EN": "...", "ES": "...", "DE": "..."},
+      "content": {"PT": "...", "EN": "...", "ES": "...", "DE": "..."},
+      "tip": {"PT": "...", "EN": "...", "ES": "...", "DE": "..."},
+      "alert": {"PT": "...", "EN": "...", "ES": "...", "DE": "..."},
+      "suggestion": {"PT": "...", "EN": "...", "ES": "...", "DE": "..."}
     }
   ],
   "whatToBring": {
-    "documents": ["item1", ...],
-    "comfort": ["item1", ...],
-    "safety": ["item1", ...],
-    "technology": ["item1", ...],
-    "climate": ["item1", ...]
+    "documents": [{"PT": "...", "EN": "...", "ES": "...", "DE": "..."}, ...],
+    "comfort": [{"PT": "...", "EN": "...", "ES": "...", "DE": "..."}, ...],
+    "safety": [{"PT": "...", "EN": "...", "ES": "...", "DE": "..."}, ...],
+    "technology": [{"PT": "...", "EN": "...", "ES": "...", "DE": "..."}, ...],
+    "climate": [{"PT": "...", "EN": "...", "ES": "...", "DE": "..."}, ...]
   },
-  "drivingTips": ["tip1", "tip2", ...],
+  "drivingTips": [
+    {"PT": "...", "EN": "...", "ES": "...", "DE": "..."},
+    ...
+  ],
   "planB": [
-    { "scenario": "if it rains", "solution": "what to do" },
-    { "scenario": "traffic jam", "solution": "alternative" },
-    { "scenario": "delay at car pickup", "solution": "adjustment" }
+    {
+      "scenario": {"PT": "...", "EN": "...", "ES": "...", "DE": "..."},
+      "solution": {"PT": "...", "EN": "...", "ES": "...", "DE": "..."}
+    }
   ],
   "googleMapsLinks": [],
-  "summary": "5-line max summary of the entire road trip"
+  "summary": {"PT": "...", "EN": "...", "ES": "...", "DE": "..."}
 }
 
 For narratedBlocks, create blocks for:
 - "Before departure (2-4 min)" with pre-trip prep
 - For each day: "Day X departure", "Day X main stretch", "Day X arrival and approach" covering the connections between stops
 - Include specific references to the wineries, restaurants, and hotels in the itinerary
+- tip, alert, and suggestion are OPTIONAL fields — only include them when there is genuinely useful content
 
 For carPickupChecklist: 5-9 items about inspecting the rental car, documents needed, fuel policy check, etc.
 ${!quiz.needsCarRental ? 'Since no car rental, make the checklist about general driving preparation instead.' : ''}
@@ -218,11 +221,44 @@ Leave googleMapsLinks as an empty array (these will be generated separately).
 IMPORTANT: Respond ONLY with the JSON object. No explanations, no markdown formatting.`;
 }
 
+const EMPTY_LOCALIZED: LocalizedString = { PT: '', EN: '', ES: '', DE: '' };
+
+function ensureLocalized(val: any): LocalizedString {
+  if (val && typeof val === 'object' && 'PT' in val && 'EN' in val && 'ES' in val && 'DE' in val) {
+    return { PT: String(val.PT), EN: String(val.EN), ES: String(val.ES), DE: String(val.DE) };
+  }
+  if (typeof val === 'string') {
+    return { PT: val, EN: val, ES: val, DE: val };
+  }
+  return { ...EMPTY_LOCALIZED };
+}
+
+function ensureLocalizedArray(arr: any): LocalizedString[] {
+  if (!Array.isArray(arr)) return [];
+  return arr.map(ensureLocalized);
+}
+
+function ensureNarratedBlock(block: any) {
+  return {
+    title: ensureLocalized(block?.title),
+    content: ensureLocalized(block?.content),
+    ...(block?.tip ? { tip: ensureLocalized(block.tip) } : {}),
+    ...(block?.alert ? { alert: ensureLocalized(block.alert) } : {}),
+    ...(block?.suggestion ? { suggestion: ensureLocalized(block.suggestion) } : {}),
+  };
+}
+
+function ensurePlanB(item: any) {
+  return {
+    scenario: ensureLocalized(item?.scenario),
+    solution: ensureLocalized(item?.solution),
+  };
+}
+
 export async function generateRoadTripGuide(
-  itinerary: Itinerary,
-  lang: string
+  itinerary: Itinerary
 ): Promise<RoadTripGuide> {
-  const prompt = buildPrompt(itinerary, lang);
+  const prompt = buildPrompt(itinerary);
   const googleMapsLinks = buildGoogleMapsLinks(itinerary);
 
   const response = await getOpenAI().chat.completions.create({
@@ -230,12 +266,12 @@ export async function generateRoadTripGuide(
     messages: [
       {
         role: 'system',
-        content: 'You are a premium wine tourism road trip guide generator for Portugal. Always respond with valid JSON only.',
+        content: 'You are a premium wine tourism road trip guide generator for Portugal. Always respond with valid JSON only. Every text field must be a multilingual object with PT, EN, ES, DE keys.',
       },
       { role: 'user', content: prompt },
     ],
     temperature: 0.7,
-    max_tokens: 4000,
+    max_tokens: 12000,
     response_format: { type: 'json_object' },
   });
 
@@ -246,26 +282,25 @@ export async function generateRoadTripGuide(
 
   const parsed = JSON.parse(content);
 
-  parsed.googleMapsLinks = googleMapsLinks;
+  const guide: RoadTripGuide = {
+    carPickupChecklist: ensureLocalizedArray(parsed.carPickupChecklist),
+    narratedBlocks: Array.isArray(parsed.narratedBlocks)
+      ? parsed.narratedBlocks.map(ensureNarratedBlock)
+      : [],
+    whatToBring: {
+      documents: ensureLocalizedArray(parsed.whatToBring?.documents),
+      comfort: ensureLocalizedArray(parsed.whatToBring?.comfort),
+      safety: ensureLocalizedArray(parsed.whatToBring?.safety),
+      technology: ensureLocalizedArray(parsed.whatToBring?.technology),
+      climate: ensureLocalizedArray(parsed.whatToBring?.climate),
+    },
+    drivingTips: ensureLocalizedArray(parsed.drivingTips),
+    planB: Array.isArray(parsed.planB)
+      ? parsed.planB.map(ensurePlanB)
+      : [],
+    googleMapsLinks,
+    summary: ensureLocalized(parsed.summary),
+  };
 
-  if (!parsed.carPickupChecklist || !Array.isArray(parsed.carPickupChecklist)) {
-    parsed.carPickupChecklist = [];
-  }
-  if (!parsed.narratedBlocks || !Array.isArray(parsed.narratedBlocks)) {
-    parsed.narratedBlocks = [];
-  }
-  if (!parsed.whatToBring) {
-    parsed.whatToBring = { documents: [], comfort: [], safety: [], technology: [], climate: [] };
-  }
-  if (!parsed.drivingTips || !Array.isArray(parsed.drivingTips)) {
-    parsed.drivingTips = [];
-  }
-  if (!parsed.planB || !Array.isArray(parsed.planB)) {
-    parsed.planB = [];
-  }
-  if (!parsed.summary) {
-    parsed.summary = '';
-  }
-
-  return parsed as RoadTripGuide;
+  return guide;
 }

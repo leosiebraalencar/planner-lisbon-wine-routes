@@ -313,7 +313,13 @@ function ensureSpace(doc: PDFKit.PDFDocument, needed: number) {
   }
 }
 
-function renderRoadTripGuide(doc: PDFKit.PDFDocument, guide: RoadTripGuide, pt: Record<string, string>) {
+function locPdf(ls: any, lang: string): string {
+  if (!ls) return '';
+  if (typeof ls === 'string') return ls;
+  return ls[lang] || ls.EN || ls.PT || '';
+}
+
+function renderRoadTripGuide(doc: PDFKit.PDFDocument, guide: RoadTripGuide, pt: Record<string, string>, lang: string) {
   const pageWidth = doc.page.width - 100;
 
   doc.addPage();
@@ -335,7 +341,7 @@ function renderRoadTripGuide(doc: PDFKit.PDFDocument, guide: RoadTripGuide, pt: 
       doc.fillColor(DARK_TEXT)
         .fontSize(10)
         .font(BODY_FONT)
-        .text(`${idx + 1}. ${item}`, 60, doc.y, { width: pageWidth - 20 });
+        .text(`${idx + 1}. ${locPdf(item, lang)}`, 60, doc.y, { width: pageWidth - 20 });
       doc.moveDown(0.3);
     });
     doc.moveDown(1);
@@ -355,49 +361,58 @@ function renderRoadTripGuide(doc: PDFKit.PDFDocument, guide: RoadTripGuide, pt: 
       doc.fillColor(WINE_RED)
         .fontSize(11)
         .font(BOLD_FONT)
-        .text(block.title, 50, doc.y, { width: pageWidth });
+        .text(locPdf(block.title, lang), 50, doc.y, { width: pageWidth });
       doc.moveDown(0.3);
 
       doc.fillColor(DARK_TEXT)
         .fontSize(10)
         .font(BODY_FONT)
-        .text(block.content, 60, doc.y, { width: pageWidth - 20 });
+        .text(locPdf(block.content, lang), 60, doc.y, { width: pageWidth - 20 });
       doc.moveDown(0.4);
 
       if (block.tip) {
-        ensureSpace(doc, 25);
-        doc.fillColor('#2563EB')
-          .fontSize(9)
-          .font(BOLD_FONT)
-          .text(`${pt.rtgTip || 'Tip'}: `, 60, doc.y, { continued: true });
-        doc.font(BODY_FONT)
-          .fillColor(GRAY_TEXT)
-          .text(block.tip, { width: pageWidth - 30 });
-        doc.moveDown(0.2);
+        const tipText = locPdf(block.tip, lang);
+        if (tipText) {
+          ensureSpace(doc, 25);
+          doc.fillColor('#2563EB')
+            .fontSize(9)
+            .font(BOLD_FONT)
+            .text(`${pt.rtgTip || 'Tip'}: `, 60, doc.y, { continued: true });
+          doc.font(BODY_FONT)
+            .fillColor(GRAY_TEXT)
+            .text(tipText, { width: pageWidth - 30 });
+          doc.moveDown(0.2);
+        }
       }
 
       if (block.alert) {
-        ensureSpace(doc, 25);
-        doc.fillColor('#D97706')
-          .fontSize(9)
-          .font(BOLD_FONT)
-          .text(`${pt.rtgAlert || 'Alert'}: `, 60, doc.y, { continued: true });
-        doc.font(BODY_FONT)
-          .fillColor(GRAY_TEXT)
-          .text(block.alert, { width: pageWidth - 30 });
-        doc.moveDown(0.2);
+        const alertText = locPdf(block.alert, lang);
+        if (alertText) {
+          ensureSpace(doc, 25);
+          doc.fillColor('#D97706')
+            .fontSize(9)
+            .font(BOLD_FONT)
+            .text(`${pt.rtgAlert || 'Alert'}: `, 60, doc.y, { continued: true });
+          doc.font(BODY_FONT)
+            .fillColor(GRAY_TEXT)
+            .text(alertText, { width: pageWidth - 30 });
+          doc.moveDown(0.2);
+        }
       }
 
       if (block.suggestion) {
-        ensureSpace(doc, 25);
-        doc.fillColor('#059669')
-          .fontSize(9)
-          .font(BOLD_FONT)
-          .text(`${pt.rtgSuggestion || 'Suggestion'}: `, 60, doc.y, { continued: true });
-        doc.font(BODY_FONT)
-          .fillColor(GRAY_TEXT)
-          .text(block.suggestion, { width: pageWidth - 30 });
-        doc.moveDown(0.2);
+        const sugText = locPdf(block.suggestion, lang);
+        if (sugText) {
+          ensureSpace(doc, 25);
+          doc.fillColor('#059669')
+            .fontSize(9)
+            .font(BOLD_FONT)
+            .text(`${pt.rtgSuggestion || 'Suggestion'}: `, 60, doc.y, { continued: true });
+          doc.font(BODY_FONT)
+            .fillColor(GRAY_TEXT)
+            .text(sugText, { width: pageWidth - 30 });
+          doc.moveDown(0.2);
+        }
       }
 
       doc.moveDown(0.8);
@@ -434,7 +449,7 @@ function renderRoadTripGuide(doc: PDFKit.PDFDocument, guide: RoadTripGuide, pt: 
         doc.fillColor(DARK_TEXT)
           .fontSize(9)
           .font(BODY_FONT)
-          .text(`• ${item}`, 70, doc.y, { width: pageWidth - 30 });
+          .text(`• ${locPdf(item, lang)}`, 70, doc.y, { width: pageWidth - 30 });
         doc.moveDown(0.2);
       });
       doc.moveDown(0.3);
@@ -455,7 +470,7 @@ function renderRoadTripGuide(doc: PDFKit.PDFDocument, guide: RoadTripGuide, pt: 
       doc.fillColor(DARK_TEXT)
         .fontSize(10)
         .font(BODY_FONT)
-        .text(`${idx + 1}. ${tip}`, 60, doc.y, { width: pageWidth - 20 });
+        .text(`${idx + 1}. ${locPdf(tip, lang)}`, 60, doc.y, { width: pageWidth - 20 });
       doc.moveDown(0.3);
     });
     doc.moveDown(0.5);
@@ -474,11 +489,11 @@ function renderRoadTripGuide(doc: PDFKit.PDFDocument, guide: RoadTripGuide, pt: 
       doc.fillColor(DARK_TEXT)
         .fontSize(10)
         .font(BOLD_FONT)
-        .text(plan.scenario, 60, doc.y, { width: pageWidth - 20 });
+        .text(locPdf(plan.scenario, lang), 60, doc.y, { width: pageWidth - 20 });
       doc.moveDown(0.2);
       doc.fillColor(GRAY_TEXT)
         .font(BODY_FONT)
-        .text(plan.solution, 60, doc.y, { width: pageWidth - 20 });
+        .text(locPdf(plan.solution, lang), 60, doc.y, { width: pageWidth - 20 });
       doc.moveDown(0.5);
     });
   }
@@ -512,7 +527,7 @@ function renderRoadTripGuide(doc: PDFKit.PDFDocument, guide: RoadTripGuide, pt: 
     doc.fillColor(DARK_TEXT)
       .fontSize(10)
       .font(BODY_FONT)
-      .text(guide.summary, 50, doc.y, { width: pageWidth });
+      .text(locPdf(guide.summary, lang), 50, doc.y, { width: pageWidth });
     doc.moveDown(1);
   }
 }
@@ -762,7 +777,7 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
     }
 
     if (itinerary.roadTripGuide) {
-      renderRoadTripGuide(doc, itinerary.roadTripGuide, pt);
+      renderRoadTripGuide(doc, itinerary.roadTripGuide, pt, lang);
     }
 
     doc.moveDown(3);

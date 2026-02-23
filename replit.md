@@ -74,19 +74,19 @@ Preferred communication style: Simple, everyday language.
 ### AI-Generated Road Trip Guide (server/ai.ts)
 - **Provider**: Replit AI Integration (OpenAI-compatible via `AI_INTEGRATIONS_OPENAI_BASE_URL`), falls back to direct OpenAI API key
 - **Model**: gpt-4o-mini with JSON response format
-- **Endpoint**: `POST /api/generate-road-trip-guide?lang=XX`
-- **Input**: Full Itinerary object
-- **Output**: RoadTripGuide schema with sections:
-  - `carPickupChecklist`: 5-9 items for car rental inspection
-  - `narratedBlocks`: Step-by-step driving narration between stops (title, content, tip, alert, suggestion)
-  - `whatToBring`: Categorized packing list (documents, comfort, safety, technology, climate)
-  - `drivingTips`: Practical driving and safety tips for Portugal
-  - `planB`: 3 contingency scenarios (rain, traffic, delays)
+- **Endpoint**: `POST /api/generate-road-trip-guide`
+- **Input**: Full Itinerary object (no language parameter needed)
+- **Output**: RoadTripGuide schema with all text as LocalizedString `{ PT, EN, ES, DE }`:
+  - `carPickupChecklist`: LocalizedString[] (5-9 items, each in 4 languages)
+  - `narratedBlocks`: array of { title, content, tip?, alert?, suggestion? } all LocalizedString
+  - `whatToBring`: Categorized packing list, each category is LocalizedString[]
+  - `drivingTips`: LocalizedString[]
+  - `planB`: array of { scenario: LocalizedString, solution: LocalizedString }
   - `googleMapsLinks`: Per-day clickable route maps (generated deterministically, not by AI)
-  - `summary`: 5-line trip summary
-- **Frontend**: RoadTripGuide.tsx component with "Generate" button, loading state, and full guide display
-- **PDF**: Road Trip Guide section rendered after recommendations with all sub-sections
-- **Multilingual**: Prompt includes language parameter; all section headers translated in 4 languages
+  - `summary`: LocalizedString
+- **Multilingual**: AI generates all 4 languages (PT/EN/ES/DE) in a single request; switching language instantly updates guide content without re-generation
+- **Frontend**: RoadTripGuide.tsx uses `loc(localizedString, language)` helper to pick current language with EN fallback
+- **PDF**: `locPdf()` helper extracts correct language translation for PDF rendering
 - **State**: Guide stored in itinerary.roadTripGuide, persisted to sessionStorage, included in PDF when present
 
 ### Itinerary Generation (client/src/App.tsx)

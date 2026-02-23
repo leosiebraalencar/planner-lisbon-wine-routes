@@ -6,7 +6,13 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Navigation, CheckCircle, AlertTriangle, Lightbulb, MapPin, FileText, Shield, Smartphone, CloudSun, Armchair, ExternalLink, Loader2, RefreshCw, Route } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { apiRequest } from "@/lib/queryClient";
-import type { Itinerary, RoadTripGuide as RoadTripGuideType } from "@shared/schema";
+import type { Itinerary, RoadTripGuide as RoadTripGuideType, LocalizedString } from "@shared/schema";
+
+function loc(ls: LocalizedString | undefined, lang: string): string {
+  if (!ls) return '';
+  const key = lang as keyof LocalizedString;
+  return ls[key] || ls.EN || ls.PT || '';
+}
 
 interface RoadTripGuideProps {
   itinerary: Itinerary;
@@ -23,7 +29,7 @@ export default function RoadTripGuideSection({ itinerary, onGuideGenerated }: Ro
     setIsGenerating(true);
     setError(null);
     try {
-      const response = await apiRequest('POST', `/api/generate-road-trip-guide?lang=${language}`, itinerary);
+      const response = await apiRequest('POST', '/api/generate-road-trip-guide', itinerary);
       const data = await response.json();
       onGuideGenerated(data);
     } catch (err: any) {
@@ -96,7 +102,7 @@ export default function RoadTripGuideSection({ itinerary, onGuideGenerated }: Ro
                   <span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 text-xs font-medium mt-0.5">
                     {idx + 1}
                   </span>
-                  <span>{item}</span>
+                  <span>{loc(item, language)}</span>
                 </li>
               ))}
             </ul>
@@ -117,17 +123,17 @@ export default function RoadTripGuideSection({ itinerary, onGuideGenerated }: Ro
               {guide.narratedBlocks.map((block, idx) => (
                 <AccordionItem key={idx} value={`block-${idx}`}>
                   <AccordionTrigger className="hover:no-underline" data-testid={`accordion-narrated-${idx}`}>
-                    <span className="text-left font-medium">{block.title}</span>
+                    <span className="text-left font-medium">{loc(block.title, language)}</span>
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="space-y-3 pt-2">
-                      <p className="text-sm leading-relaxed">{block.content}</p>
+                      <p className="text-sm leading-relaxed">{loc(block.content, language)}</p>
                       {block.tip && (
                         <div className="flex items-start gap-2 bg-blue-50 dark:bg-blue-950/30 p-3 rounded-md">
                           <Lightbulb className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                           <div>
                             <span className="text-xs font-semibold text-blue-700 dark:text-blue-300 uppercase">{t('itinerary.roadTripGuide.tipLabel')}</span>
-                            <p className="text-sm text-blue-800 dark:text-blue-200">{block.tip}</p>
+                            <p className="text-sm text-blue-800 dark:text-blue-200">{loc(block.tip, language)}</p>
                           </div>
                         </div>
                       )}
@@ -136,7 +142,7 @@ export default function RoadTripGuideSection({ itinerary, onGuideGenerated }: Ro
                           <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                           <div>
                             <span className="text-xs font-semibold text-amber-700 dark:text-amber-300 uppercase">{t('itinerary.roadTripGuide.alertLabel')}</span>
-                            <p className="text-sm text-amber-800 dark:text-amber-200">{block.alert}</p>
+                            <p className="text-sm text-amber-800 dark:text-amber-200">{loc(block.alert, language)}</p>
                           </div>
                         </div>
                       )}
@@ -145,7 +151,7 @@ export default function RoadTripGuideSection({ itinerary, onGuideGenerated }: Ro
                           <MapPin className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
                           <div>
                             <span className="text-xs font-semibold text-green-700 dark:text-green-300 uppercase">{t('itinerary.roadTripGuide.suggestionLabel')}</span>
-                            <p className="text-sm text-green-800 dark:text-green-200">{block.suggestion}</p>
+                            <p className="text-sm text-green-800 dark:text-green-200">{loc(block.suggestion, language)}</p>
                           </div>
                         </div>
                       )}
@@ -174,7 +180,7 @@ export default function RoadTripGuideSection({ itinerary, onGuideGenerated }: Ro
                     </div>
                     <ul className="space-y-1 pl-6">
                       {items.map((item, idx) => (
-                        <li key={idx} className="text-sm text-muted-foreground list-disc">{item}</li>
+                        <li key={idx} className="text-sm text-muted-foreground list-disc">{loc(item, language)}</li>
                       ))}
                     </ul>
                   </div>
@@ -193,7 +199,7 @@ export default function RoadTripGuideSection({ itinerary, onGuideGenerated }: Ro
               {guide.drivingTips.map((tip, idx) => (
                 <li key={idx} className="flex items-start gap-2 text-sm">
                   <Shield className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                  <span>{tip}</span>
+                  <span>{loc(tip, language)}</span>
                 </li>
               ))}
             </ul>
@@ -213,8 +219,8 @@ export default function RoadTripGuideSection({ itinerary, onGuideGenerated }: Ro
             <div className="space-y-3">
               {guide.planB.map((plan, idx) => (
                 <div key={idx} className="bg-card p-4 rounded-lg border border-border">
-                  <div className="font-medium text-sm mb-1">{plan.scenario}</div>
-                  <p className="text-sm text-muted-foreground">{plan.solution}</p>
+                  <div className="font-medium text-sm mb-1">{loc(plan.scenario, language)}</div>
+                  <p className="text-sm text-muted-foreground">{loc(plan.solution, language)}</p>
                 </div>
               ))}
             </div>
@@ -260,7 +266,7 @@ export default function RoadTripGuideSection({ itinerary, onGuideGenerated }: Ro
             <CardTitle className="text-base">{t('itinerary.roadTripGuide.summary')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm leading-relaxed whitespace-pre-line">{guide.summary}</p>
+            <p className="text-sm leading-relaxed whitespace-pre-line">{loc(guide.summary, language)}</p>
           </CardContent>
         </Card>
       )}

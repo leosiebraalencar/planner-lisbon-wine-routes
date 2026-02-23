@@ -111,17 +111,26 @@ export const activitySchema = z.object({
   theForkPromoCode: z.string().optional(),
 });
 
+export const localizedStringSchema = z.object({
+  PT: z.string(),
+  EN: z.string(),
+  ES: z.string(),
+  DE: z.string(),
+});
+
+export type LocalizedString = z.infer<typeof localizedStringSchema>;
+
 export const narratedBlockSchema = z.object({
-  title: z.string(),
-  content: z.string(),
-  tip: z.string().optional(),
-  alert: z.string().optional(),
-  suggestion: z.string().optional(),
+  title: localizedStringSchema,
+  content: localizedStringSchema,
+  tip: localizedStringSchema.optional(),
+  alert: localizedStringSchema.optional(),
+  suggestion: localizedStringSchema.optional(),
 });
 
 export const planBSchema = z.object({
-  scenario: z.string(),
-  solution: z.string(),
+  scenario: localizedStringSchema,
+  solution: localizedStringSchema,
 });
 
 export const googleMapsLinkSchema = z.object({
@@ -131,19 +140,19 @@ export const googleMapsLinkSchema = z.object({
 });
 
 export const roadTripGuideSchema = z.object({
-  carPickupChecklist: z.array(z.string()),
+  carPickupChecklist: z.array(localizedStringSchema),
   narratedBlocks: z.array(narratedBlockSchema),
   whatToBring: z.object({
-    documents: z.array(z.string()),
-    comfort: z.array(z.string()),
-    safety: z.array(z.string()),
-    technology: z.array(z.string()),
-    climate: z.array(z.string()),
+    documents: z.array(localizedStringSchema),
+    comfort: z.array(localizedStringSchema),
+    safety: z.array(localizedStringSchema),
+    technology: z.array(localizedStringSchema),
+    climate: z.array(localizedStringSchema),
   }),
-  drivingTips: z.array(z.string()),
+  drivingTips: z.array(localizedStringSchema),
   planB: z.array(planBSchema),
   googleMapsLinks: z.array(googleMapsLinkSchema),
-  summary: z.string(),
+  summary: localizedStringSchema,
 });
 
 export type RoadTripGuide = z.infer<typeof roadTripGuideSchema>;
