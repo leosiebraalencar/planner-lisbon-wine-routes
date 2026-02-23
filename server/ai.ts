@@ -6,9 +6,22 @@ let _openai: OpenAI | null = null;
 
 function getOpenAI(): OpenAI {
   if (!_openai) {
-    _openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+    const baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
+    if (baseURL) {
+      _openai = new OpenAI({
+        baseURL: baseURL.endsWith('/') ? baseURL.slice(0, -1) : baseURL,
+        apiKey: 'replit',
+        defaultHeaders: {
+          'Authorization': 'Bearer replit',
+        },
+      });
+    } else if (process.env.OPENAI_API_KEY) {
+      _openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+      });
+    } else {
+      throw new Error('No AI service configured. Set AI_INTEGRATIONS_OPENAI_BASE_URL or OPENAI_API_KEY.');
+    }
   }
   return _openai;
 }

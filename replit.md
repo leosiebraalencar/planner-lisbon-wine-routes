@@ -68,6 +68,26 @@ Preferred communication style: Simple, everyday language.
 ### Geo Utilities (shared/geoUtils.ts)
 - `haversineDistance()`: Calculates distance in km between two lat/lng coordinates
 - `extractCoordsFromGoogleMapsUrl()`: Extracts lat/lng from Google Maps URLs (winery coordinates)
+- `buildGoogleMapsRouteUrl()`: Creates Google Maps directions URL with origin, destination, and optional waypoints
+- `buildDayRouteUrl()`: Generates per-day route URL from a list of stops with addresses
+
+### AI-Generated Road Trip Guide (server/ai.ts)
+- **Provider**: Replit AI Integration (OpenAI-compatible via `AI_INTEGRATIONS_OPENAI_BASE_URL`), falls back to direct OpenAI API key
+- **Model**: gpt-4o-mini with JSON response format
+- **Endpoint**: `POST /api/generate-road-trip-guide?lang=XX`
+- **Input**: Full Itinerary object
+- **Output**: RoadTripGuide schema with sections:
+  - `carPickupChecklist`: 5-9 items for car rental inspection
+  - `narratedBlocks`: Step-by-step driving narration between stops (title, content, tip, alert, suggestion)
+  - `whatToBring`: Categorized packing list (documents, comfort, safety, technology, climate)
+  - `drivingTips`: Practical driving and safety tips for Portugal
+  - `planB`: 3 contingency scenarios (rain, traffic, delays)
+  - `googleMapsLinks`: Per-day clickable route maps (generated deterministically, not by AI)
+  - `summary`: 5-line trip summary
+- **Frontend**: RoadTripGuide.tsx component with "Generate" button, loading state, and full guide display
+- **PDF**: Road Trip Guide section rendered after recommendations with all sub-sections
+- **Multilingual**: Prompt includes language parameter; all section headers translated in 4 languages
+- **State**: Guide stored in itinerary.roadTripGuide, persisted to sessionStorage, included in PDF when present
 
 ### Itinerary Generation (client/src/App.tsx)
 - **Pace modes**: `oneWineryPerDay` = 1 winery + lunch + dinner; default/`maxWineries` = 2 wineries + dinner

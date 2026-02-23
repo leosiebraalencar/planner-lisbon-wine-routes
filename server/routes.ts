@@ -354,7 +354,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const lang = (req.query.lang as string || 'EN').toUpperCase();
       const validLang = ['PT', 'EN', 'ES', 'DE'].includes(lang) ? lang : 'EN';
 
-      if (!process.env.OPENAI_API_KEY) {
+      if (!process.env.AI_INTEGRATIONS_OPENAI_BASE_URL && !process.env.OPENAI_API_KEY) {
         return res.status(503).json({ error: 'AI service not configured' });
       }
 

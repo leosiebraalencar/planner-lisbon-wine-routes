@@ -1,7 +1,7 @@
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
-import type { Itinerary, Activity } from '@shared/schema';
+import type { Itinerary, Activity, RoadTripGuide } from '@shared/schema';
 
 const PDFS_DIR = path.join(process.cwd(), 'attached_assets', 'pdfs');
 
@@ -63,6 +63,22 @@ const pdfTranslations: Record<PdfLang, Record<string, string>> = {
     evening: 'Noite',
     carPickup: 'Levantamento do Carro',
     overnightStay: 'Estadia Noturna',
+    roadTripGuide: 'GUIA DE ROAD TRIP',
+    rtgChecklist: 'Checklist na Retirada do Carro',
+    rtgNarrated: 'Roteiro Narrado',
+    rtgWhatToBring: 'O Que Levar / Preparar',
+    rtgDocuments: 'Documentos',
+    rtgComfort: 'Conforto',
+    rtgSafety: 'Segurança',
+    rtgTechnology: 'Tecnologia',
+    rtgClimate: 'Clima',
+    rtgDrivingTips: 'Dicas de Condução e Segurança',
+    rtgPlanB: 'Planos B',
+    rtgMaps: 'Mapas do Trajeto',
+    rtgSummary: 'Resumo Rápido',
+    rtgTip: 'Dica',
+    rtgAlert: 'Alerta',
+    rtgSuggestion: 'Sugestão',
   },
   EN: {
     title: 'Your Personalized Wine Tourism Itinerary',
@@ -89,6 +105,22 @@ const pdfTranslations: Record<PdfLang, Record<string, string>> = {
     evening: 'Evening',
     carPickup: 'Car Pickup',
     overnightStay: 'Overnight Stay',
+    roadTripGuide: 'ROAD TRIP GUIDE',
+    rtgChecklist: 'Car Pickup Checklist',
+    rtgNarrated: 'Narrated Route',
+    rtgWhatToBring: 'What to Bring / Prepare',
+    rtgDocuments: 'Documents',
+    rtgComfort: 'Comfort',
+    rtgSafety: 'Safety',
+    rtgTechnology: 'Technology',
+    rtgClimate: 'Climate',
+    rtgDrivingTips: 'Driving Tips & Safety',
+    rtgPlanB: 'Plan B',
+    rtgMaps: 'Route Maps',
+    rtgSummary: 'Quick Summary',
+    rtgTip: 'Tip',
+    rtgAlert: 'Alert',
+    rtgSuggestion: 'Suggestion',
   },
   ES: {
     title: 'Tu Itinerario Personalizado de Enoturismo',
@@ -115,6 +147,22 @@ const pdfTranslations: Record<PdfLang, Record<string, string>> = {
     evening: 'Noche',
     carPickup: 'Recogida del Coche',
     overnightStay: 'Estancia Nocturna',
+    roadTripGuide: 'GUÍA DE ROAD TRIP',
+    rtgChecklist: 'Checklist en la Recogida del Coche',
+    rtgNarrated: 'Ruta Narrada',
+    rtgWhatToBring: 'Qué Llevar / Preparar',
+    rtgDocuments: 'Documentos',
+    rtgComfort: 'Comodidad',
+    rtgSafety: 'Seguridad',
+    rtgTechnology: 'Tecnología',
+    rtgClimate: 'Clima',
+    rtgDrivingTips: 'Consejos de Conducción y Seguridad',
+    rtgPlanB: 'Planes B',
+    rtgMaps: 'Mapas de la Ruta',
+    rtgSummary: 'Resumen Rápido',
+    rtgTip: 'Consejo',
+    rtgAlert: 'Alerta',
+    rtgSuggestion: 'Sugerencia',
   },
   DE: {
     title: 'Ihre Personalisierte Weintourismus-Route',
@@ -141,6 +189,22 @@ const pdfTranslations: Record<PdfLang, Record<string, string>> = {
     evening: 'Abend',
     carPickup: 'Autoabholung',
     overnightStay: 'Übernachtung',
+    roadTripGuide: 'ROAD TRIP GUIDE',
+    rtgChecklist: 'Checkliste bei Fahrzeugübernahme',
+    rtgNarrated: 'Erzählte Route',
+    rtgWhatToBring: 'Was mitnehmen / vorbereiten',
+    rtgDocuments: 'Dokumente',
+    rtgComfort: 'Komfort',
+    rtgSafety: 'Sicherheit',
+    rtgTechnology: 'Technologie',
+    rtgClimate: 'Klima',
+    rtgDrivingTips: 'Fahrtipps & Sicherheit',
+    rtgPlanB: 'Plan B',
+    rtgMaps: 'Routenkarten',
+    rtgSummary: 'Kurzzusammenfassung',
+    rtgTip: 'Tipp',
+    rtgAlert: 'Hinweis',
+    rtgSuggestion: 'Vorschlag',
   },
 };
 
@@ -241,6 +305,216 @@ function renderActivityBlock(
   }
   
   doc.moveDown(1.5);
+}
+
+function ensureSpace(doc: PDFKit.PDFDocument, needed: number) {
+  if (doc.y + needed > doc.page.height - 60) {
+    doc.addPage();
+  }
+}
+
+function renderRoadTripGuide(doc: PDFKit.PDFDocument, guide: RoadTripGuide, pt: Record<string, string>) {
+  const pageWidth = doc.page.width - 100;
+
+  doc.addPage();
+  doc.fillColor(WINE_RED)
+    .fontSize(16)
+    .font(TITLE_FONT)
+    .text(pt.roadTripGuide || 'ROAD TRIP GUIDE', 50, 50);
+  doc.moveDown(1.5);
+
+  if (guide.carPickupChecklist.length > 0) {
+    doc.fillColor(WINE_RED)
+      .fontSize(12)
+      .font(TITLE_FONT)
+      .text(pt.rtgChecklist || 'Car Pickup Checklist');
+    doc.moveDown(0.5);
+
+    guide.carPickupChecklist.forEach((item, idx) => {
+      ensureSpace(doc, 20);
+      doc.fillColor(DARK_TEXT)
+        .fontSize(10)
+        .font(BODY_FONT)
+        .text(`${idx + 1}. ${item}`, 60, doc.y, { width: pageWidth - 20 });
+      doc.moveDown(0.3);
+    });
+    doc.moveDown(1);
+  }
+
+  if (guide.narratedBlocks.length > 0) {
+    ensureSpace(doc, 40);
+    doc.fillColor(WINE_RED)
+      .fontSize(12)
+      .font(TITLE_FONT)
+      .text(pt.rtgNarrated || 'Narrated Route');
+    doc.moveDown(0.5);
+
+    guide.narratedBlocks.forEach((block) => {
+      ensureSpace(doc, 60);
+
+      doc.fillColor(WINE_RED)
+        .fontSize(11)
+        .font(BOLD_FONT)
+        .text(block.title, 50, doc.y, { width: pageWidth });
+      doc.moveDown(0.3);
+
+      doc.fillColor(DARK_TEXT)
+        .fontSize(10)
+        .font(BODY_FONT)
+        .text(block.content, 60, doc.y, { width: pageWidth - 20 });
+      doc.moveDown(0.4);
+
+      if (block.tip) {
+        ensureSpace(doc, 25);
+        doc.fillColor('#2563EB')
+          .fontSize(9)
+          .font(BOLD_FONT)
+          .text(`${pt.rtgTip || 'Tip'}: `, 60, doc.y, { continued: true });
+        doc.font(BODY_FONT)
+          .fillColor(GRAY_TEXT)
+          .text(block.tip, { width: pageWidth - 30 });
+        doc.moveDown(0.2);
+      }
+
+      if (block.alert) {
+        ensureSpace(doc, 25);
+        doc.fillColor('#D97706')
+          .fontSize(9)
+          .font(BOLD_FONT)
+          .text(`${pt.rtgAlert || 'Alert'}: `, 60, doc.y, { continued: true });
+        doc.font(BODY_FONT)
+          .fillColor(GRAY_TEXT)
+          .text(block.alert, { width: pageWidth - 30 });
+        doc.moveDown(0.2);
+      }
+
+      if (block.suggestion) {
+        ensureSpace(doc, 25);
+        doc.fillColor('#059669')
+          .fontSize(9)
+          .font(BOLD_FONT)
+          .text(`${pt.rtgSuggestion || 'Suggestion'}: `, 60, doc.y, { continued: true });
+        doc.font(BODY_FONT)
+          .fillColor(GRAY_TEXT)
+          .text(block.suggestion, { width: pageWidth - 30 });
+        doc.moveDown(0.2);
+      }
+
+      doc.moveDown(0.8);
+    });
+  }
+
+  const categories = [
+    { key: 'documents', label: pt.rtgDocuments || 'Documents', items: guide.whatToBring.documents },
+    { key: 'comfort', label: pt.rtgComfort || 'Comfort', items: guide.whatToBring.comfort },
+    { key: 'safety', label: pt.rtgSafety || 'Safety', items: guide.whatToBring.safety },
+    { key: 'technology', label: pt.rtgTechnology || 'Technology', items: guide.whatToBring.technology },
+    { key: 'climate', label: pt.rtgClimate || 'Climate', items: guide.whatToBring.climate },
+  ];
+
+  const hasItems = categories.some(c => c.items.length > 0);
+  if (hasItems) {
+    ensureSpace(doc, 40);
+    doc.fillColor(WINE_RED)
+      .fontSize(12)
+      .font(TITLE_FONT)
+      .text(pt.rtgWhatToBring || 'What to Bring / Prepare');
+    doc.moveDown(0.5);
+
+    categories.forEach(({ label, items }) => {
+      if (items.length === 0) return;
+      ensureSpace(doc, 30);
+      doc.fillColor(WINE_RED)
+        .fontSize(10)
+        .font(BOLD_FONT)
+        .text(label, 60);
+      doc.moveDown(0.2);
+      items.forEach(item => {
+        ensureSpace(doc, 15);
+        doc.fillColor(DARK_TEXT)
+          .fontSize(9)
+          .font(BODY_FONT)
+          .text(`• ${item}`, 70, doc.y, { width: pageWidth - 30 });
+        doc.moveDown(0.2);
+      });
+      doc.moveDown(0.3);
+    });
+    doc.moveDown(0.5);
+  }
+
+  if (guide.drivingTips.length > 0) {
+    ensureSpace(doc, 40);
+    doc.fillColor(WINE_RED)
+      .fontSize(12)
+      .font(TITLE_FONT)
+      .text(pt.rtgDrivingTips || 'Driving Tips & Safety');
+    doc.moveDown(0.5);
+
+    guide.drivingTips.forEach((tip, idx) => {
+      ensureSpace(doc, 20);
+      doc.fillColor(DARK_TEXT)
+        .fontSize(10)
+        .font(BODY_FONT)
+        .text(`${idx + 1}. ${tip}`, 60, doc.y, { width: pageWidth - 20 });
+      doc.moveDown(0.3);
+    });
+    doc.moveDown(0.5);
+  }
+
+  if (guide.planB.length > 0) {
+    ensureSpace(doc, 40);
+    doc.fillColor(WINE_RED)
+      .fontSize(12)
+      .font(TITLE_FONT)
+      .text(pt.rtgPlanB || 'Plan B');
+    doc.moveDown(0.5);
+
+    guide.planB.forEach(plan => {
+      ensureSpace(doc, 35);
+      doc.fillColor(DARK_TEXT)
+        .fontSize(10)
+        .font(BOLD_FONT)
+        .text(plan.scenario, 60, doc.y, { width: pageWidth - 20 });
+      doc.moveDown(0.2);
+      doc.fillColor(GRAY_TEXT)
+        .font(BODY_FONT)
+        .text(plan.solution, 60, doc.y, { width: pageWidth - 20 });
+      doc.moveDown(0.5);
+    });
+  }
+
+  if (guide.googleMapsLinks.length > 0) {
+    ensureSpace(doc, 40);
+    doc.fillColor(WINE_RED)
+      .fontSize(12)
+      .font(TITLE_FONT)
+      .text(pt.rtgMaps || 'Route Maps');
+    doc.moveDown(0.5);
+
+    guide.googleMapsLinks.forEach(link => {
+      ensureSpace(doc, 25);
+      doc.fillColor(WINE_RED)
+        .fontSize(10)
+        .font(BOLD_FONT)
+        .text(link.label, 60, doc.y, { link: link.url, underline: true });
+      doc.moveDown(0.3);
+    });
+    doc.moveDown(0.5);
+  }
+
+  if (guide.summary) {
+    ensureSpace(doc, 60);
+    doc.fillColor(WINE_RED)
+      .fontSize(12)
+      .font(TITLE_FONT)
+      .text(pt.rtgSummary || 'Quick Summary');
+    doc.moveDown(0.5);
+    doc.fillColor(DARK_TEXT)
+      .fontSize(10)
+      .font(BODY_FONT)
+      .text(guide.summary, 50, doc.y, { width: pageWidth });
+    doc.moveDown(1);
+  }
 }
 
 export async function generateItineraryPDF(itinerary: Itinerary, sessionId: string, lang: PdfLang = 'EN'): Promise<string> {
@@ -485,6 +759,10 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
         doc.text(`${index + 1}. ${tip}`, { indent: 10 });
         doc.moveDown(0.3);
       });
+    }
+
+    if (itinerary.roadTripGuide) {
+      renderRoadTripGuide(doc, itinerary.roadTripGuide, pt);
     }
 
     doc.moveDown(3);
