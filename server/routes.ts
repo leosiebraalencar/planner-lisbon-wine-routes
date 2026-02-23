@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import Stripe from "stripe";
 import { itinerarySchema, insertProRequestSchema, insertQuizSubmissionSchema } from "@shared/schema";
 import { generateItineraryPDF } from "./pdf";
+import { generateRoadTripGuide } from "./ai";
 import path from "path";
 import fs from "fs";
 
@@ -344,6 +345,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error getting itinerary count:', error);
       res.json({ count: 50 });
+    }
+  });
+
+  app.post("/api/generate-road-trip-guide", async (req, res) => {
+    try {
+      const itinerary = itinerarySchema.parse(req.body);
+      const lang = (req.query.lang as string || 'EN').toUpperCase();
+      const validLang = ['PT', 'EN', 'ES', 'DE'].includes(lang) ? lang : 'EN';
+
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(503).json({ error: 'AI service not configured' });
+      }
+
+      const guide = await generateRoadTripGuide(itinerary, validLang);
+      res.json(guide);
+    } catch (error: any) {
+      console.error('Error generating road trip guide:', error);
+      if (error?.status === 429) {
+        return res.status(429).json({ error: 'AI service is busy. Please try again in a moment.' });
+      }
+      res.status(500).json({ error: 'Failed to generate road trip guide' });
     }
   });
 

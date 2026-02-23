@@ -14,16 +14,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Heart, X, Mail } from "lucide-react";
 import { STRIPE_DONATION_URL } from "@shared/affiliateLinks";
-import type { Itinerary } from "@shared/schema";
+import type { Itinerary, RoadTripGuide } from "@shared/schema";
 
 interface ItineraryPageProps {
   itinerary: Itinerary;
+  setItinerary: (itinerary: Itinerary) => void;
   submissionId?: string | null;
 }
 
 const DONATION_URL = import.meta.env.VITE_STRIPE_DONATION_URL || STRIPE_DONATION_URL;
 
-export default function ItineraryPage({ itinerary, submissionId }: ItineraryPageProps) {
+export default function ItineraryPage({ itinerary, setItinerary, submissionId }: ItineraryPageProps) {
   const { toast } = useToast();
   const { t, language } = useLanguage();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -33,6 +34,14 @@ export default function ItineraryPage({ itinerary, submissionId }: ItineraryPage
   const [marketingConsent, setMarketingConsent] = useState(false);
 
   const customerName = itinerary.quizData.customerName || '';
+
+  const handleGuideGenerated = (guide: RoadTripGuide) => {
+    const updated = { ...itinerary, roadTripGuide: guide };
+    setItinerary(updated);
+    try {
+      sessionStorage.setItem('generatedItinerary', JSON.stringify(updated));
+    } catch {}
+  };
 
   const doDownload = async () => {
     setIsProcessing(true);
@@ -112,6 +121,7 @@ export default function ItineraryPage({ itinerary, submissionId }: ItineraryPage
           onDownload={handleDownloadClick}
           isDownloading={isProcessing}
           customerName={customerName}
+          onGuideGenerated={handleGuideGenerated}
         />
       </div>
       <Footer />

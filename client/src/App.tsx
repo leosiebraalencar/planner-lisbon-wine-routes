@@ -29,7 +29,7 @@ import { ALL_RESTAURANTS, type RestaurantData } from "@shared/restaurantData";
 import { getHotelsByBudgetAndRegion, type HotelData } from "@shared/hotelData";
 import { haversineDistance, extractCoordsFromGoogleMapsUrl } from "@shared/geoUtils";
 
-function ItineraryPageWrapper({ itinerary, submissionId }: { itinerary: Itinerary | null; submissionId: string | null }) {
+function ItineraryPageWrapper({ itinerary, setItinerary, submissionId }: { itinerary: Itinerary | null; setItinerary: (it: Itinerary) => void; submissionId: string | null }) {
   const [, setLocation] = useLocation();
 
   useEffect(() => {
@@ -42,7 +42,7 @@ function ItineraryPageWrapper({ itinerary, submissionId }: { itinerary: Itinerar
     return null;
   }
 
-  return <ItineraryPage itinerary={itinerary} submissionId={submissionId} />;
+  return <ItineraryPage itinerary={itinerary} setItinerary={setItinerary} submissionId={submissionId} />;
 }
 
 const LANGUAGE_MAP: Record<string, string[]> = {
@@ -622,7 +622,7 @@ function App() {
                 <QuizPage onComplete={handleQuizComplete} />
               </Route>
               <Route path="/itinerary">
-                <ItineraryPageWrapper itinerary={itinerary} submissionId={submissionId} />
+                <ItineraryPageWrapper itinerary={itinerary} setItinerary={setItinerary} submissionId={submissionId} />
               </Route>
               <Route path="/success">
                 <SuccessPage />

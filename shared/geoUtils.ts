@@ -16,3 +16,34 @@ export function extractCoordsFromGoogleMapsUrl(url: string): { lat: number; lng:
   }
   return null;
 }
+
+export function buildGoogleMapsRouteUrl(
+  origin: string,
+  destination: string,
+  waypoints?: string[]
+): string {
+  const base = 'https://www.google.com/maps/dir/?api=1';
+  const params = new URLSearchParams();
+  params.set('api', '1');
+  params.set('origin', origin);
+  params.set('destination', destination);
+  params.set('travelmode', 'driving');
+  if (waypoints && waypoints.length > 0) {
+    params.set('waypoints', waypoints.join('|'));
+  }
+  return `${base}&${params.toString().replace('api=1&', '')}`;
+}
+
+export function buildDayRouteUrl(
+  stops: { name: string; address?: string }[]
+): string | null {
+  if (stops.length < 2) return null;
+  const addresses = stops
+    .map(s => s.address || s.name)
+    .filter(Boolean);
+  if (addresses.length < 2) return null;
+  const origin = addresses[0];
+  const destination = addresses[addresses.length - 1];
+  const waypoints = addresses.slice(1, -1);
+  return buildGoogleMapsRouteUrl(origin, destination, waypoints);
+}

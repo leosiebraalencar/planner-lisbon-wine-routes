@@ -111,6 +111,43 @@ export const activitySchema = z.object({
   theForkPromoCode: z.string().optional(),
 });
 
+export const narratedBlockSchema = z.object({
+  title: z.string(),
+  content: z.string(),
+  tip: z.string().optional(),
+  alert: z.string().optional(),
+  suggestion: z.string().optional(),
+});
+
+export const planBSchema = z.object({
+  scenario: z.string(),
+  solution: z.string(),
+});
+
+export const googleMapsLinkSchema = z.object({
+  dayNumber: z.number(),
+  label: z.string(),
+  url: z.string(),
+});
+
+export const roadTripGuideSchema = z.object({
+  carPickupChecklist: z.array(z.string()),
+  narratedBlocks: z.array(narratedBlockSchema),
+  whatToBring: z.object({
+    documents: z.array(z.string()),
+    comfort: z.array(z.string()),
+    safety: z.array(z.string()),
+    technology: z.array(z.string()),
+    climate: z.array(z.string()),
+  }),
+  drivingTips: z.array(z.string()),
+  planB: z.array(planBSchema),
+  googleMapsLinks: z.array(googleMapsLinkSchema),
+  summary: z.string(),
+});
+
+export type RoadTripGuide = z.infer<typeof roadTripGuideSchema>;
+
 export const itinerarySchema = z.object({
   id: z.string(),
   quizData: quizResponseSchema,
@@ -159,6 +196,7 @@ export const itinerarySchema = z.object({
       affiliateUrl: z.string(),
     }).optional(),
   }),
+  roadTripGuide: roadTripGuideSchema.optional(),
 });
 
 export type Activity = z.infer<typeof activitySchema>;

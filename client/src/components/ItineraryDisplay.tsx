@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, Clock, Calendar, Download, DollarSign, ExternalLink, Car, Building2, Sparkles, UtensilsCrossed, Hotel, Compass, Mail } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import type { Itinerary, Activity } from "@shared/schema";
+import type { Itinerary, Activity, RoadTripGuide } from "@shared/schema";
+import RoadTripGuideSection from "./RoadTripGuide";
 
 function ActivityCard({ activity, periodLabel, t }: { activity: Activity; periodLabel: string; t: (key: string) => string }) {
   return (
@@ -55,9 +56,10 @@ interface ItineraryDisplayProps {
   onDownload: () => void;
   isDownloading?: boolean;
   customerName?: string;
+  onGuideGenerated?: (guide: RoadTripGuide) => void;
 }
 
-export default function ItineraryDisplay({ itinerary, onDownload, isDownloading = false, customerName }: ItineraryDisplayProps) {
+export default function ItineraryDisplay({ itinerary, onDownload, isDownloading = false, customerName, onGuideGenerated }: ItineraryDisplayProps) {
   const { t } = useLanguage();
   
   const greeting = customerName ? t('itinerary.greeting', { name: customerName }) : '';
@@ -347,6 +349,13 @@ export default function ItineraryDisplay({ itinerary, onDownload, isDownloading 
           </Accordion>
         </CardContent>
       </Card>
+
+      {onGuideGenerated && (
+        <RoadTripGuideSection
+          itinerary={itinerary}
+          onGuideGenerated={onGuideGenerated}
+        />
+      )}
 
       {itinerary.recommendations.restaurants && itinerary.recommendations.restaurants.length > 0 && (
         <Card className="border-border mb-8">
