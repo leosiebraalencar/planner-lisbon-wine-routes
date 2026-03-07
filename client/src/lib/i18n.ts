@@ -59,7 +59,7 @@ export const translations = {
         maps: 'Mapas e informações de contacto',
         support: 'Apoie o nosso trabalho de curadoria',
       },
-      cta: 'Quero apoiar o projeto',
+      cta: 'Comprar Versão Pro (€29)',
     },
     footer: {
       description: 'Descobrindo as melhores experiências de enoturismo em Lisboa',
@@ -493,7 +493,7 @@ export const translations = {
         maps: 'Maps and contact information',
         support: 'Support our curation work',
       },
-      cta: 'I want to support the project',
+      cta: 'Buy Pro Version (€29)',
     },
     footer: {
       description: 'Discovering the best wine tourism experiences in Lisbon',
@@ -927,7 +927,7 @@ export const translations = {
         maps: 'Mapas e información de contacto',
         support: 'Apoya nuestro trabajo de curación',
       },
-      cta: 'Quiero apoyar el proyecto',
+      cta: 'Comprar Versión Pro (€29)',
     },
     footer: {
       description: 'Descubriendo las mejores experiencias de enoturismo en Lisboa',
@@ -1361,7 +1361,7 @@ export const translations = {
         maps: 'Karten und Kontaktinformationen',
         support: 'Unterstützen Sie unsere Kurationsarbeit',
       },
-      cta: 'Ich möchte das Projekt unterstützen',
+      cta: 'Pro-Version Kaufen (€29)',
     },
     footer: {
       description: 'Entdecken Sie die besten Weintourismus-Erlebnisse in Lissabon',
