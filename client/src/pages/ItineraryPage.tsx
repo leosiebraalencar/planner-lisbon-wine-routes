@@ -60,7 +60,7 @@ export default function ItineraryPage({ itinerary, setItinerary, submissionId }:
       window.URL.revokeObjectURL(url);
 
       toast({
-        title: t('success.title'),
+        title: t('itinerary.downloadedTitle'),
         description: t('itinerary.downloadSuccess'),
       });
 

@@ -150,7 +150,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     const existingPrices = await stripe.prices.list({
-      lookup_keys: ['itinerary_pwyw'],
+      lookup_keys: ['itinerary_pro_29eur'],
       limit: 1,
     });
 
@@ -160,19 +160,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     const product = await stripe.products.create({
-      name: 'Lisbon Wine Routes - Personalized Itinerary',
-      description: 'Personalized wine tourism itinerary for Lisbon',
+      name: 'Lisbon Wine Routes - Pro Itinerary',
+      description: 'Personalized wine tourism Pro itinerary for the Lisbon region',
     });
 
     cachedPrice = await stripe.prices.create({
       product: product.id,
-      currency: 'usd',
-      custom_unit_amount: {
-        enabled: true,
-        preset: 500,
-        minimum: 100,
-      },
-      lookup_key: 'itinerary_pwyw',
+      currency: 'eur',
+      unit_amount: 2900,
+      lookup_key: 'itinerary_pro_29eur',
     });
 
     return cachedPrice;

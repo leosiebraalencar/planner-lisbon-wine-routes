@@ -253,6 +253,7 @@ export const translations = {
       downloadInfo: 'Faça o download do guia completo em PDF com todas as informações, mapas e contactos.',
       downloadButton: 'Descarregar Roteiro Completo (PDF)',
       downloadSuccess: 'O seu roteiro foi descarregado com sucesso!',
+      downloadedTitle: 'Roteiro Descarregado!',
       downloadError: 'Erro',
       downloadErrorDescription: 'Falha ao descarregar o PDF. Tente novamente.',
       maybeLater: 'Talvez mais tarde',
@@ -358,7 +359,6 @@ export const translations = {
       },
     },
     success: {
-      title: 'Pagamento Confirmado!',
       message: 'Obrigado por apoiar o nosso trabalho! O seu roteiro personalizado está pronto para download.',
       downloadButton: 'Descarregar Roteiro (PDF)',
       downloading: 'A descarregar...',
@@ -687,6 +687,7 @@ export const translations = {
       downloadInfo: 'Download the complete PDF guide with all information, maps, and contacts.',
       downloadButton: 'Download Complete Itinerary (PDF)',
       downloadSuccess: 'Your itinerary was downloaded successfully!',
+      downloadedTitle: 'Itinerary Downloaded!',
       downloadError: 'Error',
       downloadErrorDescription: 'Failed to download PDF. Please try again.',
       maybeLater: 'Maybe later',
@@ -792,7 +793,6 @@ export const translations = {
       },
     },
     success: {
-      title: 'Payment Confirmed!',
       message: 'Thank you for supporting our work! Your personalized itinerary is ready to download.',
       downloadButton: 'Download Itinerary (PDF)',
       downloading: 'Downloading...',
@@ -1121,6 +1121,7 @@ export const translations = {
       downloadInfo: 'Descarga la guía completa en PDF con toda la información, mapas y contactos.',
       downloadButton: 'Descargar Itinerario Completo (PDF)',
       downloadSuccess: '¡Tu itinerario se descargó con éxito!',
+      downloadedTitle: '¡Itinerario Descargado!',
       downloadError: 'Error',
       downloadErrorDescription: 'Error al descargar el PDF. Inténtalo de nuevo.',
       maybeLater: 'Quizás más tarde',
@@ -1226,7 +1227,6 @@ export const translations = {
       },
     },
     success: {
-      title: '¡Pago Confirmado!',
       message: '¡Gracias por apoyar nuestro trabajo! Tu itinerario personalizado está listo para descargar.',
       downloadButton: 'Descargar Itinerario (PDF)',
       downloading: 'Descargando...',
@@ -1555,6 +1555,7 @@ export const translations = {
       downloadInfo: 'Laden Sie den vollständigen PDF-Führer mit allen Informationen, Karten und Kontakten herunter.',
       downloadButton: 'Vollständige Route Herunterladen (PDF)',
       downloadSuccess: 'Ihre Route wurde erfolgreich heruntergeladen!',
+      downloadedTitle: 'Route Heruntergeladen!',
       downloadError: 'Fehler',
       downloadErrorDescription: 'PDF-Download fehlgeschlagen. Bitte versuchen Sie es erneut.',
       maybeLater: 'Vielleicht später',
@@ -1660,7 +1661,6 @@ export const translations = {
       },
     },
     success: {
-      title: 'Zahlung Bestätigt!',
       message: 'Vielen Dank für Ihre Unterstützung! Ihre personalisierte Reiseroute steht zum Download bereit.',
       downloadButton: 'Reiseroute Herunterladen (PDF)',
       downloading: 'Wird heruntergeladen...',
