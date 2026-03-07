@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, Calendar, Download, DollarSign, ExternalLink, Car, Building2, Sparkles, UtensilsCrossed, Hotel, Compass, Mail } from "lucide-react";
+import { MapPin, Clock, Calendar, Download, DollarSign, ExternalLink, Car, Building2, Sparkles, UtensilsCrossed, Hotel, Compass, CreditCard, Navigation, Mail } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { Itinerary, Activity, RoadTripGuide } from "@shared/schema";
 import RoadTripGuideSection from "./RoadTripGuide";
@@ -57,9 +57,11 @@ interface ItineraryDisplayProps {
   isDownloading?: boolean;
   customerName?: string;
   onGuideGenerated?: (guide: RoadTripGuide) => void;
+  onCheckout?: () => void;
+  isCheckingOut?: boolean;
 }
 
-export default function ItineraryDisplay({ itinerary, onDownload, isDownloading = false, customerName, onGuideGenerated }: ItineraryDisplayProps) {
+export default function ItineraryDisplay({ itinerary, onDownload, isDownloading = false, customerName, onGuideGenerated, onCheckout, isCheckingOut = false }: ItineraryDisplayProps) {
   const { t } = useLanguage();
   
   const greeting = customerName ? t('itinerary.greeting', { name: customerName }) : '';
@@ -351,10 +353,23 @@ export default function ItineraryDisplay({ itinerary, onDownload, isDownloading 
       </Card>
 
       {onGuideGenerated && (
-        <RoadTripGuideSection
-          itinerary={itinerary}
-          onGuideGenerated={onGuideGenerated}
-        />
+        <>
+          <Card className="border-primary/10 bg-primary/5 mb-4">
+            <CardContent className="p-6 flex flex-col sm:flex-row items-center gap-4">
+              <div className="flex-1 text-center sm:text-left">
+                <div className="flex items-center justify-center sm:justify-start gap-2 mb-2">
+                  <Navigation className="w-5 h-5 text-primary flex-shrink-0" />
+                  <h4 className="font-semibold text-base">{t('itinerary.roadTripGuide.stepByStepButton')}</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">{t('itinerary.roadTripGuide.stepByStepCta')}</p>
+              </div>
+            </CardContent>
+          </Card>
+          <RoadTripGuideSection
+            itinerary={itinerary}
+            onGuideGenerated={onGuideGenerated}
+          />
+        </>
       )}
 
       {itinerary.recommendations.restaurants && itinerary.recommendations.restaurants.length > 0 && (
@@ -485,14 +500,26 @@ export default function ItineraryDisplay({ itinerary, onDownload, isDownloading 
           <p className="text-muted-foreground text-sm mb-4">
             {t('itinerary.proUpsellText')}
           </p>
-          <a href="/pro">
-            <Button 
-              variant="default"
-              data-testid="button-pro-upsell"
-            >
-              {t('itinerary.proUpsellButton')}
-            </Button>
-          </a>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center flex-wrap">
+            {onCheckout && (
+              <Button
+                onClick={onCheckout}
+                disabled={isCheckingOut}
+                data-testid="button-checkout"
+              >
+                <CreditCard className="w-4 h-4 mr-2" />
+                {isCheckingOut ? '...' : t('itinerary.checkoutButton')}
+              </Button>
+            )}
+            <a href="/pro">
+              <Button 
+                variant="outline"
+                data-testid="button-pro-upsell"
+              >
+                {t('itinerary.proUpsellButton')}
+              </Button>
+            </a>
+          </div>
         </CardContent>
       </Card>
     </div>

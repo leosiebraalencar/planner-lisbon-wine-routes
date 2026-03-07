@@ -573,40 +573,16 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
 
     const infoStartY = doc.y;
     const columnWidth = pageWidth / 2 - 20;
+    const leftColX = 50;
+    const rightColX = doc.page.width / 2 + 20;
+    const rightLabelX = rightColX;
+    const rightValueX = rightColX + 115;
+    const rightValueWidth = columnWidth - 115;
 
-    doc.fillColor(DARK_TEXT)
-      .fontSize(11)
-      .font(BOLD_FONT)
-      .text(`${pt.duration} `, 50, infoStartY);
-    doc.font(BODY_FONT)
-      .text(`${itinerary.days.length} ${itinerary.days.length > 1 ? pt.days : pt.day}`, 120, infoStartY);
-    
-    doc.font(BOLD_FONT)
-      .text(`${pt.budget} `, 50);
-    const budgetY = doc.y - 13;
-    doc.font(BODY_FONT)
-      .text(itinerary.quizData.budget, 120, budgetY);
-    
-    doc.font(BOLD_FONT)
-      .text(`${pt.travelType} `, 50);
-    const travelY = doc.y - 13;
-    doc.font(BODY_FONT)
-      .text(itinerary.quizData.travelers, 130, travelY);
-    
-    if (itinerary.quizData.startDate && itinerary.quizData.endDate) {
-      doc.font(BOLD_FONT)
-        .text(`${pt.dates} `, 50);
-      const datesY = doc.y - 13;
-      doc.font(BODY_FONT)
-        .text(`${itinerary.quizData.startDate} ${pt.datesTo} ${itinerary.quizData.endDate}`, 100, datesY);
-    }
-
-    const highlightsX = doc.page.width / 2 + 20;
-    
     doc.fillColor(WINE_RED)
       .fontSize(12)
       .font(TITLE_FONT)
-      .text(pt.highlights, highlightsX, infoStartY, { width: columnWidth });
+      .text(pt.highlights, leftColX, infoStartY, { width: columnWidth });
     
     doc.moveDown(0.5);
     
@@ -616,9 +592,36 @@ export async function generateItineraryPDF(itinerary: Itinerary, sessionId: stri
     
     const highlights = itinerary.highlights.slice(0, 4);
     highlights.forEach((highlight, index) => {
-      doc.text(`${index + 1}. ${highlight}`, highlightsX, doc.y, { width: columnWidth });
+      doc.text(`${index + 1}. ${highlight}`, leftColX, doc.y, { width: columnWidth });
       doc.moveDown(0.3);
     });
+
+    doc.fillColor(DARK_TEXT)
+      .fontSize(11)
+      .font(BOLD_FONT)
+      .text(pt.duration, rightLabelX, infoStartY, { width: 110, lineBreak: false });
+    doc.font(BODY_FONT)
+      .text(`${itinerary.days.length} ${itinerary.days.length > 1 ? pt.days : pt.day}`, rightValueX, infoStartY, { width: rightValueWidth });
+    
+    const budgetY = infoStartY + 18;
+    doc.font(BOLD_FONT)
+      .text(pt.budget, rightLabelX, budgetY, { width: 110, lineBreak: false });
+    doc.font(BODY_FONT)
+      .text(itinerary.quizData.budget, rightValueX, budgetY, { width: rightValueWidth });
+    
+    const travelY = infoStartY + 36;
+    doc.font(BOLD_FONT)
+      .text(pt.travelType, rightLabelX, travelY, { width: 110, lineBreak: false });
+    doc.font(BODY_FONT)
+      .text(itinerary.quizData.travelers, rightValueX, travelY, { width: rightValueWidth });
+    
+    if (itinerary.quizData.startDate && itinerary.quizData.endDate) {
+      const datesY = infoStartY + 54;
+      doc.font(BOLD_FONT)
+        .text(pt.dates, rightLabelX, datesY, { width: 110, lineBreak: false });
+      doc.font(BODY_FONT)
+        .text(`${itinerary.quizData.startDate} ${pt.datesTo} ${itinerary.quizData.endDate}`, rightValueX, datesY, { width: rightValueWidth });
+    }
 
     itinerary.days.forEach((day) => {
       doc.addPage();

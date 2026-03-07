@@ -31,6 +31,8 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
   const today = new Date().toISOString().split('T')[0];
   const [formData, setFormData] = useState<Partial<QuizResponse>>({
     customerName: '',
+    customerEmail: '',
+    marketingConsent: false,
     duration: 3,
     startDate: today,
     budget: 'moderado',
@@ -101,8 +103,10 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
         return formData.hasAccommodation !== undefined;
       case 13:
         return formData.hasAccommodation || formData.accommodationPreference !== undefined;
-      case 14:
-        return true;
+      case 14: {
+        const email = formData.customerEmail || '';
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      }
       default:
         return false;
     }
@@ -816,17 +820,48 @@ export default function QuizPage({ onComplete }: QuizPageProps) {
             canGoNext={canGoNext()}
             canGoBack={currentStep > 1}
           >
-            <div className="space-y-4">
+            <div className="space-y-5">
               <p className="text-sm text-muted-foreground">
                 {t('quiz.q11.info')}
               </p>
-              <Textarea
-                placeholder={t('quiz.q11.placeholder')}
-                className="min-h-[120px]"
-                value={formData.specialRequests || ''}
-                onChange={(e) => setFormData({ ...formData, specialRequests: e.target.value })}
-                data-testid="textarea-special-requests"
-              />
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="customer-email">
+                  {t('quiz.q11.emailLabel')} <span className="text-destructive">*</span>
+                </label>
+                <input
+                  id="customer-email"
+                  type="email"
+                  className="w-full px-4 py-3 rounded-lg border border-input bg-background"
+                  placeholder={t('quiz.q11.emailPlaceholder')}
+                  value={formData.customerEmail || ''}
+                  onChange={(e) => setFormData({ ...formData, customerEmail: e.target.value })}
+                  data-testid="input-customer-email"
+                />
+              </div>
+              <div className="flex items-start space-x-3">
+                <Checkbox
+                  id="quiz-marketing-consent"
+                  checked={formData.marketingConsent || false}
+                  onCheckedChange={(checked) => setFormData({ ...formData, marketingConsent: checked === true })}
+                  data-testid="checkbox-quiz-marketing-consent"
+                />
+                <label htmlFor="quiz-marketing-consent" className="text-sm text-muted-foreground cursor-pointer leading-tight">
+                  {t('quiz.q11.consentText')}
+                </label>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="special-requests">
+                  {t('quiz.q11.specialLabel')}
+                </label>
+                <Textarea
+                  id="special-requests"
+                  placeholder={t('quiz.q11.placeholder')}
+                  className="min-h-[100px]"
+                  value={formData.specialRequests || ''}
+                  onChange={(e) => setFormData({ ...formData, specialRequests: e.target.value })}
+                  data-testid="textarea-special-requests"
+                />
+              </div>
             </div>
           </QuizQuestion>
         )}

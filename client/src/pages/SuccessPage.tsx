@@ -98,9 +98,6 @@ export default function SuccessPage() {
               <div className="flex justify-center mb-4">
                 <CheckCircle className="w-16 h-16 text-primary" />
               </div>
-              <CardTitle className="font-serif text-3xl">
-                {t('success.title')}
-              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <p className="text-center text-muted-foreground">

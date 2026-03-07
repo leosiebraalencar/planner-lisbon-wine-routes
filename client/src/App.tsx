@@ -598,6 +598,8 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           customerName: data.customerName || 'Anonymous',
+          customerEmail: data.customerEmail || null,
+          marketingConsent: data.marketingConsent ? 'true' : 'false',
           quizData: data,
           language: currentLang,
         }),

@@ -75,6 +75,8 @@ export type QuizSubmission = typeof quizSubmissions.$inferSelect;
 
 export const quizResponseSchema = z.object({
   customerName: z.string().optional(),
+  customerEmail: z.string().email().optional(),
+  marketingConsent: z.boolean().optional(),
   duration: z.number().min(1).max(10),
   startDate: z.string().optional(),
   endDate: z.string().optional(),

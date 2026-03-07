@@ -8,11 +8,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Heart, X, Mail } from "lucide-react";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Heart, X } from "lucide-react";
 import { STRIPE_DONATION_URL } from "@shared/affiliateLinks";
 import type { Itinerary, RoadTripGuide } from "@shared/schema";
 
@@ -28,10 +25,8 @@ export default function ItineraryPage({ itinerary, setItinerary, submissionId }:
   const { toast } = useToast();
   const { t, language } = useLanguage();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [showDonationModal, setShowDonationModal] = useState(false);
-  const [showEmailModal, setShowEmailModal] = useState(false);
-  const [emailInput, setEmailInput] = useState("");
-  const [marketingConsent, setMarketingConsent] = useState(false);
 
   const customerName = itinerary.quizData.customerName || '';
 
@@ -41,6 +36,7 @@ export default function ItineraryPage({ itinerary, setItinerary, submissionId }:
     try {
       sessionStorage.setItem('generatedItinerary', JSON.stringify(updated));
     } catch {}
+    setShowDonationModal(true);
   };
 
   const doDownload = async () => {
@@ -81,27 +77,27 @@ export default function ItineraryPage({ itinerary, setItinerary, submissionId }:
     }
   };
 
-  const handleDownloadClick = () => {
-    setShowEmailModal(true);
-  };
-
-  const handleEmailSubmit = async () => {
-    if (!emailInput.trim()) return;
-
-    if (submissionId) {
-      try {
-        await fetch(`/api/quiz-submission/${submissionId}/email`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: emailInput.trim(), consent: marketingConsent }),
-        });
-      } catch (err) {
-        console.error('Failed to save email:', err);
+  const handleCheckout = async () => {
+    setIsCheckingOut(true);
+    try {
+      const res = await apiRequest('POST', '/api/create-checkout-session', itinerary);
+      if (!res.ok) {
+        throw new Error('Failed to create checkout session');
       }
+      const { url } = await res.json();
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast({
+        title: t('itinerary.downloadError'),
+        description: t('itinerary.downloadErrorDescription'),
+        variant: "destructive",
+      });
+    } finally {
+      setIsCheckingOut(false);
     }
-
-    setShowEmailModal(false);
-    doDownload();
   };
 
   const handleDonation = () => {
@@ -118,72 +114,15 @@ export default function ItineraryPage({ itinerary, setItinerary, submissionId }:
       <div className="py-12 px-4">
         <ItineraryDisplay
           itinerary={itinerary}
-          onDownload={handleDownloadClick}
+          onDownload={doDownload}
           isDownloading={isProcessing}
           customerName={customerName}
           onGuideGenerated={handleGuideGenerated}
+          onCheckout={handleCheckout}
+          isCheckingOut={isCheckingOut}
         />
       </div>
       <Footer />
-
-      {showEmailModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-          <Card className="w-[90vw] max-w-md animate-in fade-in zoom-in relative">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-[10px] top-[10px] z-10"
-              onClick={() => setShowEmailModal(false)}
-              data-testid="button-close-email-modal"
-            >
-              <X className="w-5 h-5" />
-            </Button>
-            <CardContent className="p-8">
-              <div className="text-center mb-6">
-                <Mail className="w-10 h-10 text-primary mx-auto mb-4" />
-                <CardTitle className="text-xl md:text-2xl font-serif mb-2">
-                  {t('itinerary.emailTitle')}
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  {t('itinerary.emailSubtitle')}
-                </p>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="download-email">Email</Label>
-                  <Input
-                    id="download-email"
-                    type="email"
-                    value={emailInput}
-                    onChange={(e) => setEmailInput(e.target.value)}
-                    placeholder={t('itinerary.emailPlaceholder')}
-                    data-testid="input-download-email"
-                  />
-                </div>
-                <div className="flex items-start space-x-3">
-                  <Checkbox
-                    id="marketing-consent"
-                    checked={marketingConsent}
-                    onCheckedChange={(checked) => setMarketingConsent(checked === true)}
-                    data-testid="checkbox-marketing-consent"
-                  />
-                  <Label htmlFor="marketing-consent" className="text-sm text-muted-foreground cursor-pointer leading-tight">
-                    {t('itinerary.consentText')}
-                  </Label>
-                </div>
-                <Button
-                  className="w-full"
-                  onClick={handleEmailSubmit}
-                  disabled={!emailInput.trim()}
-                  data-testid="button-submit-email-download"
-                >
-                  {t('itinerary.downloadButton')}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
 
       {showDonationModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
