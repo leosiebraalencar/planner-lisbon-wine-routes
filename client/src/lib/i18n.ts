@@ -9,7 +9,7 @@ export const translations = {
       title: 'Descubra o Seu Roteiro Perfeito de Enoturismo em Lisboa',
       subtitle: 'Responda algumas perguntas e receba um guia personalizado com as melhores vinícolas, degustações e experiências da região de Lisboa',
       cta: 'Criar Meu Roteiro Personalizado',
-      created: 'Mais de {{count}} roteiros criados',
+      created: '{{count}} roteiros criados',
     },
     valueProposition: {
       personalized: {
@@ -443,7 +443,7 @@ export const translations = {
       title: 'Discover Your Perfect Wine Tourism Itinerary in Lisbon',
       subtitle: 'Answer a few questions and receive a personalized guide with the best wineries, tastings, and experiences in the Lisbon region',
       cta: 'Create My Personalized Itinerary',
-      created: 'Over {{count}} itineraries created',
+      created: '{{count}} itineraries created',
     },
     valueProposition: {
       personalized: {
@@ -877,7 +877,7 @@ export const translations = {
       title: 'Descubre Tu Itinerario Perfecto de Enoturismo en Lisboa',
       subtitle: 'Responde algunas preguntas y recibe una guía personalizada con las mejores bodegas, degustaciones y experiencias de la región de Lisboa',
       cta: 'Crear Mi Itinerario Personalizado',
-      created: 'Más de {{count}} itinerarios creados',
+      created: '{{count}} itinerarios creados',
     },
     valueProposition: {
       personalized: {
@@ -1311,7 +1311,7 @@ export const translations = {
       title: 'Entdecken Sie Ihre Perfekte Weintourismus-Route in Lissabon',
       subtitle: 'Beantworten Sie einige Fragen und erhalten Sie einen personalisierten Führer mit den besten Weingütern, Verkostungen und Erlebnissen der Region Lissabon',
       cta: 'Meine Personalisierte Route Erstellen',
-      created: 'Über {{count}} erstellte Routen',
+      created: '{{count}} erstellte Routen',
     },
     valueProposition: {
       personalized: {
