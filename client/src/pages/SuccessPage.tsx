@@ -22,10 +22,13 @@ export default function SuccessPage() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [hasDownloaded, setHasDownloaded] = useState(false);
 
+  const [isSupport, setIsSupport] = useState(false);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const session = params.get('session_id');
     setSessionId(session);
+    setIsSupport(params.get('type') === 'support');
   }, []);
 
   const handleDownloadPDF = async () => {
@@ -105,16 +108,18 @@ export default function SuccessPage() {
               </p>
               
               <div className="flex flex-col gap-3">
-                <Button 
-                  size="lg" 
-                  onClick={handleDownloadPDF}
-                  disabled={!sessionId || isDownloading}
-                  className="w-full"
-                  data-testid="button-download-pdf"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  {isDownloading ? t('success.downloading') : t('success.downloadButton')}
-                </Button>
+                {!isSupport && (
+                  <Button 
+                    size="lg" 
+                    onClick={handleDownloadPDF}
+                    disabled={!sessionId || isDownloading}
+                    className="w-full"
+                    data-testid="button-download-pdf"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    {isDownloading ? t('success.downloading') : t('success.downloadButton')}
+                  </Button>
+                )}
                 
                 <Button 
                   size="lg" 

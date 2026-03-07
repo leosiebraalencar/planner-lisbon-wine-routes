@@ -230,6 +230,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/create-simple-checkout", async (req, res) => {
+    try {
+      let baseUrl = req.get('origin') || `${req.protocol}://${req.get('host')}`;
+
+      if (process.env.REPLIT_DEV_DOMAIN) {
+        let envUrl = process.env.REPLIT_DEV_DOMAIN;
+        if (!envUrl.startsWith('http://') && !envUrl.startsWith('https://')) {
+          envUrl = `https://${envUrl}`;
+        }
+        baseUrl = envUrl;
+      }
+
+      if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
+        baseUrl = `https://${baseUrl}`;
+      }
+
+      baseUrl = baseUrl.replace(/\/$/, '');
+
+      const price = await getOrCreatePrice();
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{ price: price.id, quantity: 1 }],
+        mode: 'payment',
+        success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}&type=support`,
+        cancel_url: `${baseUrl}/`,
+      });
+
+      res.json({ url: session.url });
+    } catch (error) {
+      console.error('Error creating simple checkout session:', error);
+      res.status(500).json({ error: 'Failed to create checkout session' });
+    }
+  });
+
   app.post("/api/quiz-submission", async (req, res) => {
     try {
       const validationResult = insertQuizSubmissionSchema.safeParse(req.body);

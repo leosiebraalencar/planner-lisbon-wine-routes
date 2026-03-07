@@ -46,11 +46,11 @@ export const translations = {
       eveningDesc: 'Jantar com pratos típicos portugueses harmonizados com vinhos da região de Bucelas',
     },
     pricing: {
-      title: 'Pague o Que Achar Justo',
-      subtitle: 'Acreditamos no valor que oferecemos. Escolha quanto quer pagar (mínimo $1 USD)',
+      title: 'Versão Pro por €29',
+      subtitle: 'Apoie o nosso trabalho e receba um roteiro ainda mais detalhado e personalizado.',
       included: 'O que está incluído:',
-      from: 'A partir de',
-      choose: 'Escolha o valor após ver o seu roteiro personalizado',
+      from: 'Por apenas',
+      choose: 'Preço fixo — sem surpresas',
       benefits: {
         personalized: 'Roteiros personalizados por IA especializada',
         time: 'Economia de horas de pesquisa e planeamento',
@@ -480,11 +480,11 @@ export const translations = {
       eveningDesc: 'Dinner with traditional Portuguese dishes paired with wines from the Bucelas region',
     },
     pricing: {
-      title: 'Pay What You Think Is Fair',
-      subtitle: 'We believe in the value we offer. Choose how much you want to pay (minimum $1 USD)',
+      title: 'Pro Version for €29',
+      subtitle: 'Support our work and receive an even more detailed and personalized itinerary.',
       included: 'What\'s included:',
-      from: 'From',
-      choose: 'You choose the amount after seeing your personalized itinerary',
+      from: 'For just',
+      choose: 'Fixed price — no surprises',
       benefits: {
         personalized: 'Personalized itineraries by specialized AI',
         time: 'Save hours of research and planning',
@@ -914,11 +914,11 @@ export const translations = {
       eveningDesc: 'Cena con platos típicos portugueses maridados con vinos de la región de Bucelas',
     },
     pricing: {
-      title: 'Paga Lo Que Consideres Justo',
-      subtitle: 'Creemos en el valor que ofrecemos. Elige cuánto quieres pagar (mínimo $1 USD)',
+      title: 'Versión Pro por €29',
+      subtitle: 'Apoya nuestro trabajo y recibe un itinerario aún más detallado y personalizado.',
       included: 'Qué está incluido:',
-      from: 'Desde',
-      choose: 'Eliges el monto después de ver tu itinerario personalizado',
+      from: 'Por solo',
+      choose: 'Precio fijo — sin sorpresas',
       benefits: {
         personalized: 'Itinerarios personalizados por IA especializada',
         time: 'Ahorra horas de investigación y planificación',
@@ -1348,11 +1348,11 @@ export const translations = {
       eveningDesc: 'Abendessen mit traditionellen portugiesischen Gerichten, begleitet von Weinen aus der Region Bucelas',
     },
     pricing: {
-      title: 'Zahlen Sie, Was Sie Für Fair Halten',
-      subtitle: 'Wir glauben an den Wert, den wir bieten. Wählen Sie, wie viel Sie zahlen möchten (mindestens $1 USD)',
+      title: 'Pro-Version für €29',
+      subtitle: 'Unterstützen Sie unsere Arbeit und erhalten Sie eine noch detailliertere personalisierte Route.',
       included: 'Was ist enthalten:',
-      from: 'Ab',
-      choose: 'Sie wählen den Betrag nach Ansicht Ihrer personalisierten Route',
+      from: 'Nur',
+      choose: 'Festpreis — keine Überraschungen',
       benefits: {
         personalized: 'Personalisierte Routen durch spezialisierte KI',
         time: 'Sparen Sie Stunden an Recherche und Planung',

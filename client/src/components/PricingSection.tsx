@@ -1,9 +1,8 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle2, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { STRIPE_DONATION_URL } from "@shared/affiliateLinks";
-
-const DONATION_URL = import.meta.env.VITE_STRIPE_DONATION_URL || STRIPE_DONATION_URL;
 
 const benefitKeys = [
   'pricing.benefits.personalized',
@@ -16,6 +15,21 @@ const benefitKeys = [
 
 export default function PricingSection() {
   const { t } = useLanguage();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleCheckout = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/create-simple-checkout', { method: 'POST' });
+      if (!res.ok) throw new Error('Failed to create checkout session');
+      const { url } = await res.json();
+      if (url) window.location.href = url;
+    } catch (error) {
+      console.error('Checkout error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <section className="py-16 md:py-24 bg-card">
@@ -45,22 +59,20 @@ export default function PricingSection() {
               <div className="flex flex-col justify-center items-center text-center p-6 bg-background rounded-lg">
                 <div className="mb-4">
                   <div className="text-sm text-muted-foreground mb-2">{t('pricing.from')}</div>
-                  <div className="font-serif font-bold text-5xl text-primary">$1</div>
-                  <div className="text-sm text-muted-foreground mt-1">USD</div>
+                  <div className="font-serif font-bold text-5xl text-primary">€29</div>
+                  <div className="text-sm text-muted-foreground mt-1">EUR</div>
                 </div>
-                <p className="text-sm text-muted-foreground mb-4">
+                <p className="text-sm text-muted-foreground mb-6">
                   {t('pricing.choose')}
                 </p>
-                <a
-                  href={DONATION_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm font-medium underline"
-                  style={{ color: '#84270B' }}
-                  data-testid="link-quero-apoiar"
+                <Button
+                  onClick={handleCheckout}
+                  disabled={isLoading}
+                  data-testid="button-quero-apoiar"
+                  className="w-full"
                 >
-                  {t('pricing.cta')} <ExternalLink className="w-3 h-3" />
-                </a>
+                  {isLoading ? '...' : t('pricing.cta')}
+                </Button>
               </div>
             </div>
           </CardContent>
