@@ -460,26 +460,53 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
         .sort((a, b) => b.score - a.score);
       let afternoonWinery: WineryData | undefined = afternoonCandidates[0]?.winery;
       if (!afternoonWinery) {
-        afternoonWinery = findWineryAnyRegion();
+        const fallback = findWineryAnyRegion();
+        if (fallback) {
+          const fc = getWineryCoords(fallback);
+          const fallbackDist = (morningCoords && fc)
+            ? haversineDistance(morningCoords.lat, morningCoords.lng, fc.lat, fc.lng)
+            : 0;
+          if (fallbackDist <= 65) afternoonWinery = fallback;
+        }
       }
       if (afternoonWinery) usedWineries.add(afternoonWinery.name);
-      if (!afternoonWinery) afternoonWinery = regionWineries[regionName]?.[1] || ALL_WINERIES[1];
 
-      let afternoonExp = getExperienceByBudget(afternoonWinery, quizData.budget);
-      if (afternoonExp && /brunch/i.test(afternoonExp.name)) {
+      let afternoonExp = afternoonWinery ? getExperienceByBudget(afternoonWinery, quizData.budget) : undefined;
+      if (afternoonExp && afternoonWinery && /brunch/i.test(afternoonExp.name)) {
         const alt = afternoonWinery.experiences.find(e => !/brunch/i.test(e.name));
         afternoonExp = alt || afternoonExp;
       }
 
-      const afternoonCoords = getWineryCoords(afternoonWinery);
+      const afternoonCoords = afternoonWinery ? getWineryCoords(afternoonWinery) : null;
       const lastWineryCoords = afternoonCoords || morningCoords;
 
-      if (isJmfMorning || afternoonWinery.name === JMF_WINERY_NAME) {
+      if (afternoonWinery && (isJmfMorning || afternoonWinery.name === JMF_WINERY_NAME)) {
         usedRestaurants.add(JMF_WINECORNER_NAME);
       }
 
       const dinnerRestaurant = getUnusedRestaurant(dinnerRegion, true, lastWineryCoords?.lat, lastWineryCoords?.lng, null, null);
       if (dinnerRestaurant) usedRestaurants.add(dinnerRestaurant.name);
+
+      const afternoonActivity = afternoonWinery ? {
+        time: '14:00-18:00',
+        activity: afternoonExp?.name || tt('itinerary.gen.cellarTour'),
+        location: afternoonWinery.name,
+        description: tt('itinerary.gen.exploreAndTaste'),
+        duration: afternoonExp?.duration || '2h',
+        address: afternoonWinery.address,
+        price: afternoonExp?.price || 0,
+        affiliateUrl: afternoonExp?.url || afternoonWinery.hostUrl || buildGoogleMapsUrl(afternoonWinery.name, afternoonWinery.address),
+        affiliateProvider: (afternoonExp?.url || afternoonWinery.hostUrl) ? 'winalist' as const : 'googlemaps' as const
+      } : {
+        time: '14:00-18:00',
+        activity: tt('itinerary.gen.freeAfternoon'),
+        location: tt('itinerary.gen.exploreRegion'),
+        description: tt('itinerary.gen.freeAfternoonDescription'),
+        duration: '3h',
+        address: morningWinery.address,
+        affiliateUrl: '',
+        affiliateProvider: 'googlemaps' as const,
+      };
 
       const dayData: typeof days[number] = {
         day: i,
@@ -495,17 +522,7 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
           affiliateUrl: morningExp?.url || morningWinery.hostUrl || buildGoogleMapsUrl(morningWinery.name, morningWinery.address),
           affiliateProvider: (morningExp?.url || morningWinery.hostUrl) ? 'winalist' as const : 'googlemaps' as const
         },
-        afternoon: {
-          time: '14:00-18:00',
-          activity: afternoonExp?.name || tt('itinerary.gen.cellarTour'),
-          location: afternoonWinery.name,
-          description: tt('itinerary.gen.exploreAndTaste'),
-          duration: afternoonExp?.duration || '2h',
-          address: afternoonWinery.address,
-          price: afternoonExp?.price || 0,
-          affiliateUrl: afternoonExp?.url || afternoonWinery.hostUrl || buildGoogleMapsUrl(afternoonWinery.name, afternoonWinery.address),
-          affiliateProvider: (afternoonExp?.url || afternoonWinery.hostUrl) ? 'winalist' as const : 'googlemaps' as const
-        },
+        afternoon: afternoonActivity,
         evening: buildDinnerActivity(dinnerRestaurant)
       };
       days.push(dayData);
@@ -521,10 +538,7 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
   }
 
   const transitionDayIndices = new Set<number>();
-  const maxTransitions = Math.max(1, Math.floor(numDays / 3));
-  let transitionsInserted = 0;
   for (let di = days.length - 2; di >= 0; di--) {
-    if (transitionsInserted >= maxTransitions) break;
     const fromCoords = dayLastWineryCoords[di];
     const toCoords = dayFirstWineryCoords[di + 1];
     if (!fromCoords || !toCoords) continue;
@@ -580,7 +594,6 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
       dayLastWineryCoords.splice(di + 1, 0, null);
       dayFirstWineryCoords.splice(di + 1, 0, null);
       transitionDayIndices.add(di + 1);
-      transitionsInserted++;
     }
   }
   days.forEach((d, idx) => { d.day = idx + 1; });
