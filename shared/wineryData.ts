@@ -19,6 +19,8 @@ export interface WineryData {
 export const REGIONS = ['Região Oeste', 'Sintra', 'Setúbal', 'Oeiras'] as const;
 export type Region = typeof REGIONS[number];
 
+export const PLANNED_REGIONS = ['Grandola'] as const;
+
 export const ALL_WINERIES: WineryData[] = [
   {
     name: 'Manzwine',

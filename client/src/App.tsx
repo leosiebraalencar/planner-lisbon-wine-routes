@@ -23,10 +23,11 @@ import {
   REGIONS, 
   getExperienceByBudget,
   scoreWinery,
+  PLANNED_REGIONS,
   type WineryData 
 } from "@shared/wineryData";
 import { ALL_RESTAURANTS, type RestaurantData } from "@shared/restaurantData";
-import { getHotelsByBudgetAndRegion, type HotelData } from "@shared/hotelData";
+import { getHotelsByBudget, HOTEL_REGION_ALIASES, type HotelData } from "@shared/hotelData";
 import { haversineDistance, extractCoordsFromGoogleMapsUrl } from "@shared/geoUtils";
 
 function ItineraryPageWrapper({ itinerary, setItinerary, submissionId }: { itinerary: Itinerary | null; setItinerary: (it: Itinerary) => void; submissionId: string | null }) {
@@ -188,7 +189,7 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
     grandola: 'Grandola',
   };
 
-  const ALL_ITINERARY_REGIONS = [...REGIONS, 'Grandola'];
+  const ALL_ITINERARY_REGIONS = [...REGIONS, ...PLANNED_REGIONS];
 
   const userRegionPrefs = quizData.regionPreferences || [];
   const hasSurprise = userRegionPrefs.includes('surprise') || userRegionPrefs.length === 0;
@@ -300,12 +301,16 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
 
   const getHotelForRegion = (region: string, usedHotels: Set<string>): HotelData | undefined => {
     const isProtected = NO_LISBOA_FALLBACK_REGIONS.has(region);
-    const hotels = getHotelsByBudgetAndRegion(quizData.budget, region)
-      .filter(h => !h.isGenericListing && !usedHotels.has(h.name))
-      .filter(h => !isProtected || h.region !== 'Lisboa');
-    if (hotels.length > 0) return hotels[0];
-    const lisboaFallback = getHotelsByBudgetAndRegion(quizData.budget, 'Lisboa')
+    const budgetHotels = getHotelsByBudget(quizData.budget)
       .filter(h => !h.isGenericListing && !usedHotels.has(h.name));
+    const exactMatch = budgetHotels.filter(h => h.region === region);
+    if (exactMatch.length > 0) return exactMatch[0];
+    const aliases = HOTEL_REGION_ALIASES[region] || [region];
+    const aliasMatch = budgetHotels.filter(h =>
+      aliases.includes(h.region) && (!isProtected || h.region !== 'Lisboa')
+    );
+    if (aliasMatch.length > 0) return aliasMatch[0];
+    const lisboaFallback = budgetHotels.filter(h => h.region === 'Lisboa');
     return lisboaFallback[0];
   };
 
@@ -516,7 +521,10 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
   }
 
   const transitionDayIndices = new Set<number>();
+  const maxTransitions = Math.max(1, Math.floor(numDays / 3));
+  let transitionsInserted = 0;
   for (let di = days.length - 2; di >= 0; di--) {
+    if (transitionsInserted >= maxTransitions) break;
     const fromCoords = dayLastWineryCoords[di];
     const toCoords = dayFirstWineryCoords[di + 1];
     if (!fromCoords || !toCoords) continue;
@@ -572,6 +580,7 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
       dayLastWineryCoords.splice(di + 1, 0, null);
       dayFirstWineryCoords.splice(di + 1, 0, null);
       transitionDayIndices.add(di + 1);
+      transitionsInserted++;
     }
   }
   days.forEach((d, idx) => { d.day = idx + 1; });
