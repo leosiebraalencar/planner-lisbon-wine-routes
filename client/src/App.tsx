@@ -152,6 +152,26 @@ const generateHighlights = (quizData: QuizResponse, days: Array<{ region: string
   return highlights.slice(0, 6);
 };
 
+const HOTEL_REGION_CENTERS: Array<{ region: string; lat: number; lng: number }> = [
+  { region: 'Lisboa', lat: 38.7223, lng: -9.1393 },
+  { region: 'Sintra', lat: 38.8029, lng: -9.3817 },
+  { region: 'Cascais', lat: 38.6979, lng: -9.4215 },
+  { region: 'Setúbal', lat: 38.5244, lng: -8.8882 },
+  { region: 'Ericeira', lat: 38.9627, lng: -9.4175 },
+  { region: 'Mafra', lat: 38.9358, lng: -9.3265 },
+  { region: 'Bucelas', lat: 38.9186, lng: -9.1176 },
+  { region: 'Torres Vedras', lat: 39.0918, lng: -9.2592 },
+  { region: 'Alenquer', lat: 39.0564, lng: -9.0075 },
+  { region: 'Cadaval', lat: 39.2460, lng: -9.1020 },
+];
+
+const findNearestHotelRegion = (lat: number, lng: number): string =>
+  HOTEL_REGION_CENTERS.reduce((nearest, curr) => {
+    const dCurr = haversineDistance(lat, lng, curr.lat, curr.lng);
+    const dNearest = haversineDistance(lat, lng, nearest.lat, nearest.lng);
+    return dCurr < dNearest ? curr : nearest;
+  }).region;
+
 const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerary => {
   const tt = (key: string, replacements?: Record<string, string>) => translate(key, lang, replacements);
   const days: Itinerary['days'] = [];
@@ -235,7 +255,7 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
       'Sintra': ['Sintra', 'Colares Sintra'],
       'Setúbal': ['Setúbal', 'Palmela'],
       'Palmela': ['Setúbal', 'Palmela'],
-      'Grandola': ['Setúbal', 'Grandola'],
+      'Grandola': ['Grandola'],
       'Oeiras': ['Oeiras', 'Lisboa'],
       'Lisboa': ['Lisboa'],
     };
@@ -413,22 +433,25 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
       const afternoonCandidates = (regionWineries[regionName] || [])
         .filter(w => !usedWineries.has(w.name))
         .map(w => {
+          if (morningCoords) {
+            const c = getWineryCoords(w);
+            if (c) {
+              const dist = haversineDistance(morningCoords.lat, morningCoords.lng, c.lat, c.lng);
+              if (dist > 65) return null;
+            }
+          }
           let s = scoreWinery(w, quizData.budget, quizData.preferences || []);
           if (morningCoords) {
             const c = getWineryCoords(w);
             if (c) {
               const dist = haversineDistance(morningCoords.lat, morningCoords.lng, c.lat, c.lng);
-              if (dist <= 30) {
-                s += 25;
-              } else if (dist > 65) {
-                s -= 150;
-              } else {
-                s -= 20;
-              }
+              if (dist <= 30) s += 25;
+              else s -= 20;
             }
           }
           return { winery: w, score: s };
         })
+        .filter((x): x is { winery: WineryData; score: number } => x !== null)
         .sort((a, b) => b.score - a.score);
       let afternoonWinery: WineryData | undefined = afternoonCandidates[0]?.winery;
       if (!afternoonWinery) {
@@ -501,13 +524,16 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
     if (dist > 65) {
       const midLat = (fromCoords.lat + toCoords.lat) / 2;
       const midLng = (fromCoords.lng + toCoords.lng) / 2;
-      const transitionLunch = getUnusedRestaurant('Lisboa', false, midLat, midLng, null, null);
+      const transitionRegion = findNearestHotelRegion(midLat, midLng);
+      const transitionLunch = getUnusedRestaurant(transitionRegion, false, midLat, midLng, null, null)
+        || getUnusedRestaurant('Lisboa', false, midLat, midLng, null, null);
       if (transitionLunch) usedRestaurants.add(transitionLunch.name);
-      const transitionDinner = getUnusedRestaurant('Lisboa', true, midLat, midLng, null, null);
+      const transitionDinner = getUnusedRestaurant(transitionRegion, true, midLat, midLng, null, null)
+        || getUnusedRestaurant('Lisboa', true, midLat, midLng, null, null);
       if (transitionDinner) usedRestaurants.add(transitionDinner.name);
       const transitionDay: typeof days[number] = {
         day: 0,
-        region: 'Lisboa',
+        region: transitionRegion,
         morning: {
           time: '09:00-12:00',
           activity: tt('itinerary.gen.travelDay'),
@@ -558,7 +584,7 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
     for (let di = 0; di < days.length; di++) {
       let dayHotel: HotelData | undefined;
       if (transitionDayIndices.has(di)) {
-        dayHotel = getHotelForRegion('Lisboa', usedHotels);
+        dayHotel = getHotelForRegion(days[di].region, usedHotels) || getHotelForRegion('Lisboa', usedHotels);
       } else if (wantsCenter) {
         dayHotel = centralHotel;
       } else if (di < days.length - 1) {
