@@ -165,7 +165,10 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
     sintra: 'Sintra',
     setubal: 'Setúbal',
     oeiras: 'Oeiras',
+    grandola: 'Grandola',
   };
+
+  const ALL_ITINERARY_REGIONS = [...REGIONS, 'Grandola'];
 
   const userRegionPrefs = quizData.regionPreferences || [];
   const hasSurprise = userRegionPrefs.includes('surprise') || userRegionPrefs.length === 0;
@@ -182,9 +185,10 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
   }
 
   const regionWineries: Record<string, WineryData[]> = {};
-  REGIONS.forEach(r => {
+  ALL_ITINERARY_REGIONS.forEach(r => {
     regionWineries[r] = filteredWineries.filter(w => w.region === r);
   });
+  orderedRegions = orderedRegions.filter(r => (regionWineries[r]?.length ?? 0) > 0);
 
   const budgetCat = getBudgetForRestaurant(quizData.budget);
 
@@ -275,12 +279,12 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
   const NO_LISBOA_FALLBACK_REGIONS = new Set(['Sintra', 'Setúbal', 'Grandola']);
 
   const getHotelForRegion = (region: string, usedHotels: Set<string>): HotelData | undefined => {
+    const isProtected = NO_LISBOA_FALLBACK_REGIONS.has(region);
     const hotels = getHotelsByBudgetAndRegion(quizData.budget, region)
-      .filter(h => !h.isGenericListing && !usedHotels.has(h.name));
+      .filter(h => !h.isGenericListing && !usedHotels.has(h.name))
+      .filter(h => !isProtected || h.region !== 'Lisboa');
     if (hotels.length > 0) return hotels[0];
-    if (NO_LISBOA_FALLBACK_REGIONS.has(region)) {
-      return undefined;
-    }
+    if (isProtected) return undefined;
     const fallback = getHotelsByBudgetAndRegion(quizData.budget, 'Lisboa')
       .filter(h => !h.isGenericListing && !usedHotels.has(h.name));
     return fallback[0];
@@ -488,6 +492,60 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
       daysInCurrentRegion = 0;
     }
   }
+
+  for (let di = days.length - 2; di >= 0; di--) {
+    const fromCoords = dayLastWineryCoords[di];
+    const toCoords = dayFirstWineryCoords[di + 1];
+    if (!fromCoords || !toCoords) continue;
+    const dist = haversineDistance(fromCoords.lat, fromCoords.lng, toCoords.lat, toCoords.lng);
+    if (dist > 65) {
+      const transitionLunch = getUnusedRestaurant('Lisboa', false, 38.7223, -9.1393, null, null);
+      if (transitionLunch) usedRestaurants.add(transitionLunch.name);
+      const transitionDinner = getUnusedRestaurant('Lisboa', true, 38.7223, -9.1393, null, null);
+      if (transitionDinner) usedRestaurants.add(transitionDinner.name);
+      const transitionDay: typeof days[number] = {
+        day: 0,
+        region: 'Lisboa',
+        morning: {
+          time: '09:00-12:00',
+          activity: tt('itinerary.gen.travelDay'),
+          location: tt('itinerary.gen.travelToNextRegion'),
+          description: tt('itinerary.gen.travelDayDescription'),
+          duration: '3h',
+          address: '',
+          affiliateUrl: '',
+          affiliateProvider: 'googlemaps' as const,
+        },
+        afternoon: transitionLunch ? {
+          time: '12:30-14:30',
+          activity: tt('itinerary.gen.lunch'),
+          location: transitionLunch.name,
+          description: transitionLunch.description || tt('itinerary.gen.lunchDescription'),
+          duration: '1h30',
+          address: transitionLunch.address,
+          price: transitionLunch.averagePrice,
+          affiliateUrl: transitionLunch.link,
+          affiliateProvider: transitionLunch.isTheFork ? 'thefork' as const : 'direct' as const,
+          isTheFork: transitionLunch.isTheFork,
+          theForkPromoCode: transitionLunch.theForkPromoCode || undefined,
+        } : {
+          time: '12:30-14:30',
+          activity: tt('itinerary.gen.lunch'),
+          location: tt('itinerary.gen.localRestaurant'),
+          description: tt('itinerary.gen.lunchDescription'),
+          duration: '1h30',
+          address: '',
+          affiliateUrl: '',
+          affiliateProvider: 'googlemaps' as const,
+        },
+        evening: buildDinnerActivity(transitionDinner),
+      };
+      days.splice(di + 1, 0, transitionDay);
+      dayLastWineryCoords.splice(di + 1, 0, null);
+      dayFirstWineryCoords.splice(di + 1, 0, null);
+    }
+  }
+  days.forEach((d, idx) => { d.day = idx + 1; });
 
   if (needsHotel) {
     const centralHotel: HotelData | undefined = wantsCenter
