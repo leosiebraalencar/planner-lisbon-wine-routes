@@ -22,12 +22,15 @@ export default function SuccessPage() {
   const [isDonating, setIsDonating] = useState(false);
 
   const [isSupport, setIsSupport] = useState(false);
+  const [isDonation, setIsDonation] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const session = params.get('session_id');
+    const type = params.get('type');
     setSessionId(session);
-    setIsSupport(params.get('type') === 'support');
+    setIsSupport(type === 'support');
+    setIsDonation(type === 'donation');
   }, []);
 
   const handleDownloadPDF = async () => {
@@ -121,7 +124,7 @@ export default function SuccessPage() {
               </p>
               
               <div className="flex flex-col gap-3">
-                {!isSupport && (
+                {!isSupport && !isDonation && (
                   <Button 
                     size="lg" 
                     onClick={handleDownloadPDF}
@@ -150,28 +153,30 @@ export default function SuccessPage() {
 
           {(hasDownloaded || true) && (
             <>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Heart className="w-5 h-5 text-red-500" />
-                    {t('success.donateTitle')}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    {t('success.thankYou')}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    <Button 
-                      onClick={handleDonation}
-                      disabled={isDonating}
-                      data-testid="button-donate"
-                    >
-                      {isDonating ? '...' : t('success.donateButton')}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              {!isDonation && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Heart className="w-5 h-5 text-red-500" />
+                      {t('success.donateTitle')}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-muted-foreground">
+                      {t('success.thankYou')}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <Button 
+                        onClick={handleDonation}
+                        disabled={isDonating}
+                        data-testid="button-donate"
+                      >
+                        {isDonating ? '...' : t('success.donateButton')}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               <Card>
                 <CardHeader>
