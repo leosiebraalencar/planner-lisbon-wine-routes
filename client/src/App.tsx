@@ -211,9 +211,60 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
 
   const budgetCat = getBudgetForRestaurant(quizData.budget);
 
-  const daysPerRegion = quizData.duration >= 4 ? 2 : 1;
-  let currentRegionIndex = 0;
-  let daysInCurrentRegion = 0;
+  const buildRegionSchedule = (duration: number, regions: string[]): string[] => {
+    if (regions.length === 0) return [];
+    if (regions.length === 1) return Array(duration).fill(regions[0]);
+
+    if (duration >= 5) {
+      const totalWineries = regions.reduce((sum, r) => sum + (regionWineries[r]?.length || 0), 0);
+      const rawAlloc = regions.map(r =>
+        totalWineries > 0 ? (regionWineries[r]?.length || 0) / totalWineries * duration : duration / regions.length
+      );
+      const alloc = rawAlloc.map(v => Math.max(0, Math.floor(v)));
+      let leftover = duration - alloc.reduce((s, v) => s + v, 0);
+      const fracs = rawAlloc.map((v, i) => ({ i, frac: v - Math.floor(v) })).sort((a, b) => b.frac - a.frac);
+      for (let k = 0; k < leftover; k++) alloc[fracs[k].i]++;
+
+      const minRegionsToVisit = Math.min(3, regions.length);
+      const activeCount = alloc.filter(v => v > 0).length;
+      if (activeCount < minRegionsToVisit) {
+        for (let ri = 0; ri < minRegionsToVisit; ri++) {
+          if (alloc[ri] === 0) {
+            const maxIdx = alloc.reduce((mi, v, i) => v > alloc[mi] ? i : mi, 0);
+            if (alloc[maxIdx] > 1) { alloc[maxIdx]--; alloc[ri]++; }
+          }
+        }
+      }
+
+      const remaining = [...alloc];
+      const schedule: string[] = [];
+      while (schedule.length < duration) {
+        let added = false;
+        for (let ri = 0; ri < regions.length; ri++) {
+          if (remaining[ri] > 0) {
+            schedule.push(regions[ri]);
+            remaining[ri]--;
+            added = true;
+            if (schedule.length >= duration) break;
+          }
+        }
+        if (!added) break;
+      }
+      return schedule;
+    }
+
+    const dpr = duration >= 4 ? 2 : 1;
+    const schedule: string[] = [];
+    let ri = 0, daysInRegion = 0;
+    for (let i = 0; i < duration; i++) {
+      schedule.push(regions[ri]);
+      daysInRegion++;
+      if (daysInRegion >= dpr) { ri = (ri + 1) % regions.length; daysInRegion = 0; }
+    }
+    return schedule;
+  };
+
+  const regionSchedule = buildRegionSchedule(quizData.duration, orderedRegions);
 
   const getScoredWinery = (region: string): WineryData | undefined => {
     const wineries = (regionWineries[region] || []).filter(w => !usedWineries.has(w.name));
@@ -356,7 +407,7 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
   };
 
   for (let i = 1; i <= quizData.duration; i++) {
-    const regionName = orderedRegions[currentRegionIndex];
+    const regionName = regionSchedule[i - 1] ?? orderedRegions[0];
 
     let morningWinery = getScoredWinery(regionName);
     if (morningWinery) usedWineries.add(morningWinery.name);
@@ -527,11 +578,6 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
       dayLastWineryCoords.push(afternoonCoords || morningCoords);
     }
 
-    daysInCurrentRegion++;
-    if (daysInCurrentRegion >= daysPerRegion) {
-      currentRegionIndex = (currentRegionIndex + 1) % orderedRegions.length;
-      daysInCurrentRegion = 0;
-    }
   }
 
   const transitionDayIndices = new Set<number>();
