@@ -23,7 +23,6 @@ import {
   REGIONS, 
   getExperienceByBudget,
   scoreWinery,
-  PLANNED_REGIONS,
   type WineryData 
 } from "@shared/wineryData";
 import { ALL_RESTAURANTS, type RestaurantData } from "@shared/restaurantData";
@@ -186,10 +185,9 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
     sintra: 'Sintra',
     setubal: 'Setúbal',
     oeiras: 'Oeiras',
-    grandola: 'Grandola',
   };
 
-  const ALL_ITINERARY_REGIONS = [...REGIONS, ...PLANNED_REGIONS];
+  const ALL_ITINERARY_REGIONS = [...REGIONS];
 
   const userRegionPrefs = quizData.regionPreferences || [];
   const hasSurprise = userRegionPrefs.includes('surprise') || userRegionPrefs.length === 0;
@@ -256,7 +254,6 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
       'Sintra': ['Sintra', 'Colares Sintra'],
       'Setúbal': ['Setúbal', 'Palmela'],
       'Palmela': ['Setúbal', 'Palmela'],
-      'Grandola': ['Grandola'],
       'Oeiras': ['Oeiras', 'Lisboa'],
       'Lisboa': ['Lisboa'],
     };
@@ -297,7 +294,7 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
     return scored[0]?.restaurant;
   };
 
-  const NO_LISBOA_FALLBACK_REGIONS = new Set(['Sintra', 'Setúbal', 'Grandola']);
+  const NO_LISBOA_FALLBACK_REGIONS = new Set(['Sintra', 'Setúbal']);
 
   const getHotelForRegion = (region: string, usedHotels: Set<string>): HotelData | undefined => {
     const isProtected = NO_LISBOA_FALLBACK_REGIONS.has(region);
