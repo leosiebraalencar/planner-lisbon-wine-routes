@@ -5,6 +5,7 @@ import Stripe from "stripe";
 import { itinerarySchema, insertProRequestSchema, insertQuizSubmissionSchema } from "@shared/schema";
 import { generateItineraryPDF } from "./pdf";
 import { generateRoadTripGuide } from "./ai";
+import { sendProRequestNotification } from "./email";
 import path from "path";
 import fs from "fs";
 
@@ -420,6 +421,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const proRequest = await storage.createProRequest(validatedData);
 
       console.log(`New Pro request created: ${proRequest.id}`);
+
+      sendProRequestNotification({
+        name: validatedData.name || 'N/A',
+        email: validatedData.email || 'N/A',
+        phone: validatedData.phone || undefined,
+        duration: validatedData.duration ? parseInt(validatedData.duration, 10) : undefined,
+        preferences: validatedData.preferences,
+      }).catch(() => {});
 
       res.json({ success: true, id: proRequest.id });
     } catch (error) {
