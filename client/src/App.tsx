@@ -225,20 +225,20 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
 
   const getUnusedRestaurant = (region: string, forDinner: boolean, nearLat?: number | null, nearLng?: number | null, hotelLat?: number | null, hotelLng?: number | null): RestaurantData | undefined => {
     const regionAliases: Record<string, string[]> = {
-      'Região Oeste': ['Região Oeste', 'Alenquer', 'Bucelas'],
-      'Alenquer': ['Região Oeste', 'Alenquer'],
-      'Bucelas': ['Região Oeste', 'Bucelas'],
+      'Região Oeste': ['Região Oeste', 'Alenquer', 'Bucelas', 'Lisboa'],
+      'Alenquer': ['Região Oeste', 'Alenquer', 'Lisboa'],
+      'Bucelas': ['Região Oeste', 'Bucelas', 'Lisboa'],
       'Sintra': ['Sintra', 'Colares Sintra'],
       'Setúbal': ['Setúbal', 'Palmela', 'Grandola'],
       'Palmela': ['Setúbal', 'Palmela'],
       'Oeiras': ['Oeiras', 'Lisboa'],
       'Lisboa': ['Lisboa'],
     };
-    const allowedRegions = regionAliases[region] || [region, 'Lisboa'];
+    const allowedRegions = regionAliases[region] || [region];
 
     const candidates = ALL_RESTAURANTS.filter(r => {
       if (usedRestaurants.has(r.name)) return false;
-      if (!allowedRegions.includes(r.region) && r.region !== 'Lisboa') return false;
+      if (!allowedRegions.includes(r.region)) return false;
       if (r.cuisineType === 'brunch' && forDinner) return false;
       if (forDinner) {
         return Object.values(r.openingHours).some(h => h !== 'Encerrado' && /19:|20:|21:|18:/.test(h));
@@ -402,10 +402,15 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
           let s = scoreWinery(w, quizData.budget, quizData.preferences || []);
           if (morningCoords) {
             const c = getWineryCoords(w);
-            if (c && haversineDistance(morningCoords.lat, morningCoords.lng, c.lat, c.lng) <= 30) {
-              s += 25;
-            } else if (c) {
-              s -= 20;
+            if (c) {
+              const dist = haversineDistance(morningCoords.lat, morningCoords.lng, c.lat, c.lng);
+              if (dist <= 30) {
+                s += 25;
+              } else if (dist > 65) {
+                s -= 150;
+              } else {
+                s -= 20;
+              }
             }
           }
           return { winery: w, score: s };
@@ -472,10 +477,14 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
   }
 
   if (needsHotel) {
+    const centralHotel: HotelData | undefined = wantsCenter
+      ? getHotelForRegion('Lisboa', usedHotels)
+      : undefined;
+
     for (let di = 0; di < days.length; di++) {
       let dayHotel: HotelData | undefined;
       if (wantsCenter) {
-        dayHotel = getHotelForRegion('Lisboa', usedHotels);
+        dayHotel = centralHotel;
       } else if (di < days.length - 1) {
         const nextDayRegion = days[di + 1].region;
         const currentDayRegion = days[di].region;
@@ -491,7 +500,7 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
         dayHotel = getHotelForRegion(days[di].region, usedHotels);
       }
       if (dayHotel) {
-        usedHotels.add(dayHotel.name);
+        if (!wantsCenter) usedHotels.add(dayHotel.name);
         days[di].hotel = { name: dayHotel.name, description: dayHotel.description, affiliateUrl: dayHotel.affiliateUrl, budgetCategory: dayHotel.budgetCategory };
       }
     }
