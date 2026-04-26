@@ -492,6 +492,64 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
     }
   }
 
+  const transitionDayIndices = new Set<number>();
+  for (let di = days.length - 2; di >= 0; di--) {
+    const fromCoords = dayLastWineryCoords[di];
+    const toCoords = dayFirstWineryCoords[di + 1];
+    if (!fromCoords || !toCoords) continue;
+    const dist = haversineDistance(fromCoords.lat, fromCoords.lng, toCoords.lat, toCoords.lng);
+    if (dist > 65) {
+      const midLat = (fromCoords.lat + toCoords.lat) / 2;
+      const midLng = (fromCoords.lng + toCoords.lng) / 2;
+      const transitionLunch = getUnusedRestaurant('Lisboa', false, midLat, midLng, null, null);
+      if (transitionLunch) usedRestaurants.add(transitionLunch.name);
+      const transitionDinner = getUnusedRestaurant('Lisboa', true, midLat, midLng, null, null);
+      if (transitionDinner) usedRestaurants.add(transitionDinner.name);
+      const transitionDay: typeof days[number] = {
+        day: 0,
+        region: 'Lisboa',
+        morning: {
+          time: '09:00-12:00',
+          activity: tt('itinerary.gen.travelDay'),
+          location: tt('itinerary.gen.travelToNextRegion'),
+          description: tt('itinerary.gen.travelDayDescription'),
+          duration: '3h',
+          address: '',
+          affiliateUrl: '',
+          affiliateProvider: 'googlemaps' as const,
+        },
+        afternoon: transitionLunch ? {
+          time: '12:30-14:30',
+          activity: tt('itinerary.gen.lunch'),
+          location: transitionLunch.name,
+          description: transitionLunch.description || tt('itinerary.gen.lunchDescription'),
+          duration: '1h30',
+          address: transitionLunch.address,
+          price: transitionLunch.averagePrice,
+          affiliateUrl: transitionLunch.link,
+          affiliateProvider: transitionLunch.isTheFork ? 'thefork' as const : 'direct' as const,
+          isTheFork: transitionLunch.isTheFork,
+          theForkPromoCode: transitionLunch.theForkPromoCode || undefined,
+        } : {
+          time: '12:30-14:30',
+          activity: tt('itinerary.gen.lunch'),
+          location: tt('itinerary.gen.localRestaurant'),
+          description: tt('itinerary.gen.lunchDescription'),
+          duration: '1h30',
+          address: '',
+          affiliateUrl: '',
+          affiliateProvider: 'googlemaps' as const,
+        },
+        evening: buildDinnerActivity(transitionDinner),
+      };
+      days.splice(di + 1, 0, transitionDay);
+      dayLastWineryCoords.splice(di + 1, 0, null);
+      dayFirstWineryCoords.splice(di + 1, 0, null);
+      transitionDayIndices.add(di + 1);
+    }
+  }
+  days.forEach((d, idx) => { d.day = idx + 1; });
+
   if (needsHotel) {
     const centralHotel: HotelData | undefined = wantsCenter
       ? getHotelForRegion('Lisboa', usedHotels)
@@ -499,7 +557,9 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
 
     for (let di = 0; di < days.length; di++) {
       let dayHotel: HotelData | undefined;
-      if (wantsCenter) {
+      if (transitionDayIndices.has(di)) {
+        dayHotel = getHotelForRegion('Lisboa', usedHotels);
+      } else if (wantsCenter) {
         dayHotel = centralHotel;
       } else if (di < days.length - 1) {
         const nextDayRegion = days[di + 1].region;
