@@ -460,13 +460,13 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
         .sort((a, b) => b.score - a.score);
       let afternoonWinery: WineryData | undefined = afternoonCandidates[0]?.winery;
       if (!afternoonWinery) {
-        const fallback = findWineryAnyRegion();
-        if (fallback) {
-          const fc = getWineryCoords(fallback);
+        const regionFallback = (regionWineries[regionName] || []).find(w => !usedWineries.has(w.name));
+        if (regionFallback) {
+          const fc = getWineryCoords(regionFallback);
           const fallbackDist = (morningCoords && fc)
             ? haversineDistance(morningCoords.lat, morningCoords.lng, fc.lat, fc.lng)
             : 0;
-          if (fallbackDist <= 65) afternoonWinery = fallback;
+          if (fallbackDist <= 65) afternoonWinery = regionFallback;
         }
       }
       if (afternoonWinery) usedWineries.add(afternoonWinery.name);
@@ -605,10 +605,10 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
 
     for (let di = 0; di < days.length; di++) {
       let dayHotel: HotelData | undefined;
-      if (transitionDayIndices.has(di)) {
-        dayHotel = getHotelForRegion(days[di].region, usedHotels) || getHotelForRegion('Lisboa', usedHotels);
-      } else if (wantsCenter) {
+      if (wantsCenter) {
         dayHotel = centralHotel;
+      } else if (transitionDayIndices.has(di)) {
+        dayHotel = getHotelForRegion(days[di].region, usedHotels) || getHotelForRegion('Lisboa', usedHotels);
       } else if (di < days.length - 1) {
         const nextDayRegion = days[di + 1].region;
         const currentDayRegion = days[di].region;
