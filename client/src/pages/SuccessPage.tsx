@@ -10,9 +10,7 @@ import { SiFacebook, SiX, SiLinkedin, SiWhatsapp } from "react-icons/si";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 
-import { STRIPE_DONATION_URL } from "@shared/affiliateLinks";
-
-const DONATION_URL = import.meta.env.VITE_STRIPE_DONATION_URL || STRIPE_DONATION_URL;
+import { apiRequest } from "@/lib/queryClient";
 
 export default function SuccessPage() {
   const [, setLocation] = useLocation();
@@ -21,6 +19,7 @@ export default function SuccessPage() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [hasDownloaded, setHasDownloaded] = useState(false);
+  const [isDonating, setIsDonating] = useState(false);
 
   const [isSupport, setIsSupport] = useState(false);
 
@@ -76,9 +75,23 @@ export default function SuccessPage() {
     }
   };
 
-  const handleDonation = () => {
-    // Uses fixed Stripe checkout link - amounts are handled by Stripe's pay-what-you-want UI
-    window.open(DONATION_URL, '_blank');
+  const handleDonation = async () => {
+    setIsDonating(true);
+    try {
+      const res = await apiRequest('POST', '/api/create-donation-checkout', {});
+      if (!res.ok) throw new Error('Failed to create donation session');
+      const { url } = await res.json();
+      if (url) window.open(url, '_blank');
+    } catch (error) {
+      console.error('Donation error:', error);
+      toast({
+        title: 'Error',
+        description: 'Could not open donation page. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsDonating(false);
+    }
   };
 
   const shareUrl = 'https://guides.lisbonwineroutes.com';
@@ -151,9 +164,10 @@ export default function SuccessPage() {
                   <div className="flex flex-wrap gap-2">
                     <Button 
                       onClick={handleDonation}
+                      disabled={isDonating}
                       data-testid="button-donate"
                     >
-                      {t('success.donateButton')}
+                      {isDonating ? '...' : t('success.donateButton')}
                     </Button>
                   </div>
                 </CardContent>

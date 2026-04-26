@@ -143,6 +143,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   let cachedPrice: Stripe.Price | null = null;
+  let cachedDonationPrice: Stripe.Price | null = null;
+
+  async function getOrCreateDonationPrice(): Promise<Stripe.Price> {
+    if (cachedDonationPrice) return cachedDonationPrice;
+
+    const existing = await stripe.prices.list({ lookup_keys: ['donation_5eur'], limit: 1 });
+    if (existing.data.length > 0) {
+      cachedDonationPrice = existing.data[0];
+      return cachedDonationPrice;
+    }
+
+    const product = await stripe.products.create({
+      name: 'Lisbon Wine Routes - Apoie o Nosso Trabalho',
+      description: 'Contribuição para apoiar o projeto Lisbon Wine Routes',
+    });
+
+    cachedDonationPrice = await stripe.prices.create({
+      product: product.id,
+      currency: 'eur',
+      unit_amount: 500,
+      lookup_key: 'donation_5eur',
+    });
+
+    return cachedDonationPrice;
+  }
 
   async function getOrCreatePrice(): Promise<Stripe.Price> {
     if (cachedPrice) {
@@ -262,6 +287,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error creating simple checkout session:', error);
       res.status(500).json({ error: 'Failed to create checkout session' });
+    }
+  });
+
+  app.post("/api/create-donation-checkout", async (req, res) => {
+    try {
+      let baseUrl = req.get('origin') || `${req.protocol}://${req.get('host')}`;
+
+      if (process.env.REPLIT_DEV_DOMAIN) {
+        let envUrl = process.env.REPLIT_DEV_DOMAIN;
+        if (!envUrl.startsWith('http://') && !envUrl.startsWith('https://')) {
+          envUrl = `https://${envUrl}`;
+        }
+        baseUrl = envUrl;
+      }
+
+      if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
+        baseUrl = `https://${baseUrl}`;
+      }
+
+      baseUrl = baseUrl.replace(/\/$/, '');
+
+      const price = await getOrCreateDonationPrice();
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{ price: price.id, quantity: 1 }],
+        mode: 'payment',
+        success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}&type=donation`,
+        cancel_url: `${baseUrl}/itinerary`,
+      });
+
+      res.json({ url: session.url });
+    } catch (error) {
+      console.error('Error creating donation checkout session:', error);
+      res.status(500).json({ error: 'Failed to create donation session' });
     }
   });
 

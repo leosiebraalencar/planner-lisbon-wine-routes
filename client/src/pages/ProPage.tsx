@@ -95,10 +95,18 @@ export default function ProPage() {
 
   const renderValue = (value: string) => {
     if (value === 'Sim' || value === 'Yes' || value === 'Sí' || value === 'Ja') {
-      return <Check className="w-5 h-5 text-green-600" />;
+      return (
+        <div className="flex justify-center items-center">
+          <Check className="w-5 h-5" style={{ color: 'rgb(132, 39, 11)' }} />
+        </div>
+      );
     }
     if (value === 'Não' || value === 'No' || value === 'Nein') {
-      return <X className="w-5 h-5 text-muted-foreground" />;
+      return (
+        <div className="flex justify-center items-center">
+          <X className="w-5 h-5" style={{ color: 'rgb(132, 39, 11)' }} />
+        </div>
+      );
     }
     return <span className="text-sm">{value}</span>;
   };
@@ -144,8 +152,8 @@ export default function ProPage() {
                       <tr key={key} className="border-b last:border-0">
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-2">
-                            <Icon className="w-4 h-4 text-muted-foreground" />
-                            <span>{t(`pro.features.${key}`)}</span>
+                            <Icon className="w-4 h-4" style={{ color: 'rgb(132, 39, 11)' }} />
+                            <span style={{ color: 'rgb(132, 39, 11)' }}>{t(`pro.features.${key}`)}</span>
                           </div>
                         </td>
                         <td className="text-center py-3 px-4">

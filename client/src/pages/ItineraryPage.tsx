@@ -10,7 +10,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Heart, X } from "lucide-react";
-import { STRIPE_DONATION_URL } from "@shared/affiliateLinks";
 import type { Itinerary, RoadTripGuide } from "@shared/schema";
 
 interface ItineraryPageProps {
@@ -19,14 +18,13 @@ interface ItineraryPageProps {
   submissionId?: string | null;
 }
 
-const DONATION_URL = import.meta.env.VITE_STRIPE_DONATION_URL || STRIPE_DONATION_URL;
-
 export default function ItineraryPage({ itinerary, setItinerary, submissionId }: ItineraryPageProps) {
   const { toast } = useToast();
   const { t, language } = useLanguage();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [showDonationModal, setShowDonationModal] = useState(false);
+  const [isDonating, setIsDonating] = useState(false);
 
   const customerName = itinerary.quizData.customerName || '';
 
@@ -100,9 +98,26 @@ export default function ItineraryPage({ itinerary, setItinerary, submissionId }:
     }
   };
 
-  const handleDonation = () => {
-    window.open(DONATION_URL, '_blank');
-    setShowDonationModal(false);
+  const handleDonation = async () => {
+    setIsDonating(true);
+    try {
+      const res = await apiRequest('POST', '/api/create-donation-checkout', {});
+      if (!res.ok) throw new Error('Failed to create donation session');
+      const { url } = await res.json();
+      if (url) {
+        window.open(url, '_blank');
+        setShowDonationModal(false);
+      }
+    } catch (error) {
+      console.error('Donation error:', error);
+      toast({
+        title: t('itinerary.downloadError'),
+        description: t('itinerary.downloadErrorDescription'),
+        variant: "destructive",
+      });
+    } finally {
+      setIsDonating(false);
+    }
   };
 
   const seo = getSeoData('itinerary', language);
@@ -136,7 +151,7 @@ export default function ItineraryPage({ itinerary, setItinerary, submissionId }:
             >
               <X className="w-5 h-5" />
             </Button>
-            <CardContent className="p-8 md:p-10">
+            <CardContent className="pt-14 px-8 pb-8 md:pt-16 md:px-10 md:pb-10">
               <div className="text-center mb-6">
                 <Heart className="w-10 h-10 text-red-500 mx-auto mb-4" />
                 <CardTitle className="text-2xl md:text-3xl font-serif mb-3">
@@ -150,10 +165,11 @@ export default function ItineraryPage({ itinerary, setItinerary, submissionId }:
                 <Button
                   size="lg"
                   onClick={handleDonation}
+                  disabled={isDonating}
                   className="w-full text-base"
                   data-testid="button-donate"
                 >
-                  {t('success.donateButton')}
+                  {isDonating ? '...' : t('success.donateButton')}
                 </Button>
                 <Button
                   variant="ghost"
