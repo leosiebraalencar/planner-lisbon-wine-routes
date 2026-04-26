@@ -174,13 +174,13 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
   const hasSurprise = userRegionPrefs.includes('surprise') || userRegionPrefs.length === 0;
   let orderedRegions: string[];
   if (hasSurprise) {
-    orderedRegions = [...REGIONS];
+    orderedRegions = [...ALL_ITINERARY_REGIONS];
   } else {
     const preferred = userRegionPrefs
       .filter(k => k !== 'surprise')
       .map(k => regionKeyToName[k])
       .filter(Boolean);
-    const rest = REGIONS.filter(r => !preferred.includes(r));
+    const rest = ALL_ITINERARY_REGIONS.filter(r => !preferred.includes(r));
     orderedRegions = [...preferred, ...rest];
   }
 
@@ -284,10 +284,9 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
       .filter(h => !h.isGenericListing && !usedHotels.has(h.name))
       .filter(h => !isProtected || h.region !== 'Lisboa');
     if (hotels.length > 0) return hotels[0];
-    if (isProtected) return undefined;
-    const fallback = getHotelsByBudgetAndRegion(quizData.budget, 'Lisboa')
+    const lisboaFallback = getHotelsByBudgetAndRegion(quizData.budget, 'Lisboa')
       .filter(h => !h.isGenericListing && !usedHotels.has(h.name));
-    return fallback[0];
+    return lisboaFallback[0];
   };
 
   const isSlowPace = quizData.preferences.includes('oneWineryPerDay');
