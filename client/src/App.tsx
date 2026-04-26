@@ -229,8 +229,9 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
       'Alenquer': ['Região Oeste', 'Alenquer', 'Lisboa'],
       'Bucelas': ['Região Oeste', 'Bucelas', 'Lisboa'],
       'Sintra': ['Sintra', 'Colares Sintra'],
-      'Setúbal': ['Setúbal', 'Palmela', 'Grandola'],
+      'Setúbal': ['Setúbal', 'Palmela'],
       'Palmela': ['Setúbal', 'Palmela'],
+      'Grandola': ['Setúbal', 'Grandola'],
       'Oeiras': ['Oeiras', 'Lisboa'],
       'Lisboa': ['Lisboa'],
     };
@@ -271,10 +272,15 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
     return scored[0]?.restaurant;
   };
 
+  const NO_LISBOA_FALLBACK_REGIONS = new Set(['Sintra', 'Setúbal', 'Grandola']);
+
   const getHotelForRegion = (region: string, usedHotels: Set<string>): HotelData | undefined => {
     const hotels = getHotelsByBudgetAndRegion(quizData.budget, region)
       .filter(h => !h.isGenericListing && !usedHotels.has(h.name));
     if (hotels.length > 0) return hotels[0];
+    if (NO_LISBOA_FALLBACK_REGIONS.has(region)) {
+      return undefined;
+    }
     const fallback = getHotelsByBudgetAndRegion(quizData.budget, 'Lisboa')
       .filter(h => !h.isGenericListing && !usedHotels.has(h.name));
     return fallback[0];
@@ -292,6 +298,9 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
   const needsHotel = !quizData.hasAccommodation;
   const usedHotels = new Set<string>();
   const wantsCenter = quizData.accommodationPreference === 'central_lisboa';
+
+  const dayLastWineryCoords: Array<{ lat: number; lng: number } | null> = [];
+  const dayFirstWineryCoords: Array<{ lat: number; lng: number } | null> = [];
 
   const buildDinnerActivity = (restaurant: RestaurantData | undefined) => {
     if (restaurant) {
@@ -395,6 +404,8 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
         evening: buildDinnerActivity(dinnerRestaurant)
       };
       days.push(dayData);
+      dayFirstWineryCoords.push(morningCoords);
+      dayLastWineryCoords.push(morningCoords);
     } else {
       const afternoonCandidates = (regionWineries[regionName] || [])
         .filter(w => !usedWineries.has(w.name))
@@ -467,6 +478,8 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
         evening: buildDinnerActivity(dinnerRestaurant)
       };
       days.push(dayData);
+      dayFirstWineryCoords.push(morningCoords);
+      dayLastWineryCoords.push(afternoonCoords || morningCoords);
     }
 
     daysInCurrentRegion++;
@@ -489,7 +502,16 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
         const nextDayRegion = days[di + 1].region;
         const currentDayRegion = days[di].region;
         if (nextDayRegion !== currentDayRegion) {
-          dayHotel = getHotelForRegion(nextDayRegion, usedHotels);
+          const fromCoords = dayLastWineryCoords[di];
+          const toCoords = dayFirstWineryCoords[di + 1];
+          const interDayDist = (fromCoords && toCoords)
+            ? haversineDistance(fromCoords.lat, fromCoords.lng, toCoords.lat, toCoords.lng)
+            : 0;
+          if (interDayDist > 65) {
+            dayHotel = getHotelForRegion('Lisboa', usedHotels) || getHotelForRegion(currentDayRegion, usedHotels);
+          } else {
+            dayHotel = getHotelForRegion(nextDayRegion, usedHotels);
+          }
           if (!dayHotel) {
             dayHotel = getHotelForRegion(currentDayRegion, usedHotels);
           }
