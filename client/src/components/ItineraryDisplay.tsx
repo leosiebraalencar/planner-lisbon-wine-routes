@@ -66,7 +66,23 @@ export default function ItineraryDisplay({ itinerary, onDownload, isDownloading 
   const { t } = useLanguage();
   
   const greeting = customerName ? t('itinerary.greeting', { name: customerName }) : '';
-  
+
+  const REGION_COLORS: Record<string, string> = {
+    'Região Oeste': 'bg-emerald-500',
+    'Sintra': 'bg-violet-500',
+    'Setúbal': 'bg-blue-500',
+    'Oeiras': 'bg-amber-500',
+  };
+
+  const regionDayMap: Record<string, number[]> = {};
+  if (itinerary.days.length >= 5) {
+    itinerary.days.forEach(day => {
+      if (!regionDayMap[day.region]) regionDayMap[day.region] = [];
+      regionDayMap[day.region].push(day.day);
+    });
+  }
+  const regionEntries = Object.entries(regionDayMap);
+
   return (
     <div className="w-full max-w-5xl mx-auto">
       <div className="mb-8 text-center">
@@ -121,7 +137,39 @@ export default function ItineraryDisplay({ itinerary, onDownload, isDownloading 
           </CardContent>
         </Card>
       </div>
-      
+
+      {regionEntries.length > 0 && (
+        <Card className="border-border mb-8" data-testid="card-region-diversity">
+          <CardHeader className="pb-3">
+            <CardTitle className="font-serif text-base flex items-center gap-2">
+              <Compass className="w-5 h-5 text-primary" />
+              {t('itinerary.regionDiversityTitle')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-x-6 gap-y-3">
+              {regionEntries.map(([region, days]) => {
+                const dotColor = REGION_COLORS[region] ?? 'bg-primary';
+                const dayLabel = days.length === 1
+                  ? `${t('itinerary.day')} ${days[0]}`
+                  : `${t('itinerary.days')} ${days.join(', ')}`;
+                return (
+                  <div
+                    key={region}
+                    className="flex items-center gap-2"
+                    data-testid={`region-summary-${region.toLowerCase().replace(/\s+/g, '-')}`}
+                  >
+                    <span className={`w-3 h-3 rounded-full flex-shrink-0 ${dotColor}`} />
+                    <span className="text-sm font-medium">{region}:</span>
+                    <span className="text-sm text-muted-foreground">{dayLabel}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card className="border-border mb-8">
         <CardHeader>
           <CardTitle className="font-serif">{t('itinerary.highlights')}</CardTitle>
