@@ -8,10 +8,49 @@ import { generateRoadTripGuide } from "./ai";
 import { sendProRequestNotification } from "./email";
 import path from "path";
 import fs from "fs";
+import crypto from "crypto";
+import rateLimit from "express-rate-limit";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error("STRIPE_SECRET_KEY must be set");
 }
+
+if (!process.env.STRIPE_WEBHOOK_SECRET) {
+  console.warn('[security] WARNING: STRIPE_WEBHOOK_SECRET is not set — webhook endpoint will reject all requests');
+}
+
+const SESSION_SECRET = process.env.SESSION_SECRET || (() => {
+  throw new Error("SESSION_SECRET must be set");
+})();
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function signToken(payload: Record<string, unknown>): string {
+  const data = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const sig = crypto.createHmac('sha256', SESSION_SECRET).update(data).digest('base64url');
+  return `${data}.${sig}`;
+}
+
+function verifyToken(token: string): Record<string, unknown> | null {
+  try {
+    const [data, sig] = token.split('.');
+    if (!data || !sig) return null;
+    const expected = crypto.createHmac('sha256', SESSION_SECRET).update(data).digest('base64url');
+    if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return null;
+    return JSON.parse(Buffer.from(data, 'base64url').toString('utf8'));
+  } catch {
+    return null;
+  }
+}
+
+const ADMIN_TOKEN_TTL_MS = 8 * 60 * 60 * 1000;
+const SUBMISSION_TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
+
+const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 5, standardHeaders: true, legacyHeaders: false });
+const pdfLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 10, standardHeaders: true, legacyHeaders: false });
+const aiLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 5, standardHeaders: true, legacyHeaders: false });
+const quizLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 30, standardHeaders: true, legacyHeaders: false });
+const proLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 10, standardHeaders: true, legacyHeaders: false });
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2025-10-29.clover",
@@ -27,17 +66,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     let event: Stripe.Event;
 
+    if (!process.env.STRIPE_WEBHOOK_SECRET) {
+      console.error('[security] Webhook request rejected: STRIPE_WEBHOOK_SECRET not configured');
+      return res.status(503).send('Webhook not available');
+    }
+
     try {
-      if (process.env.STRIPE_WEBHOOK_SECRET) {
-        event = stripe.webhooks.constructEvent(
-          req.body,
-          sig,
-          process.env.STRIPE_WEBHOOK_SECRET
-        );
-      } else {
-        console.warn('WARNING: STRIPE_WEBHOOK_SECRET not set, skipping webhook signature verification');
-        event = JSON.parse(req.body.toString());
-      }
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        sig,
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
     } catch (err: any) {
       console.error('Webhook signature verification failed:', err.message);
       return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -75,7 +114,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Free PDF download - generates and returns PDF directly without payment
-  app.post("/api/generate-free-pdf", async (req, res) => {
+  app.post("/api/generate-free-pdf", pdfLimiter, async (req, res) => {
     try {
       const itinerary = itinerarySchema.parse(req.body);
       const lang = (req.query.lang as string || 'EN').toUpperCase() as 'PT' | 'EN' | 'ES' | 'DE';
@@ -326,14 +365,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/quiz-submission", async (req, res) => {
+  app.post("/api/quiz-submission", quizLimiter, async (req, res) => {
     try {
       const validationResult = insertQuizSubmissionSchema.safeParse(req.body);
       if (!validationResult.success) {
-        return res.status(400).json({ error: 'Validation failed', details: validationResult.error.errors });
+        return res.status(400).json({ error: 'Validation failed' });
       }
       const submission = await storage.createQuizSubmission(validationResult.data);
-      res.json({ success: true, id: submission.id });
+      const submissionToken = signToken({ id: submission.id, iat: Date.now() });
+      res.json({ success: true, id: submission.id, submissionToken });
     } catch (error) {
       console.error('Error creating quiz submission:', error);
       res.status(500).json({ error: 'Failed to save quiz submission' });
@@ -343,9 +383,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/quiz-submission/:id/email", async (req, res) => {
     try {
       const { id } = req.params;
-      const { email, consent } = req.body;
+      const { email, consent, submissionToken } = req.body;
+
+      if (!submissionToken) {
+        return res.status(403).json({ error: 'Missing submission token' });
+      }
+      const payload = verifyToken(submissionToken);
+      if (!payload || payload.id !== id || typeof payload.iat !== 'number' || Date.now() - payload.iat > SUBMISSION_TOKEN_TTL_MS) {
+        return res.status(403).json({ error: 'Invalid or expired token' });
+      }
+
       if (!email) {
         return res.status(400).json({ error: 'Email is required' });
+      }
+      if (!EMAIL_RE.test(email)) {
+        return res.status(400).json({ error: 'Invalid email address' });
       }
       const updated = await storage.updateQuizSubmissionEmail(id, email, consent ? 'true' : 'false');
       if (!updated) {
@@ -358,7 +410,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/login", async (req, res) => {
+  app.post("/api/admin/login", loginLimiter, async (req, res) => {
     try {
       const { email, password } = req.body;
       const adminEmail = process.env.ADMIN_EMAIL;
@@ -366,8 +418,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!adminEmail || !adminPassword) {
         return res.status(500).json({ error: 'Admin credentials not configured' });
       }
-      if (email === adminEmail && password === adminPassword) {
-        const token = Buffer.from(`${email}:${Date.now()}`).toString('base64');
+      const emailMatch = crypto.timingSafeEqual(
+        crypto.createHash('sha256').update(email || '').digest(),
+        crypto.createHash('sha256').update(adminEmail).digest()
+      );
+      const passMatch = crypto.timingSafeEqual(
+        crypto.createHash('sha256').update(password || '').digest(),
+        crypto.createHash('sha256').update(adminPassword).digest()
+      );
+      if (emailMatch && passMatch) {
+        const token = signToken({ role: 'admin', iat: Date.now() });
         return res.json({ success: true, token });
       }
       return res.status(401).json({ error: 'Invalid credentials' });
@@ -377,22 +437,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/submissions", async (req, res) => {
+  function requireAdmin(req: any, res: any, next: any) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const token = authHeader.substring(7);
+    const payload = verifyToken(token);
+    if (!payload || payload.role !== 'admin' || typeof payload.iat !== 'number' || Date.now() - payload.iat > ADMIN_TOKEN_TTL_MS) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    next();
+  }
+
+  app.get("/api/admin/submissions", requireAdmin, async (req, res) => {
     try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Unauthorized' });
-      }
-      const token = authHeader.substring(7);
-      try {
-        const decoded = Buffer.from(token, 'base64').toString('utf8');
-        const [email] = decoded.split(':');
-        if (email !== process.env.ADMIN_EMAIL) {
-          return res.status(401).json({ error: 'Unauthorized' });
-        }
-      } catch {
-        return res.status(401).json({ error: 'Invalid token' });
-      }
       const submissions = await storage.getQuizSubmissions();
       res.json(submissions);
     } catch (error) {
@@ -401,15 +460,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/pro-request", async (req, res) => {
+  app.post("/api/pro-request", proLimiter, async (req, res) => {
     try {
       const validationResult = insertProRequestSchema.safeParse(req.body);
       
       if (!validationResult.success) {
-        return res.status(400).json({ 
-          error: 'Validation failed', 
-          details: validationResult.error.errors 
-        });
+        return res.status(400).json({ error: 'Validation failed' });
       }
 
       const validatedData = validationResult.data;
@@ -448,7 +504,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/generate-road-trip-guide", async (req, res) => {
+  app.post("/api/generate-road-trip-guide", aiLimiter, async (req, res) => {
     try {
       const itinerary = itinerarySchema.parse(req.body);
 

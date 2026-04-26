@@ -770,6 +770,9 @@ function App() {
   const [submissionId, setSubmissionId] = useState<string | null>(() => {
     return sessionStorage.getItem('currentSubmissionId');
   });
+  const [submissionToken, setSubmissionToken] = useState<string | null>(() => {
+    return sessionStorage.getItem('currentSubmissionToken');
+  });
 
   const handleQuizComplete = async (data: QuizResponse) => {
     const currentLang = (sessionStorage.getItem('selectedLanguage') || 'PT') as Language;
@@ -793,6 +796,10 @@ function App() {
       if (result.id) {
         setSubmissionId(result.id);
         sessionStorage.setItem('currentSubmissionId', result.id);
+      }
+      if (result.submissionToken) {
+        setSubmissionToken(result.submissionToken);
+        sessionStorage.setItem('currentSubmissionToken', result.submissionToken);
       }
     } catch (err) {
       console.error('Failed to save quiz submission:', err);
