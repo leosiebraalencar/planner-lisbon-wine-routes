@@ -23,6 +23,9 @@ import {
   REGIONS, 
   getExperienceByBudget,
   scoreWinery,
+  budgetMatchScore,
+  preferenceMatchScore,
+  PRIORITY_WINERIES,
   type WineryData 
 } from "@shared/wineryData";
 import { ALL_RESTAURANTS, type RestaurantData } from "@shared/restaurantData";
@@ -174,6 +177,53 @@ const findNearestHotelRegion = (lat: number, lng: number): string =>
 
 const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerary => {
   const tt = (key: string, replacements?: Record<string, string>) => translate(key, lang, replacements);
+
+  const buildWineryHighlight = (winery: WineryData): string => {
+    const parts: string[] = [];
+
+    if (PRIORITY_WINERIES.has(winery.name)) {
+      parts.push(tt('itinerary.gen.highlightRecommended'));
+    }
+
+    const budgetScore = budgetMatchScore(winery, quizData.budget);
+    if (budgetScore === 30) {
+      parts.push(tt('itinerary.gen.highlightBudgetMatch'));
+    }
+
+    if (winery.rating != null && winery.rating >= 4.8) {
+      parts.push(tt('itinerary.gen.highlightTopRated', { rating: winery.rating.toFixed(1) }));
+    }
+
+    const PREF_HIGHLIGHT_MAP: Record<string, string> = {
+      traditionalGastronomy: 'itinerary.gen.highlightGastronomy',
+      internationalGastronomy: 'itinerary.gen.highlightGastronomy',
+      wineFood: 'itinerary.gen.highlightGastronomy',
+      historic: 'itinerary.gen.highlightHistoric',
+      modernWineries: 'itinerary.gen.highlightTechnical',
+      production: 'itinerary.gen.highlightTechnical',
+      tastings: 'itinerary.gen.highlightTastings',
+      biodynamic: 'itinerary.gen.highlightBiodynamic',
+    };
+
+    if (parts.length < 3) {
+      for (const pref of (quizData.preferences || [])) {
+        const highlightKey = PREF_HIGHLIGHT_MAP[pref];
+        if (!highlightKey) continue;
+        const prefMatches = preferenceMatchScore(winery, [pref]) > 0;
+        if (!prefMatches) continue;
+        const label = tt(highlightKey);
+        if (!parts.includes(label)) {
+          parts.push(label);
+          break;
+        }
+      }
+    }
+
+    parts.push(tt('itinerary.gen.highlightInRegion', { region: winery.region }));
+
+    return parts.slice(0, 3).join(' · ');
+  };
+
   const days: Itinerary['days'] = [];
   const usedWineries = new Set<string>();
   const usedRestaurants = new Set<string>();
@@ -474,7 +524,8 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
           address: morningWinery.address,
           price: morningExp?.price || 0,
           affiliateUrl: morningExp?.url || morningWinery.hostUrl || buildGoogleMapsUrl(morningWinery.name, morningWinery.address),
-          affiliateProvider: (morningExp?.url || morningWinery.hostUrl) ? 'winalist' as const : 'googlemaps' as const
+          affiliateProvider: (morningExp?.url || morningWinery.hostUrl) ? 'winalist' as const : 'googlemaps' as const,
+          wineryHighlight: buildWineryHighlight(morningWinery),
         },
         afternoon: afternoonActivity,
         evening: buildDinnerActivity(dinnerRestaurant)
@@ -544,7 +595,8 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
         address: afternoonWinery.address,
         price: afternoonExp?.price || 0,
         affiliateUrl: afternoonExp?.url || afternoonWinery.hostUrl || buildGoogleMapsUrl(afternoonWinery.name, afternoonWinery.address),
-        affiliateProvider: (afternoonExp?.url || afternoonWinery.hostUrl) ? 'winalist' as const : 'googlemaps' as const
+        affiliateProvider: (afternoonExp?.url || afternoonWinery.hostUrl) ? 'winalist' as const : 'googlemaps' as const,
+        wineryHighlight: buildWineryHighlight(afternoonWinery),
       } : {
         time: '14:00-18:00',
         activity: tt('itinerary.gen.freeAfternoon'),
@@ -568,7 +620,8 @@ const generateMockItinerary = (quizData: QuizResponse, lang: Language): Itinerar
           address: morningWinery.address,
           price: morningExp?.price || 0,
           affiliateUrl: morningExp?.url || morningWinery.hostUrl || buildGoogleMapsUrl(morningWinery.name, morningWinery.address),
-          affiliateProvider: (morningExp?.url || morningWinery.hostUrl) ? 'winalist' as const : 'googlemaps' as const
+          affiliateProvider: (morningExp?.url || morningWinery.hostUrl) ? 'winalist' as const : 'googlemaps' as const,
+          wineryHighlight: buildWineryHighlight(morningWinery),
         },
         afternoon: afternoonActivity,
         evening: buildDinnerActivity(dinnerRestaurant)

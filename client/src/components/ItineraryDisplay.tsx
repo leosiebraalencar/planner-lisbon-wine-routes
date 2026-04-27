@@ -12,6 +12,12 @@ function ActivityCard({ activity, periodLabel, t }: { activity: Activity; period
   return (
     <div className="bg-card p-4 rounded-lg">
       <div className="font-medium mb-1">{activity.location}</div>
+      {activity.wineryHighlight && (
+        <div className="text-xs text-muted-foreground mb-2 flex items-start gap-1" data-testid={`text-winery-highlight-${periodLabel.toLowerCase()}`}>
+          <Sparkles className="w-3 h-3 shrink-0 text-amber-500 mt-0.5" />
+          <span className="line-clamp-2">{activity.wineryHighlight}</span>
+        </div>
+      )}
       {activity.address && (
         <div className="text-xs text-muted-foreground flex items-center gap-1 mb-2">
           <MapPin className="w-3 h-3" />

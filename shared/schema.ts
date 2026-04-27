@@ -111,6 +111,7 @@ export const activitySchema = z.object({
   affiliateProvider: z.enum(['winalist', 'getyourguide', 'booking', 'discovercars', 'googlemaps', 'thefork', 'direct']).optional(),
   isTheFork: z.boolean().optional(),
   theForkPromoCode: z.string().optional(),
+  wineryHighlight: z.string().optional(),
 });
 
 export const localizedStringSchema = z.object({
