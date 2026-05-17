@@ -38,16 +38,15 @@ export default function Hero({ onStartQuiz }: HeroProps) {
         >
           {t('hero.cta')}
         </Button>
-        <div className="mt-4">
-          <Button
-            size="lg"
+        <p className="mt-4">
+          <button
             onClick={() => navigate('/pro')}
-            className="bg-[#84270B]/80 backdrop-blur-md border border-[#84270B] text-white px-8 py-6 text-lg font-semibold"
+            className="text-white underline text-base bg-transparent border-none cursor-pointer"
             data-testid="button-hero-pro-cta"
           >
             {t('hero.proCta')}
-          </Button>
-        </div>
+          </button>
+        </p>
       </div>
     </section>
   );
