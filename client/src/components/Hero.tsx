@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import heroImage from "@assets/generated_images/Hero_vineyard_golden_hour_eac5587d.png";
 
 interface HeroProps {
@@ -9,14 +10,8 @@ interface HeroProps {
 
 export default function Hero({ onStartQuiz }: HeroProps) {
   const { t } = useLanguage();
-  
-  const { data } = useQuery<{ count: number }>({
-    queryKey: ['/api/itinerary-count'],
-    staleTime: 60000,
-  });
+  const [, navigate] = useLocation();
 
-  const itineraryCount = data?.count || 50;
-  
   return (
     <section className="relative min-h-[calc(100vh-88px)] flex items-center justify-center">
       <div className="absolute inset-0">
@@ -43,9 +38,16 @@ export default function Hero({ onStartQuiz }: HeroProps) {
         >
           {t('hero.cta')}
         </Button>
-        <p className="mt-6 text-sm text-white/80" data-testid="text-itinerary-counter">
-          {t('hero.created', { count: String(itineraryCount) })}
-        </p>
+        <div className="mt-4">
+          <Button
+            size="lg"
+            onClick={() => navigate('/pro')}
+            className="bg-[#84270B]/80 backdrop-blur-md border border-[#84270B] text-white px-8 py-6 text-lg font-semibold"
+            data-testid="button-hero-pro-cta"
+          >
+            {t('hero.proCta')}
+          </Button>
+        </div>
       </div>
     </section>
   );
