@@ -29,7 +29,7 @@ export default function Header() {
               href="https://lisbonwineroutes.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors inline-block"
+              className="text-sm font-medium text-[#992b39] hover:text-[#992b39] no-underline hover:underline transition-colors inline-block"
               data-testid="link-main-blog"
             >
               <span className="md:hidden">Blog</span>
@@ -59,7 +59,7 @@ export default function Header() {
                     const currentLang = languages.find(l => l.code === language);
                     return currentLang ? <currentLang.Flag className="w-4 h-3" /> : null;
                   })()}
-                  <span className="hidden sm:inline">{language}</span>
+                  <span className="hidden sm:inline text-[#992b39]">{language}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
