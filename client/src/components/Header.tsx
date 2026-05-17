@@ -29,7 +29,7 @@ export default function Header() {
               href="https://lisbonwineroutes.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors inline-block"
+              className="text-sm font-medium text-[#992b39] hover:text-[#992b39] no-underline hover:underline transition-colors inline-block"
               data-testid="link-main-blog"
             >
               <span className="md:hidden">Blog</span>
