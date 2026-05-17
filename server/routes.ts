@@ -367,7 +367,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/quiz-submission", quizLimiter, async (req, res) => {
     try {
-      const validationResult = insertQuizSubmissionSchema.safeParse(req.body);
+      const body = req.body;
+
+      // Extract structured quiz fields from the request body or from the nested quizData payload
+      const quizPayload = body.quizData || body;
+      const duration: number | undefined =
+        typeof body.duration === 'number' ? body.duration :
+        typeof quizPayload.duration === 'number' ? quizPayload.duration : undefined;
+      const budget: string | undefined =
+        typeof body.budget === 'string' ? body.budget :
+        typeof quizPayload.budget === 'string' ? quizPayload.budget : undefined;
+      const travellers: string | undefined =
+        typeof body.travellers === 'string' ? body.travellers :
+        typeof body.travelers === 'string' ? body.travelers :
+        typeof quizPayload.travellers === 'string' ? quizPayload.travellers :
+        typeof quizPayload.travelers === 'string' ? quizPayload.travelers : undefined;
+      const preferencesRaw = body.preferences ?? quizPayload.preferences;
+      const preferences: string | undefined = Array.isArray(preferencesRaw)
+        ? preferencesRaw.join(',')
+        : typeof preferencesRaw === 'string' ? preferencesRaw : undefined;
+
+      const enrichedBody = {
+        ...body,
+        duration,
+        budget,
+        travellers,
+        preferences,
+      };
+
+      const validationResult = insertQuizSubmissionSchema.safeParse(enrichedBody);
       if (!validationResult.success) {
         return res.status(400).json({ error: 'Validation failed' });
       }
