@@ -62,6 +62,10 @@ export const quizSubmissions = pgTable("quiz_submissions", {
   marketingConsent: text("marketing_consent").default('false'),
   quizData: jsonb("quiz_data").notNull(),
   language: text("language").default('PT'),
+  duration: integer("duration"),
+  budget: text("budget"),
+  travellers: text("travellers"),
+  preferences: text("preferences"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
