@@ -14,7 +14,7 @@ export const translations = {
     },
     valueProposition: {
       personalized: {
-        title: 'Somente Personalizado',
+        title: 'Personalizado',
         description: 'Roteiros únicos baseados nas suas preferências, orçamento e tempo disponível',
       },
       curated: {
