@@ -10,6 +10,7 @@ interface SeoProps {
 }
 
 const DOMAIN = 'https://tours.lisbonwineroutes.com';
+const FAVICON_URL = 'https://lisbonwineroutes.com/wp-content/uploads/2021/02/favicon-lisbon-wine-routes-150x150.png';
 
 const localeMap: Record<string, string> = {
   pt: 'pt_PT',
@@ -29,6 +30,8 @@ export default function Seo({ lang, title, description, keywords, canonicalUrl, 
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
       <link rel="canonical" href={canonicalUrl} />
+      <link rel="icon" type="image/png" href={FAVICON_URL} />
+      <link rel="apple-touch-icon" href={FAVICON_URL} />
 
       <link rel="alternate" hrefLang="pt" href={ptUrl} />
       <link rel="alternate" hrefLang="en" href={enUrl} />
