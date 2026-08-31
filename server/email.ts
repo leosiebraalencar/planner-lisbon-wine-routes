@@ -1,22 +1,5 @@
-import nodemailer from 'nodemailer';
-
 const NOTIFY_EMAIL = 'contacto@lisbonwineroutes.com';
-
-function createTransport() {
-  const host = process.env.SMTP_HOST;
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-  const port = parseInt(process.env.SMTP_PORT || '587', 10);
-
-  if (!host || !user || !pass) return null;
-
-  return nodemailer.createTransport({
-    host,
-    port,
-    secure: port === 465,
-    auth: { user, pass },
-  });
-}
+const RESEND_API_URL = 'https://api.resend.com/emails';
 
 export async function sendProRequestNotification(data: {
   name: string;
@@ -26,9 +9,9 @@ export async function sendProRequestNotification(data: {
   budget?: string;
   preferences?: string;
 }) {
-  const transport = createTransport();
-  if (!transport) {
-    console.log('[email] SMTP not configured — skipping Pro Request notification email');
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.log('[email] RESEND_API_KEY is not configured — skipping Pro Request notification email');
     return;
   }
 
@@ -45,14 +28,27 @@ export async function sendProRequestNotification(data: {
   ].filter(Boolean).join('\n');
 
   try {
-    await transport.sendMail({
-      from: `"Lisbon Wine Routes" <${process.env.SMTP_USER}>`,
-      to: NOTIFY_EMAIL,
-      subject,
-      text,
+    const response = await fetch(RESEND_API_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'Lisbon Wine Routes <contacto@lisbonwineroutes.com>',
+        to: [NOTIFY_EMAIL],
+        subject,
+        text,
+      }),
     });
+
+    if (!response.ok) {
+      console.error(`[email] Resend request failed (${response.status}): ${await response.text()}`);
+      return;
+    }
+
     console.log(`[email] Pro Request notification sent to ${NOTIFY_EMAIL}`);
   } catch (err) {
-    console.error('[email] Failed to send Pro Request notification:', err);
+    console.error('[email] Failed to send Pro Request notification through Resend:', err);
   }
 }
