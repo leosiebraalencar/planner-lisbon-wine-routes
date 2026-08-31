@@ -3,7 +3,8 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
-app.set('trust proxy', true);
+// Railway terminates TLS at one trusted proxy before forwarding to this app.
+app.set('trust proxy', 1);
 
 declare module 'http' {
   interface IncomingMessage {
@@ -46,12 +47,17 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
+  // Do not let the SPA fallback return HTML with a 200 status for unknown API paths.
+  app.use("/api", (_req, res) => {
+    res.status(404).json({ error: "Not found" });
+  });
+
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
+    console.error(err);
     res.status(status).json({ message });
-    throw err;
   });
 
   if (app.get("env") === "development") {

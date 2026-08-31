@@ -10,6 +10,8 @@ import path from "path";
 import fs from "fs";
 import crypto from "crypto";
 import rateLimit from "express-rate-limit";
+import { sql } from "drizzle-orm";
+import { db } from "./db";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error("STRIPE_SECRET_KEY must be set");
@@ -57,6 +59,16 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  app.get("/api/health", async (_req, res) => {
+    try {
+      await db.execute(sql`SELECT 1`);
+      res.status(200).json({ status: "ok" });
+    } catch (error) {
+      console.error("Database health check failed:", error);
+      res.status(503).json({ status: "database_unavailable" });
+    }
+  });
+
   app.post("/api/webhook", async (req, res) => {
     const sig = req.headers['stripe-signature'];
     
